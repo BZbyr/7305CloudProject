@@ -1,7 +1,7 @@
 # CloudProject
 
 ![](https://img.shields.io/badge/hadoop-v2.7.5-blue.svg)
-![](https://img.shields.io/badge/Spark-v2.4.0-blue.svg)
+![](https://img.shields.io/badge/spark-v2.4.0-blue.svg)
 
 Term Project for **COMP7305 Cluster and Cloud Computing**.
 
