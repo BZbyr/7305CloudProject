@@ -12,5 +12,24 @@ Developed By:
   - [@BZbyr](https://github.com/BZbyr)
   - [@Yang Xiangyu]( )
   
+ ### Project Structure
+ 
+ ```
+ .
+├── CloudWeb
+├── Collector
+├── HBaser
+├── StreamProcessorFlink
+├── StreamProcessorSpark
+|
+└── pom.xml
+
+ ```
+ - CloudWeb: 
+ - Collector:
+ - HBaser
+ - StreamProcessorFlink
+ - StreamProcessorSpark
+ - pom.xml
   
 [Proposal](https://docs.google.com/document/d/1zzrZSWjRAz3FpL2EyyuIOGwQPduTtCBiCcYJMfmvA4I/edit?usp=sharing)
