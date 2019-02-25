@@ -17,12 +17,24 @@
         <module>StreamProcessorSpark</module>
         <module>StreamProcessorFlink</module>
         <module>CloudWeb</module>
+        <module>CloudWeb</module>
+        <module>StreamProcessorFlink</module>
+        <module>StreamProcessorSpark</module>
+        <module>Collector</module>
+        <module>HBaser</module>
+        <module>CloudWeb</module>
+        <module>CloudWeb</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <flink.version>1.5.1</flink.version>
+        <scala.binary.version>2.11</scala.binary.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
 
     <build>
