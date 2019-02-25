@@ -22,7 +22,7 @@ Developed By:
 ├── StreamProcessorFlink
 ├── StreamProcessorSpark
 |
-└── pom.xml
+└── pom.xml(Maven parent POM)
 
  ```
  - CloudWeb: 
@@ -30,6 +30,5 @@ Developed By:
  - HBaser
  - StreamProcessorFlink
  - StreamProcessorSpark
- - pom.xml
   
 [Proposal](https://docs.google.com/document/d/1zzrZSWjRAz3FpL2EyyuIOGwQPduTtCBiCcYJMfmvA4I/edit?usp=sharing)
