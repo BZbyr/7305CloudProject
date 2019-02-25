@@ -24,6 +24,7 @@
         <module>HBaser</module>
         <module>CloudWeb</module>
         <module>CloudWeb</module>
+        <module>test</module>
     </modules>
 
     <properties>
