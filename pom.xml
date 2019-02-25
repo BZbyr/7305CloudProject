@@ -7,7 +7,7 @@
     <groupId>hk.hku.cloud</groupId>
     <artifactId>CloudProject</artifactId>
     <inceptionYear>2019.02</inceptionYear>
-    <description>COMP7305 Project</description>
+    <description>COMP7305 Project Realtime Twitter Stream Analysis System</description>
     <url>www.github.com</url>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
@@ -68,7 +68,17 @@
         <developer>
             <id>yg</id>
             <name>YU Gao</name>
-            <email>example@outlook.com</email>
+            <email>yugao829@connect.hku.hk</email>
+            <organization>HKU</organization>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>lexkaing</id>
+            <name>ZHANG Kai</name>
+            <email>lexkaing@connect.hku.hk</email>
             <organization>HKU</organization>
             <roles>
                 <role>architect</role>
@@ -79,6 +89,16 @@
             <id>BZbyr</id>
             <name>ZHANG Boyang</name>
             <email>b.zhang966@outlook.com</email>
+            <organization>HKU</organization>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>yyx</id>
+            <name>YANG Yuxiang</name>
+            <email>ulyhash@connect.hku.hk</email>
             <organization>HKU</organization>
             <roles>
                 <role>architect</role>
