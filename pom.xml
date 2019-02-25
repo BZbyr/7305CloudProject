@@ -66,9 +66,10 @@
 
     <developers>
         <developer>
-            <id>yg</id>
+            <id>GaryGao</id>
             <name>YU Gao</name>
             <email>yugao829@connect.hku.hk</email>
+            <url>https://github.com/GaryGao829</url>
             <organization>HKU</organization>
             <roles>
                 <role>architect</role>
@@ -79,6 +80,7 @@
             <id>lexkaing</id>
             <name>ZHANG Kai</name>
             <email>lexkaing@connect.hku.hk</email>
+            <url>https://github.com/AlexTK2012</url>
             <organization>HKU</organization>
             <roles>
                 <role>architect</role>
@@ -89,6 +91,7 @@
             <id>BZbyr</id>
             <name>ZHANG Boyang</name>
             <email>b.zhang966@outlook.com</email>
+            <url>https://github.com/BZbyr</url>
             <organization>HKU</organization>
             <roles>
                 <role>architect</role>
@@ -99,6 +102,7 @@
             <id>yyx</id>
             <name>YANG Yuxiang</name>
             <email>ulyhash@connect.hku.hk</email>
+            <url></url>
             <organization>HKU</organization>
             <roles>
                 <role>architect</role>
