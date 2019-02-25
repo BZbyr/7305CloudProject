@@ -8,7 +8,7 @@ Term Project for **COMP7305 Cluster and Cloud Computing**.
 Developed By:
 
   - [@GaryGao](https://github.com/GaryGao829)
-  - [@lexkaing]( )
+  - [@lexkaing](https://github.com/AlexTK2012)
   - [@BZbyr](https://github.com/BZbyr)
   - [@Yang Xiangyu]( )
   
