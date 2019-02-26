@@ -12,19 +12,11 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>Collector</module>
-        <module>HBaser</module>
-        <module>StreamProcessorSpark</module>
-        <module>StreamProcessorFlink</module>
-        <module>CloudWeb</module>
-        <module>CloudWeb</module>
         <module>StreamProcessorFlink</module>
         <module>StreamProcessorSpark</module>
         <module>Collector</module>
         <module>HBaser</module>
         <module>CloudWeb</module>
-        <module>CloudWeb</module>
-        <module>test</module>
     </modules>
 
     <properties>
@@ -46,7 +38,7 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.0</version>
                     <configuration>
-                        <source>1.8</source>
+                        <source>${java.version}</source>
                         <target>1.8</target>
                         <encoding>${maven.compiler.encoding}</encoding>
                     </configuration>
@@ -70,8 +62,19 @@
                 <artifactId>jackson-core</artifactId>
                 <version>2.9.8</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>2.11.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>2.11.2</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
 
     <organization>
         <name>HKU</name>
@@ -115,7 +118,7 @@
             <id>yyx</id>
             <name>YANG Yuxiang</name>
             <email>ulyhash@connect.hku.hk</email>
-            <url></url>
+            <url>https://github.com/ulysses1881826</url>
             <organization>HKU</organization>
             <roles>
                 <role>architect</role>
