@@ -10,7 +10,7 @@ Developed By:
   - [@GaryGao](https://github.com/GaryGao829)
   - [@lexkaing](https://github.com/AlexTK2012)
   - [@BZbyr](https://github.com/BZbyr)
-  - [@Yang Xiangyu]( )
+  - [@Yang Xiangyu](https://github.com/ulysses1881826)
   
 ### Project Structure
  
@@ -33,11 +33,11 @@ Developed By:
 
 ### Cluster Website
 
-[Namenode info](http://202.45.128.135:20107/dfshealth.html#tab-overview)
+[Namenode INFO](http://202.45.128.135:20107/dfshealth.html#tab-overview)
 
-[hadoop application](http://202.45.128.135:20207/cluster)
+[Hadoop Application](http://202.45.128.135:20207/cluster)
 
-[hadoop jobhistory](http://202.45.128.135:20307/jobhistory)
+[Hadoop JobHistory](http://202.45.128.135:20307/jobhistory)
 
 [Spark](http://202.45.128.135:20507/)
 
