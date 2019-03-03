@@ -26,8 +26,8 @@ Developed By:
 
  ```
  - CloudWeb: 
- - Collector:
- - HBaser
+ - Collector: Collect data from Twitter
+ - HBaser: a Kafka-HBase Connector
  - StreamProcessorFlink
  - StreamProcessorSpark
 
