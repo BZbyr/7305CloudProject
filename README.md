@@ -26,10 +26,10 @@ Developed By:
 
  ```
  - __CloudWeb__: 
- - __Collector__: Collect data from Twitter
- - __HBaser__: a Kafka-HBase Connector
- - __StreamProcessorFlink__
- - __StreamProcessorSpark__
+ - __Collector__:   Collect data from Twitter
+ - __HBaser__:    a Kafka-HBase Connector
+ - __StreamProcessorFlink__:
+ - __StreamProcessorSpark__:
 
 ### Cluster Website
 
