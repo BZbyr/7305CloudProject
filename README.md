@@ -25,11 +25,11 @@ Developed By:
 └── pom.xml(Maven parent POM)
 
  ```
- - CloudWeb: 
- - Collector: Collect data from Twitter
- - HBaser: a Kafka-HBase Connector
- - StreamProcessorFlink
- - StreamProcessorSpark
+ - __CloudWeb__: 
+ - __Collector__: Collect data from Twitter
+ - __HBaser__: a Kafka-HBase Connector
+ - __StreamProcessorFlink__
+ - __StreamProcessorSpark__
 
 ### Cluster Website
 
