@@ -52,3 +52,8 @@ Developed By:
 [地理查询 API](http://jwd.funnyapi.com/#/index)
 
 
+ ### Flume & Kafka Config
+ [Flume](https://gist.github.com/AlexTK2012/1d3288f0e474b4ad66db80950b402230) https://flume.apache.org
+ [Flume conf Demo](https://gist.github.com/AlexTK2012/e30d0b392fda1c432da30c132e246629)
+ [Kafka](https://gist.github.com/AlexTK2012/7a1c68ec2b904528c41e726ebece4b46) http://kafka.apache.org
+ 
