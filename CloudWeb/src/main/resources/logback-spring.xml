@@ -42,8 +42,8 @@ scanPeriod   设置监测配置文件是否有修改的时间间隔，如果没�
 	</appender>
 
 	<root level="info">
-		<!--<appender-ref ref="consoleLog" />-->
-		<!--<appender-ref ref="fileInfoLog" />-->
-		<!--<appender-ref ref="fileErrorLog" />-->
+		<appender-ref ref="consoleLog" />
+		<appender-ref ref="fileInfoLog" />
+		<appender-ref ref="fileErrorLog" />
 	</root>
 </configuration>

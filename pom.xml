@@ -12,10 +12,10 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
+        <module>StreamProcessorFlink</module>
+        <module>StreamProcessorSpark</module>
         <module>Collector</module>
         <module>HBaser</module>
-        <module>StreamProcessorSpark</module>
-        <module>StreamProcessorFlink</module>
         <module>CloudWeb</module>
     </modules>
 
@@ -23,6 +23,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <flink.version>1.5.1</flink.version>
+        <log4j.version>2.11.2</log4j.version>
+        <scala.binary.version>2.11</scala.binary.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
 
     <build>
@@ -33,7 +39,7 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.0</version>
                     <configuration>
-                        <source>1.8</source>
+                        <source>${java.version}</source>
                         <target>1.8</target>
                         <encoding>${maven.compiler.encoding}</encoding>
                     </configuration>
@@ -57,8 +63,19 @@
                 <artifactId>jackson-core</artifactId>
                 <version>2.9.8</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
 
     <organization>
         <name>HKU</name>
@@ -102,7 +119,7 @@
             <id>yyx</id>
             <name>YANG Yuxiang</name>
             <email>ulyhash@connect.hku.hk</email>
-            <url></url>
+            <url>https://github.com/ulysses1881826</url>
             <organization>HKU</organization>
             <roles>
                 <role>architect</role>

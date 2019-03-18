@@ -7,9 +7,10 @@
     <groupId>hk.hku.cloud</groupId>
     <version>1.0-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
+    <name>CloudWeb</name>
 
     <description>
-        Cluster and cloud computing
+        Cluster and Cloud Computing
     </description>
 
     <!-- Inherit defaults from Spring Boot -->

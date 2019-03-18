@@ -10,9 +10,9 @@ Developed By:
   - [@GaryGao](https://github.com/GaryGao829)
   - [@lexkaing](https://github.com/AlexTK2012)
   - [@BZbyr](https://github.com/BZbyr)
-  - [@Yang Xiangyu]( )
+  - [@Yang Xiangyu](https://github.com/ulysses1881826)
   
- ### Project Structure
+### Project Structure
  
  ```
  .
@@ -25,10 +25,38 @@ Developed By:
 └── pom.xml(Maven parent POM)
 
  ```
- - CloudWeb: 
- - Collector:
- - HBaser
- - StreamProcessorFlink
- - StreamProcessorSpark
-  
+ - __CloudWeb__: 
+ - __Collector__:
+   - Collect data from Twitter
+ - __HBaser__:
+   - a Kafka-HBase Connector
+ - __StreamProcessorFlink__:
+ - __StreamProcessorSpark__:
+
+### Cluster Website
+
+[Namenode INFO](http://202.45.128.135:20107/dfshealth.html#tab-overview)
+
+[Hadoop Application](http://202.45.128.135:20207/cluster)
+
+[Hadoop JobHistory](http://202.45.128.135:20307/jobhistory)
+
+[Spark](http://202.45.128.135:20507/)
+
+### Project Documents
+
 [Proposal](https://docs.google.com/document/d/1zzrZSWjRAz3FpL2EyyuIOGwQPduTtCBiCcYJMfmvA4I/edit?usp=sharing)
+
+[Meeting Record](https://docs.google.com/document/d/1NkYv8v_0XF8zxkrgxPIUUTsgPG1U0NvSgCrm8yrpxfo/edit?usp=sharing)
+
+[地理查询 API](http://jwd.funnyapi.com/#/index)
+
+
+ ### Flume & Kafka Config
+ [Flume](https://gist.github.com/AlexTK2012/1d3288f0e474b4ad66db80950b402230) https://flume.apache.org
+ 
+ [Flume conf Demo](https://gist.github.com/AlexTK2012/e30d0b392fda1c432da30c132e246629)
+ 
+ [Kafka](https://gist.github.com/AlexTK2012/7a1c68ec2b904528c41e726ebece4b46) http://kafka.apache.org
+ 
+ 
