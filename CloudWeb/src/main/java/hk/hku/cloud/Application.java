@@ -24,6 +24,7 @@ public class Application {
 	//spring boot 启动类
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
-		logger.info("CloudWeb start!");
+		logger.info("CloudWeb start ! ");
+		logger.info("test");
 	}
 }
