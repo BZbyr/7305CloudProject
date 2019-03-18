@@ -1,4 +1,31 @@
+.DS_Store
 
-\.idea/
+#################
+## IntelliJ
+#################
+.idea/
+*/target/*
 
 *.iml
+*.class
+
+*.log
+*/logs/*
+
+#################
+## Eclipse
+#################
+
+*.pydevproject
+.project
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+.classpath
+.settings/
+.loadpath
+
