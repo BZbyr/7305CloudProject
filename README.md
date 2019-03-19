@@ -60,3 +60,8 @@ Developed By:
  [Kafka](https://gist.github.com/AlexTK2012/7a1c68ec2b904528c41e726ebece4b46) http://kafka.apache.org
  
  
+ ### Git 
+ 
+ [Spark-MLlib-Twitter-Sentiment-Analysis](https://github.com/P7h/Spark-MLlib-Twitter-Sentiment-Analysis)
+ 
+ [flume_kafka_spark_solr_hive](https://github.com/obaidcuet/flume_kafka_spark_solr_hive/tree/master/codes) 

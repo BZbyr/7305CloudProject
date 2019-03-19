@@ -16,7 +16,7 @@ G_consumer_key = 'pH8zAmloqT0xBwit303LI0zPd'
 G_consumer_secret = 'h1NfmL8t3Ry60eranoz61PYWXNir9539QyzQ0i4L2jqaU0IQDC'
 G_access_token = '4244469072-FxT513aKjBWrSZipMYzhMdlN6AYha77d90MV3Hh'
 G_access_token_secret = 'ks69jGoDCEVeKarwBqztsoWt0xdPIamllVKq9MgGu3NMi'
-G_track=['Oscar2019']
+G_track=['Oscar']
 G_locations=[99.64,1.27,104.53,6.72]
 
 
@@ -92,26 +92,27 @@ class StdOutListener(tweepy.StreamListener):
         # print to strout withput any filter to decoding
         print ('%s' %  json.dumps(json.loads(data)))  #str(json.load(data.strip())).replace("{u'","{'").replace(" u'"," '")
         # print (data)
-        G_logger.info(data)
+        # G_logger.info(data)
 
         return True
 
     def on_error(self, status):
-        global G_logger
-        G_logger.info(status)
+        # global G_logger
+        # G_logger.info(status)
+        print(status)
 
 
 ## ____________main_________________
 def main(argv):
     # accessing global variable
-    global G_logger
-    global G_consumer_key,  G_consumer_secret, G_access_token, G_access_token_secret, G_track, G_locations
-    # setting arguments
-    args = addArgs()
-    # logging
-    G_logger = getAppLogger(args.logfile)
-    G_logger.info('Started loggong to '+args.logfile)
-    G_logger.info("Start collection twitter data:_____________________________________________________________________")
+    # global G_logger
+    # global G_consumer_key,  G_consumer_secret, G_access_token, G_access_token_secret, G_track, G_locations
+    # # setting arguments
+    # args = addArgs()
+    # # logging
+    # G_logger = getAppLogger(args.logfile)
+    # G_logger.info('Started loggong to '+args.logfile)
+    # G_logger.info("Start collection twitter data:_____________________________________________________________________")
 
     # Kill if there are any actives instance for the same hivedatabase & hivetable
     # killSameInstalce(args.logfile)
