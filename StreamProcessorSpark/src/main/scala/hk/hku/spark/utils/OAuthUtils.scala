@@ -1,6 +1,5 @@
 package hk.hku.spark.utils
 
-
 import twitter4j.auth.OAuthAuthorization
 import twitter4j.conf.ConfigurationBuilder
 

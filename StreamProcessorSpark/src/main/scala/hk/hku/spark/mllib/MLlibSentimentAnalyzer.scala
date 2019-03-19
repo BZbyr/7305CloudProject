@@ -27,6 +27,7 @@ object MLlibSentimentAnalyzer {
     *
     * @param sentiment polarity of the tweet
     * @return normalized to either -1, 0 or 1 based on tweet being negative, neutral and positive.
+    *         标准化 polarity(极性) 情感。
     */
   def normalizeMLlibSentiment(sentiment: Double) = {
     sentiment match {
@@ -43,6 +44,7 @@ object MLlibSentimentAnalyzer {
     * @param tweetText     -- Complete text of a tweet.
     * @param stopWordsList -- Broadcast variable for list of stop words to be removed from the tweets.
     * @return Seq[String] after removing additional characters and stop words from the tweet.
+    *         过滤去tweet 文本中不需要的words 和stop words，返回Seq[String] 单词序列
     */
   def getBarebonesTweetText(tweetText: String, stopWordsList: List[String]): Seq[String] = {
     //Remove URLs, RT, MT and other redundant chars / strings from the tweets.

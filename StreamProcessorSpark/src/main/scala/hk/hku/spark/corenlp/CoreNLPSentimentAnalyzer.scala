@@ -20,6 +20,7 @@ object CoreNLPSentimentAnalyzer {
   }
 
   def computeSentiment(text: String): Int = {
+    // 取最长的语句，作为整体文本的情绪基调。
     val (_, sentiment) = extractSentiments(text)
       .maxBy { case (sentence, _) => sentence.length }
     sentiment
@@ -42,6 +43,12 @@ object CoreNLPSentimentAnalyzer {
     }
   }
 
+  /**
+    * 将tweet 文本扩展为 List[(细分的语句:String, 通过RNN计算并标准化后的情绪值:Int)]
+    *
+    * @param text
+    * @return
+    */
   def extractSentiments(text: String): List[(String, Int)] = {
     val annotation: Annotation = pipeline.process(text)
     val sentences = annotation.get(classOf[CoreAnnotations.SentencesAnnotation])
@@ -51,6 +58,15 @@ object CoreNLPSentimentAnalyzer {
       .toList
   }
 
+  /**
+    * 和extractSentiments 类似，但计算情感权重值方法不同
+    * 都先通过Annotation 将text 分成多段语句，计算单个语句的sentiment
+    * extractSentiments : 整体情感基调 = 最长的语句的 sentiment
+    * computeWeightedSentiment : 整体情感基调 = sum(单个语句的情绪值 * 语句的长度) / sum(单个语句的长度)
+    *
+    * @param tweet
+    * @return
+    */
   def computeWeightedSentiment(tweet: String): Int = {
 
     val annotation = pipeline.process(tweet)

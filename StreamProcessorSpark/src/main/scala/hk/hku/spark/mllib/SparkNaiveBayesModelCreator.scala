@@ -1,6 +1,6 @@
 package hk.hku.spark.mllib
 
-import hk.hku.spark.utils.{LogUtils, PropertiesLoader, SQLContextSingleton, StopwordsLoader}
+import hk.hku.spark.utils.{LogUtils, PropertiesLoader, SQLContextSingleton, StopWordsLoader}
 import org.apache.hadoop.io.compress.GzipCodec
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.mllib.classification.{NaiveBayes, NaiveBayesModel}
@@ -17,11 +17,16 @@ import org.apache.spark.{SparkConf, SparkContext}
 object SparkNaiveBayesModelCreator {
 
   def main(args: Array[String]) {
+    //    val tweet = "hello world , i have a boy? https://www.baidu.com. and you?"
+    //    val stopWordsList = StopWordsLoader.loadStopWords(PropertiesLoader.nltkStopWords)
+    //    val tweetInWords: Seq[String] = MLlibSentimentAnalyzer.getBarebonesTweetText(tweet, stopWordsList)
+    //    println(tweetInWords)
+
     val sc = createSparkContext()
 
     LogUtils.setLogLevels(sc)
 
-    val stopWordsList = sc.broadcast(StopwordsLoader.loadStopWords(PropertiesLoader.nltkStopWords))
+    val stopWordsList = sc.broadcast(StopWordsLoader.loadStopWords(PropertiesLoader.nltkStopWords))
     createAndSaveNBModel(sc, stopWordsList)
     validateAccuracyOfNBModel(sc, stopWordsList)
   }
@@ -52,6 +57,7 @@ object SparkNaiveBayesModelCreator {
 
   /**
     * Creates a Naive Bayes Model of Tweet and its Sentiment from the Sentiment140 file.
+    * 构建Bayes模型
     *
     * @param sc            -- Spark Context.
     * @param stopWordsList -- Broadcast variable for list of stop words to be removed from the tweets.
@@ -62,6 +68,7 @@ object SparkNaiveBayesModelCreator {
     val labeledRDD = tweetsDF.select("polarity", "status").rdd.map {
       case Row(polarity: Int, tweet: String) =>
         val tweetInWords: Seq[String] = MLlibSentimentAnalyzer.getBarebonesTweetText(tweet, stopWordsList.value)
+        // 将tweet 过滤后的文本String 序列，打上polarity 标签值
         LabeledPoint(polarity, MLlibSentimentAnalyzer.transformFeatures(tweetInWords))
     }
     labeledRDD.cache()
@@ -72,6 +79,7 @@ object SparkNaiveBayesModelCreator {
 
   /**
     * Validates and check the accuracy of the model by comparing the polarity of a tweet from the dataset and compares it with the MLlib predicted polarity.
+    * 测试模型准确性
     *
     * @param sc            -- Spark Context.
     * @param stopWordsList -- Broadcast variable for list of stop words to be removed from the tweets.
@@ -106,6 +114,7 @@ object SparkNaiveBayesModelCreator {
     */
   def loadSentiment140File(sc: SparkContext, sentiment140FilePath: String): DataFrame = {
     val sqlContext = SQLContextSingleton.getInstance(sc)
+    // training data 格式:polarity(情绪标签),id,date,query,user,status(tweet元数据)
     val tweetsDF = sqlContext.read
       .format("com.databricks.spark.csv")
       .option("header", "false")

@@ -39,7 +39,7 @@ object TweetSentimentAnalyzer {
 
     // Load Naive Bayes Model from the location specified in the config file.
     val naiveBayesModel = NaiveBayesModel.load(ssc.sparkContext, PropertiesLoader.naiveBayesModelPath)
-    val stopWordsList = ssc.sparkContext.broadcast(StopwordsLoader.loadStopWords(PropertiesLoader.nltkStopWords))
+    val stopWordsList = ssc.sparkContext.broadcast(StopWordsLoader.loadStopWords(PropertiesLoader.nltkStopWords))
 
     /**
       * Predicts the sentiment of the tweet passed.
@@ -94,6 +94,7 @@ object TweetSentimentAnalyzer {
 
     classifiedTweets.foreachRDD { rdd =>
       if (rdd != null && !rdd.isEmpty() && !rdd.partitions.isEmpty) {
+        // 保存数据到spark sql
         saveClassifiedTweets(rdd, tweetsClassifiedPath)
 
         // Now publish the data to Redis.

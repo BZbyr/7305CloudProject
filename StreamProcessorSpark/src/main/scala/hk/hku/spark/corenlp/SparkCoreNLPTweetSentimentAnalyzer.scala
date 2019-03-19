@@ -30,6 +30,7 @@ object SparkCoreNLPTweetSentimentAnalyzer extends App {
       tweetText.replaceAll("\n", "")
     }
 
+    // 直接通过streaming-twitter API 读取twitter 元数据
     val oAuth: Some[OAuthAuthorization] = OAuthUtils.bootstrapTwitterOAuth()
     // val filters = Array("Apache Spark", "Apache Storm", "Apache Flink")
     val rawTweets = TwitterUtils.createStream(ssc, oAuth) //, filters)
@@ -37,13 +38,16 @@ object SparkCoreNLPTweetSentimentAnalyzer extends App {
 
     rawTweets.foreachRDD { rdd =>
       if (rdd != null && !rdd.isEmpty() && !rdd.partitions.isEmpty) {
+        // 保存数据到spark sql
         saveRawTweetsInJSONFormat(rdd, PropertiesLoader.tweetsRawPath)
       }
     }
 
+    // 根据地理位置&Lang 过滤数据, 并map为id,ScreenName,text,sentiment(by NLP),Latitude,Longitude
     val DELIMITER = "|"
     val classifiedTweets = rawTweets.filter(status => hasGeoLocation(status) && isTweetInEnglish(status))
       .map(status => (status.getId, status.getUser.getScreenName, replaceNewLines(status.getText), CoreNLPSentimentAnalyzer.computeSentiment(status.getText), status.getGeoLocation.getLatitude, status.getGeoLocation.getLongitude))
+
     classifiedTweets.foreachRDD { rdd =>
       if (rdd != null && !rdd.isEmpty() && !rdd.partitions.isEmpty) {
         //val DELIMITER = "|"
