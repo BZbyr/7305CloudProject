@@ -65,3 +65,8 @@ Developed By:
  [Spark-MLlib-Twitter-Sentiment-Analysis](https://github.com/P7h/Spark-MLlib-Twitter-Sentiment-Analysis)
  
  [flume_kafka_spark_solr_hive](https://github.com/obaidcuet/flume_kafka_spark_solr_hive/tree/master/codes) 
+ 
+
+ ### Data
+
+ [train data](http://help.sentiment140.com/for-students)
