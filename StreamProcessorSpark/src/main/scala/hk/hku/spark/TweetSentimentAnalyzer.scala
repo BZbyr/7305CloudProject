@@ -17,7 +17,6 @@ import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.sql.SaveMode
 import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Durations, StreamingContext}
-import redis.clients.jedis.Jedis
 import twitter4j.Status
 import twitter4j.auth.OAuthAuthorization
 
@@ -33,7 +32,8 @@ import twitter4j.auth.OAuthAuthorization
 object TweetSentimentAnalyzer {
 
   def main(args: Array[String]): Unit = {
-    val ssc = StreamingContext.getActiveOrCreate(createSparkStreamingContext)
+    //    val ssc = StreamingContext.getActiveOrCreate(createSparkStreamingContext)
+    val ssc = createSparkStreamingContext
     val simpleDateFormat = new SimpleDateFormat("EE MMM dd HH:mm:ss ZZ yyyy")
 
     //    LogUtils.setLogLevels(ssc.sparkContext)

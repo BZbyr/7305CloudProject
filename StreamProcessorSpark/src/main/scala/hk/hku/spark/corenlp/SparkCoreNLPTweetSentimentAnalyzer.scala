@@ -22,7 +22,8 @@ import twitter4j.auth.OAuthAuthorization
 object SparkCoreNLPTweetSentimentAnalyzer extends App {
 
   override def main(args: Array[String]): Unit = {
-    val ssc = StreamingContext.getActiveOrCreate(createSparkStreamingContext)
+    // val ssc = StreamingContext.getActiveOrCreate(createSparkStreamingContext)
+    val ssc = createSparkStreamingContext
 
     LogUtils.setLogLevels(ssc.sparkContext)
 

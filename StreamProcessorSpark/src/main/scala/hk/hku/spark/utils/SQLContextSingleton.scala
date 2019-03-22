@@ -1,7 +1,7 @@
 package hk.hku.spark.utils
 
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.{SQLContext, SparkSession}
 
 /**
   * Lazily instantiated singleton instance of SQLContext.
@@ -15,7 +15,7 @@ object SQLContextSingleton {
     if (instance == null) {
       synchronized {
         if (instance == null) {
-          instance = SQLContext(sparkContext)
+          instance = SQLContext.getOrCreate(sparkContext)
         }
       }
     }

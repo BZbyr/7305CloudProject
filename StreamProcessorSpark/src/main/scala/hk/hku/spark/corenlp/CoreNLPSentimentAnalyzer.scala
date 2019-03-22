@@ -1,14 +1,14 @@
 package hk.hku.spark.corenlp
 
-
 import java.util.Properties
 
 import edu.stanford.nlp.ling.CoreAnnotations
+import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation
 import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations
 import edu.stanford.nlp.pipeline.{Annotation, StanfordCoreNLP}
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 
 object CoreNLPSentimentAnalyzer {
@@ -50,12 +50,29 @@ object CoreNLPSentimentAnalyzer {
     * @return
     */
   def extractSentiments(text: String): List[(String, Int)] = {
-    val annotation: Annotation = pipeline.process(text)
-    val sentences = annotation.get(classOf[CoreAnnotations.SentencesAnnotation])
-    sentences
-      .map(sentence => (sentence, sentence.get(classOf[SentimentCoreAnnotations.SentimentAnnotatedTree])))
-      .map { case (sentence, tree) => (sentence.toString, normalizeCoreNLPSentiment(RNNCoreAnnotations.getPredictedClass(tree))) }
-      .toList
+    val textSentiment = ListBuffer.empty[(String, Int)]
+
+    // create blank annotator
+    val annotation: Annotation = new Annotation(text)
+
+    // run all Annotator - Tokenizer on this text
+    pipeline.annotate(annotation)
+
+    val sentences = annotation.get(classOf[CoreAnnotations.SentencesAnnotation]).asScala.toList
+    sentences.foreach(sentence => {
+      val tree = sentence.get(classOf[SentimentCoreAnnotations.SentimentAnnotatedTree])
+      val value = normalizeCoreNLPSentiment(RNNCoreAnnotations.getPredictedClass(tree))
+      textSentiment += ((sentence.toString, value))
+    })
+    textSentiment.toList
+
+    // 原来的代码逻辑一致，import的包更新了
+    //    val annotation: Annotation = pipeline.process(text)
+    //    val sentences = annotation.get(classOf[CoreAnnotations.SentencesAnnotation])
+    //    sentences
+    //      .map(sentence => (sentence, sentence.get(classOf[SentimentCoreAnnotations.SentimentAnnotatedTree])))
+    //      .map { case (sentence, tree) => (sentence.toString, normalizeCoreNLPSentiment(RNNCoreAnnotations.getPredictedClass(tree))) }
+    //      .toList
   }
 
   /**
@@ -73,18 +90,28 @@ object CoreNLPSentimentAnalyzer {
     val sentiments: ListBuffer[Double] = ListBuffer()
     val sizes: ListBuffer[Int] = ListBuffer()
 
-    for (sentence <- annotation.get(classOf[CoreAnnotations.SentencesAnnotation])) {
+    val sentences = annotation.get(classOf[CoreAnnotations.SentencesAnnotation]).asScala.toList
+    sentences.foreach(sentence => {
       val tree = sentence.get(classOf[SentimentCoreAnnotations.SentimentAnnotatedTree])
       val sentiment = RNNCoreAnnotations.getPredictedClass(tree)
 
       sentiments += sentiment.toDouble
       sizes += sentence.toString.length
-    }
+    })
+
+    //    源代码有奇妙的编译bug?
+    //    for (sentence: CoreMap <- annotation.get(classOf[CoreAnnotations.SentencesAnnotation])) {
+    //      val tree = sentence.get(classOf[SentimentCoreAnnotations.SentimentAnnotatedTree])
+    //      val sentiment = RNNCoreAnnotations.getPredictedClass(tree)
+    //
+    //      sentiments += sentiment.toDouble
+    //      sizes += sentence.toString.length
+    //    }
 
     val weightedSentiment = if (sentiments.isEmpty) {
       -1
     } else {
-      val weightedSentiments = (sentiments, sizes).zipped.map((sentiment, size) => sentiment * size)
+      val weightedSentiments: ListBuffer[Double] = (sentiments, sizes).zipped.map((sentiment, size) => sentiment * size)
       weightedSentiments.sum / sizes.sum
     }
 
