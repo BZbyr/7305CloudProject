@@ -1,6 +1,6 @@
 package hk.hku.spark.mllib
 
-import hk.hku.spark.utils.{LogUtils, PropertiesLoader, SQLContextSingleton, StopWordsLoader}
+import hk.hku.spark.utils._
 import org.apache.hadoop.io.compress.GzipCodec
 import org.apache.log4j.{Level, LogManager}
 import org.apache.spark.broadcast.Broadcast
@@ -10,6 +10,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.sql._
 import org.apache.spark.{SparkConf, SparkContext}
+import org.joda.time.DateTime
 
 /**
   * Creates a Model of the training dataset using Spark MLlib's Naive Bayes classifier.
@@ -19,16 +20,11 @@ object SparkNaiveBayesModelCreator {
   val log = LogManager.getRootLogger
 
   def main(args: Array[String]) {
-    //    val tweet = "hello world , i have a boy? https://www.baidu.com. and you?"
-    //    val stopWordsList = StopWordsLoader.loadStopWords(PropertiesLoader.nltkStopWords)
-    //    val tweetInWords: Seq[String] = MLlibSentimentAnalyzer.getBarebonesTweetText(tweet, stopWordsList)
-    //    println(tweetInWords)
-
     val sc = createSparkContext()
 
     log.setLevel(Level.INFO)
     log.info("SparkNaiveBayesModelCreator start ")
-//    LogUtils.setLogLevels(sc)
+    //    LogUtils.setLogLevels(sc)
 
     val stopWordsList = sc.broadcast(StopWordsLoader.loadStopWords(PropertiesLoader.nltkStopWords))
     createAndSaveNBModel(sc, stopWordsList)
@@ -67,7 +63,7 @@ object SparkNaiveBayesModelCreator {
     * @param stopWordsList -- Broadcast variable for list of stop words to be removed from the tweets.
     */
   def createAndSaveNBModel(sc: SparkContext, stopWordsList: Broadcast[List[String]]): Unit = {
-//    使用spark sql 加载文本数据
+    //    使用spark sql 加载文本数据
     val tweetsDF: DataFrame = loadSentiment140File(sc, PropertiesLoader.sentiment140TrainingFilePath)
 
     log.info("createAndSaveNBModel loadSentiment140File")
@@ -109,8 +105,9 @@ object SparkNaiveBayesModelCreator {
     val predictedCorrect = actualVsPredictionRDD.filter(x => x._1 == x._2).count()
     val predictedInCorrect = actualVsPredictionRDD.filter(x => x._1 != x._2).count()
     val accuracy = 100.0 * predictedCorrect.toDouble / (predictedCorrect + predictedInCorrect).toDouble*/
-    println(f"""\n\t<==******** Prediction accuracy compared to actual: $accuracy%.2f%% ********==>\n""")
+    log.info(f"""\n\t<==******** Prediction accuracy compared to actual: $accuracy%.2f%% ********==>\n""")
     saveAccuracy(sc, actualVsPredictionRDD)
+    saveAccuracyRate(sc, accuracy)
   }
 
   /**
@@ -154,4 +151,15 @@ object SparkNaiveBayesModelCreator {
       .mode(SaveMode.Append)
       .save(PropertiesLoader.modelAccuracyPath)
   }
+
+
+  /**
+    * 记录validate 的准确性数值
+    */
+  def saveAccuracyRate(sc: SparkContext, accuracy: Double): Unit = {
+    val content = DateTime.now() + "\n<==******** Prediction accuracy compared to actual: " + accuracy + " ********==>\n"
+    HDFSUtils.deleteHDFSFile("/tweets_sentiment/accuracy_rate/result.txt")
+    HDFSUtils.createNewHDFSFile("/tweets_sentiment/accuracy_rate/result.txt", content)
+  }
+
 }

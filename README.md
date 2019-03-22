@@ -66,6 +66,7 @@ Developed By:
  
  [flume_kafka_spark_solr_hive](https://github.com/obaidcuet/flume_kafka_spark_solr_hive/tree/master/codes) 
  
+ [corenlp-scala-examples](https://github.com/harpribot/corenlp-scala-examples)
 
  ### Data
 

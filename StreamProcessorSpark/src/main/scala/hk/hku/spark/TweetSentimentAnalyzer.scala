@@ -15,6 +15,7 @@ import org.apache.spark.mllib.classification.NaiveBayesModel
 import org.apache.spark.rdd.RDD
 import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.sql.SaveMode
+import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Durations, StreamingContext}
 import twitter4j.Status
@@ -80,8 +81,13 @@ object TweetSentimentAnalyzer {
         simpleDateFormat.format(status.getCreatedAt))
     }
 
+
+    // 直接读取Twitter API 数据
     val oAuth: Some[OAuthAuthorization] = OAuthUtils.bootstrapTwitterOAuth()
     val rawTweets = TwitterUtils.createStream(ssc, oAuth)
+
+    // 读取 Kafka 数据
+//    val rawKafkaTweets = KafkaUtils.createDirectStream(ssc,)
 
     // Save Raw tweets only if the flag is set to true.
     if (PropertiesLoader.saveRawTweets) {
