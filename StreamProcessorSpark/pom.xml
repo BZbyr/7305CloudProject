@@ -116,6 +116,7 @@
     </dependencies>
 
     <build>
+        <finalName>StreamProcessorSpark</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -147,10 +148,10 @@
             </plugin>
 
             <!-- 单独的项目的话，用这个 mvn package 无需assembly:single-->
-            <!--<plugin>-->
-                <!--<artifactId>maven-assembly-plugin</artifactId>-->
-                <!--<version>2.5.5</version>-->
-                <!--<configuration>-->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.5</version>
+                <configuration>
                     <!--<archive>-->
                         <!--<manifest>-->
                             <!--<mainClass>com.xxg.Main</mainClass>-->
@@ -159,17 +160,17 @@
                     <!--<descriptorRefs>-->
                         <!--<descriptorRef>jar-with-dependencies</descriptorRef>-->
                     <!--</descriptorRefs>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>make-assembly</id>-->
-                        <!--<phase>package</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>single</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
         </plugins>
     </build>
