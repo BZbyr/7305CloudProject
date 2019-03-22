@@ -2,6 +2,7 @@ package hk.hku.spark.mllib
 
 import hk.hku.spark.utils.{LogUtils, PropertiesLoader, SQLContextSingleton, StopWordsLoader}
 import org.apache.hadoop.io.compress.GzipCodec
+import org.apache.log4j.{Level, LogManager}
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.mllib.classification.{NaiveBayes, NaiveBayesModel}
 import org.apache.spark.mllib.regression.LabeledPoint
@@ -15,6 +16,7 @@ import org.apache.spark.{SparkConf, SparkContext}
   */
 // spark-submit --class "org.p7h.spark.sentiment.mllib.SparkNaiveBayesModelCreator" --master spark://spark:7077 spark-streaming-corenp-mllib-tweet-sentiment-assembly-0.1.jar
 object SparkNaiveBayesModelCreator {
+  val log = LogManager.getRootLogger
 
   def main(args: Array[String]) {
     //    val tweet = "hello world , i have a boy? https://www.baidu.com. and you?"
@@ -24,7 +26,9 @@ object SparkNaiveBayesModelCreator {
 
     val sc = createSparkContext()
 
-    LogUtils.setLogLevels(sc)
+    log.setLevel(Level.INFO)
+    log.warn("SparkNaiveBayesModelCreator start ")
+//    LogUtils.setLogLevels(sc)
 
     val stopWordsList = sc.broadcast(StopWordsLoader.loadStopWords(PropertiesLoader.nltkStopWords))
     createAndSaveNBModel(sc, stopWordsList)
@@ -63,13 +67,17 @@ object SparkNaiveBayesModelCreator {
     * @param stopWordsList -- Broadcast variable for list of stop words to be removed from the tweets.
     */
   def createAndSaveNBModel(sc: SparkContext, stopWordsList: Broadcast[List[String]]): Unit = {
+//    使用spark sql 加载文本数据
     val tweetsDF: DataFrame = loadSentiment140File(sc, PropertiesLoader.sentiment140TrainingFilePath)
+
+    log.info("createAndSaveNBModel loadSentiment140File")
 
     val labeledRDD = tweetsDF.select("polarity", "status").rdd.map {
       case Row(polarity: Int, tweet: String) =>
         val tweetInWords: Seq[String] = MLlibSentimentAnalyzer.getBarebonesTweetText(tweet, stopWordsList.value)
         // 将tweet 过滤后的文本String 序列，打上polarity 标签值
         LabeledPoint(polarity, MLlibSentimentAnalyzer.transformFeatures(tweetInWords))
+
     }
     labeledRDD.cache()
 

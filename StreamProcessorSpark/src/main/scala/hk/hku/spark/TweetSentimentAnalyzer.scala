@@ -9,6 +9,7 @@ import hk.hku.spark.corenlp.CoreNLPSentimentAnalyzer
 import hk.hku.spark.mllib.MLlibSentimentAnalyzer
 import hk.hku.spark.utils._
 import org.apache.hadoop.io.compress.GzipCodec
+import org.apache.log4j.{Level, LogManager}
 import org.apache.spark.SparkConf
 import org.apache.spark.mllib.classification.NaiveBayesModel
 import org.apache.spark.rdd.RDD
@@ -35,7 +36,10 @@ object TweetSentimentAnalyzer {
     val ssc = StreamingContext.getActiveOrCreate(createSparkStreamingContext)
     val simpleDateFormat = new SimpleDateFormat("EE MMM dd HH:mm:ss ZZ yyyy")
 
-    LogUtils.setLogLevels(ssc.sparkContext)
+    //    LogUtils.setLogLevels(ssc.sparkContext)
+    val log = LogManager.getRootLogger
+    log.setLevel(Level.INFO)
+    log.warn("TweetSentimentAnalyzer start ")
 
     // Load Naive Bayes Model from the location specified in the config file.
     val naiveBayesModel = NaiveBayesModel.load(ssc.sparkContext, PropertiesLoader.naiveBayesModelPath)
@@ -50,17 +54,21 @@ object TweetSentimentAnalyzer {
       */
     def predictSentiment(status: Status): (Long, String, String, Int, Int, Double, Double, String, String) = {
       val tweetText = replaceNewLines(status.getText)
-      val (corenlpSentiment, mllibSentiment) = {
-        // If tweet is in English, compute the sentiment by MLlib and also with Stanford CoreNLP.
-        if (isTweetInEnglish(status)) {
-          (CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),
-            MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
-        } else {
-          // TODO: all non-English tweets are defaulted to neutral.
-          // TODO: this is a workaround :: as we cant compute the sentiment of non-English tweets with our current model.
-          (0, 0)
-        }
-      }
+      //      val (corenlpSentiment, mllibSentiment) = {
+      //        // If tweet is in English, compute the sentiment by MLlib and also with Stanford CoreNLP.
+      //        if (isTweetInEnglish(status)) {
+      //          (CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),
+      //            MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
+      //        } else {
+      //          // all non-English tweets are defaulted to neutral.
+      //          // this is a workaround :: as we cant compute the sentiment of non-English tweets with our current model.
+      //          (0, 0)
+      //        }
+      //      }
+
+      val (corenlpSentiment, mllibSentiment) =
+        (0, MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
+
       (status.getId,
         status.getUser.getScreenName,
         tweetText,
@@ -89,8 +97,13 @@ object TweetSentimentAnalyzer {
     // This delimiter was chosen as the probability of this character appearing in tweets is very less.
     val DELIMITER = "¦"
     val tweetsClassifiedPath = PropertiesLoader.tweetsClassifiedPath
-    val classifiedTweets = rawTweets.filter(hasGeoLocation)
+
+    // 过滤非英文tweet, 抛弃非英文tweet
+    // Actually uses profile's language as well as the Twitter ML predicted language to be sure
+    // that this tweet is indeed English.
+    val classifiedTweets = rawTweets.filter(line => "en" == line.getLang && "en" == line.getUser.getLang)
       .map(predictSentiment)
+
 
     classifiedTweets.foreachRDD { rdd =>
       if (rdd != null && !rdd.isEmpty() && !rdd.partitions.isEmpty) {
@@ -101,18 +114,14 @@ object TweetSentimentAnalyzer {
         rdd.foreach {
           case (id, screenName, text, sent1, sent2, lat, long, profileURL, date) => {
             val sentimentTuple = (id, screenName, text, sent1, sent2, lat, long, profileURL, date)
-            // TODO -- Need to remove this and use "Spark-Redis" package for publishing to Redis.
-            // TODO -- But could not figure out a way to Publish with "Spark-Redis" package though.
-            // TODO -- Confirmed with the developer of "Spark-Redis" package that they have deliberately omitted the method for publishing to Redis from Spark.
-            val jedis = new Jedis("localhost", 6379)
-            val pipeline = jedis.pipelined
             val write = sentimentTuple.productIterator.mkString(DELIMITER)
-            val p1 = pipeline.publish("TweetChannel", write)
-            //println(p1.get().longValue())
-            pipeline.sync()
+            log.info("classifiedTweets write : " + write)
           }
         }
+      } else {
+        log.warn("classifiedTweets rdd is null")
       }
+
     }
 
     ssc.start()

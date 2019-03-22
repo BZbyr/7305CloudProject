@@ -15,7 +15,7 @@ object SQLContextSingleton {
     if (instance == null) {
       synchronized {
         if (instance == null) {
-          instance = SQLContext.getOrCreate(sparkContext)
+          instance = SQLContext(sparkContext)
         }
       }
     }
