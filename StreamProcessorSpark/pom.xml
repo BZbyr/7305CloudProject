@@ -18,6 +18,20 @@
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_2.11</artifactId>
             <version>2.4.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>json4s-core_2.11</artifactId>
+                    <groupId>org.json4s</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>json4s-jackson_2.11</artifactId>
+                    <groupId>org.json4s</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-module-scala_2.11</artifactId>
+                    <groupId>com.fasterxml.jackson.module</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-mllib -->
@@ -25,6 +39,12 @@
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-mllib_2.11</artifactId>
             <version>2.4.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>breeze_2.11</artifactId>
+                    <groupId>org.scalanlp</groupId>
+                </exclusion>
+            </exclusions>
             <!--<scope>runtime</scope>-->
         </dependency>
 
@@ -111,6 +131,13 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>2.11.12</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.json4s/json4s-core -->
+        <dependency>
+            <groupId>org.json4s</groupId>
+            <artifactId>json4s-core_2.11</artifactId>
+            <version>3.6.5</version>
         </dependency>
 
     </dependencies>
