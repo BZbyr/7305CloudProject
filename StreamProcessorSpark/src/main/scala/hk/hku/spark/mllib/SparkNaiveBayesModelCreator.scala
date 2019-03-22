@@ -14,7 +14,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 /**
   * Creates a Model of the training dataset using Spark MLlib's Naive Bayes classifier.
   */
-// spark-submit --class "hk.hku.spark.mllib.SparkNaiveBayesModelCreator" --master local[3] StreamProcessorSpark-1.0-SNAPSHOT.jar
+// spark-submit --class "hk.hku.spark.mllib.SparkNaiveBayesModelCreator" --master local[3] /opt/spark-twitter/7305CloudProject/StreamProcessorSpark/target/StreamProcessorSpark-1.0-SNAPSHOT.jar
 object SparkNaiveBayesModelCreator {
   val log = LogManager.getRootLogger
 
@@ -27,7 +27,7 @@ object SparkNaiveBayesModelCreator {
     val sc = createSparkContext()
 
     log.setLevel(Level.INFO)
-    log.warn("SparkNaiveBayesModelCreator start ")
+    log.info("SparkNaiveBayesModelCreator start ")
 //    LogUtils.setLogLevels(sc)
 
     val stopWordsList = sc.broadcast(StopWordsLoader.loadStopWords(PropertiesLoader.nltkStopWords))
