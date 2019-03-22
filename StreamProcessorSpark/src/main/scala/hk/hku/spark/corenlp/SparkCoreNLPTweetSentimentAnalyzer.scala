@@ -5,13 +5,13 @@ import java.util.Date
 import com.fasterxml.jackson.databind.ObjectMapper
 import hk.hku.spark.utils.{LogUtils, OAuthUtils, PropertiesLoader, SQLContextSingleton}
 import org.apache.hadoop.io.compress.GzipCodec
+import org.apache.log4j.{Level, LogManager}
 import org.apache.spark.SparkConf
 import org.apache.spark.rdd.RDD
 import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.sql.SaveMode
 import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Durations, StreamingContext}
-import redis.clients.jedis.Jedis
 import twitter4j.Status
 import twitter4j.auth.OAuthAuthorization
 
@@ -25,7 +25,10 @@ object SparkCoreNLPTweetSentimentAnalyzer extends App {
     // val ssc = StreamingContext.getActiveOrCreate(createSparkStreamingContext)
     val ssc = createSparkStreamingContext
 
-    LogUtils.setLogLevels(ssc.sparkContext)
+//    LogUtils.setLogLevels(ssc.sparkContext)
+    val log = LogManager.getRootLogger
+    log.setLevel(Level.INFO)
+    log.info("TweetSentimentAnalyzer start ")
 
     def replaceNewLines(tweetText: String): String = {
       tweetText.replaceAll("\n", "")
@@ -58,15 +61,9 @@ object SparkCoreNLPTweetSentimentAnalyzer extends App {
         rdd.foreach {
           case (id, screenName, text, sentiment, lat, long) => {
             val tup = (id, screenName, text, sentiment, lat, long)
-            // TODO -- Temporary fix. 
-            // Need to remove this and use "Spark-Redis" package for publishing to Redis.
-            val jedis = new Jedis("localhost", 6379)
-            val pipeline = jedis.pipelined
-            //val write = id + DELIMITER + screenName + DELIMITER + text + DELIMITER + sentiment + DELIMITER + lat + DELIMITER + long
-            val write = tup.productIterator.mkString(DELIMITER)
-            val p1 = pipeline.publish("TweetChannel", write)
             //println(p1.get().longValue())
-            pipeline.sync()
+            val write = tup.productIterator.mkString(DELIMITER)
+            log.info("classifiedTweets write : " + tup)
           }
         }
       }
