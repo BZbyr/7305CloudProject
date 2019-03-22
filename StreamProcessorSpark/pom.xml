@@ -107,11 +107,11 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.scala-lang/scala-library -->
-        <!--<dependency>-->
-            <!--<groupId>org.scala-lang</groupId>-->
-            <!--<artifactId>scala-library</artifactId>-->
-            <!--<version>2.13.0-M5</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>2.12.7</version>
+        </dependency>
 
     </dependencies>
 
@@ -146,18 +146,19 @@
                 </executions>
             </plugin>
 
+            <!-- 单独的项目的话，用这个 mvn package 无需assembly:single-->
             <!--<plugin>-->
                 <!--<artifactId>maven-assembly-plugin</artifactId>-->
+                <!--<version>2.5.5</version>-->
                 <!--<configuration>-->
-                    <!--<appendAssemblyId>false</appendAssemblyId>-->
+                    <!--<archive>-->
+                        <!--<manifest>-->
+                            <!--<mainClass>com.xxg.Main</mainClass>-->
+                        <!--</manifest>-->
+                    <!--</archive>-->
                     <!--<descriptorRefs>-->
                         <!--<descriptorRef>jar-with-dependencies</descriptorRef>-->
                     <!--</descriptorRefs>-->
-                    <!--<archive>-->
-                        <!--<manifest>-->
-                            <!--<mainClass>com.altamob.LogicLauncher</mainClass>-->
-                        <!--</manifest>-->
-                    <!--</archive>-->
                 <!--</configuration>-->
                 <!--<executions>-->
                     <!--<execution>-->

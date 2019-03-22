@@ -39,7 +39,7 @@ object TweetSentimentAnalyzer {
     //    LogUtils.setLogLevels(ssc.sparkContext)
     val log = LogManager.getRootLogger
     log.setLevel(Level.INFO)
-    log.warn("TweetSentimentAnalyzer start ")
+    log.info("TweetSentimentAnalyzer start ")
 
     // Load Naive Bayes Model from the location specified in the config file.
     val naiveBayesModel = NaiveBayesModel.load(ssc.sparkContext, PropertiesLoader.naiveBayesModelPath)
@@ -110,7 +110,7 @@ object TweetSentimentAnalyzer {
         // 保存数据到spark sql
         saveClassifiedTweets(rdd, tweetsClassifiedPath)
 
-        // Now publish the data to Redis.
+        // Now publish the data to XXX
         rdd.foreach {
           case (id, screenName, text, sent1, sent2, lat, long, profileURL, date) => {
             val sentimentTuple = (id, screenName, text, sent1, sent2, lat, long, profileURL, date)
