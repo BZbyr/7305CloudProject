@@ -8,7 +8,7 @@ import com.google.gson.Gson
 import hk.hku.spark.corenlp.CoreNLPSentimentAnalyzer
 import hk.hku.spark.mllib.MLlibSentimentAnalyzer
 import hk.hku.spark.utils._
-import kafka.serializer.{DefaultDecoder, StringDecoder}
+import kafka.serializer.StringDecoder
 import org.apache.hadoop.io.compress.GzipCodec
 import org.apache.log4j.{Level, LogManager}
 import org.apache.spark.SparkConf
