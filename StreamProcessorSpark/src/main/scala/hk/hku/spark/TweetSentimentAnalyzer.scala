@@ -22,8 +22,6 @@ import org.apache.spark.streaming.{Durations, StreamingContext}
 import twitter4j.Status
 import twitter4j.auth.OAuthAuthorization
 
-import scala.reflect.ClassTag
-
 /**
   * Analyzes and predicts Twitter Sentiment in [near] real-time using Spark Streaming and Spark MLlib.
   * Uses the Naive Bayes Model created from the Training data and applies it to predict the sentiment of tweets
@@ -32,7 +30,7 @@ import scala.reflect.ClassTag
   * At the end of the batch, the gist of predicted tweets is published to Redis.
   * Any frontend app can subscribe to this Redis Channel for data visualization.
   */
-// spark-submit --class "org.p7h.spark.sentiment.TweetSentimentAnalyzer" --master spark://spark:7077 mllib-tweet-sentiment-analysis-assembly-0.1.jar
+// spark-submit --class "hk.hku.spark.TweetSentimentAnalyzer" --master local[3] /opt/spark-twitter/7305CloudProject/StreamProcessorSpark/target/StreamProcessorSpark-jar-with-dependencies.jar
 object TweetSentimentAnalyzer {
 
   def main(args: Array[String]): Unit = {
