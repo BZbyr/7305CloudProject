@@ -1,13 +1,14 @@
 package hk.hku.spark
 
-
 import java.text.SimpleDateFormat
 import java.util.Date
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.gson.Gson
 import hk.hku.spark.corenlp.CoreNLPSentimentAnalyzer
 import hk.hku.spark.mllib.MLlibSentimentAnalyzer
 import hk.hku.spark.utils._
+import kafka.serializer.{DefaultDecoder, StringDecoder}
 import org.apache.hadoop.io.compress.GzipCodec
 import org.apache.log4j.{Level, LogManager}
 import org.apache.spark.SparkConf
@@ -20,6 +21,8 @@ import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Durations, StreamingContext}
 import twitter4j.Status
 import twitter4j.auth.OAuthAuthorization
+
+import scala.reflect.ClassTag
 
 /**
   * Analyzes and predicts Twitter Sentiment in [near] real-time using Spark Streaming and Spark MLlib.
@@ -51,7 +54,8 @@ object TweetSentimentAnalyzer {
       * Invokes Stanford Core NLP and MLlib methods for identifying the tweet sentiment.
       *
       * @param status -- twitter4j.Status object.
-      * @return tuple with Tweet ID, Tweet Text, Core NLP Polarity, MLlib Polarity, Latitude, Longitude, Profile Image URL, Tweet Date.
+      * @return tuple with Tweet ID, Tweet Text, Core NLP Polarity, MLlib Polarity, Latitude, Longitude,
+      *         Profile Image URL, Tweet Date.
       */
     def predictSentiment(status: Status): (Long, String, String, Int, Int, Double, Double, String, String) = {
       val tweetText = replaceNewLines(status.getText)
@@ -83,37 +87,48 @@ object TweetSentimentAnalyzer {
 
 
     // 直接读取Twitter API 数据
-    val oAuth: Some[OAuthAuthorization] = OAuthUtils.bootstrapTwitterOAuth()
-    val rawTweets = TwitterUtils.createStream(ssc, oAuth)
+    //    val oAuth: Some[OAuthAuthorization] = OAuthUtils.bootstrapTwitterOAuth()
+    //    val rawTweets = TwitterUtils.createStream(ssc, oAuth)
 
-    // 读取 Kafka 数据
-//    val rawKafkaTweets = KafkaUtils.createDirectStream(ssc,)
+    // kafka 参数
+    val kafkaParams = Map[String, String](
+      "bootstrap.servers" -> PropertiesLoader.bootstrapServers,
+      "group.id" -> PropertiesLoader.groupId,
+      "auto.offset.reset" -> PropertiesLoader.autoOffsetReset
+    )
+    // topics
+    val topics = PropertiesLoader.topis.split(",").toSet
 
-    // Save Raw tweets only if the flag is set to true.
-    if (PropertiesLoader.saveRawTweets) {
-      rawTweets.cache()
+    // 读取 Kafka 数据---json 格式字符串
+    val rawTweets = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics)
 
-      rawTweets.foreachRDD { rdd =>
-        if (rdd != null && !rdd.isEmpty() && !rdd.partitions.isEmpty) {
-          saveRawTweetsInJSONFormat(rdd, PropertiesLoader.tweetsRawPath)
-        }
-      }
-    }
+    // 保存Tweet 元数据
+    //    if (PropertiesLoader.saveRawTweets) {
+    //      rawTweets.cache()
+    //      rawTweets.foreachRDD { rdd =>
+    //        if (rdd != null && !rdd.isEmpty() && !rdd.partitions.isEmpty) {
+    //          saveRawTweetsInJSONFormat(rdd, PropertiesLoader.tweetsRawPath)
+    //        }
+    //      }
+    //    }
+
+    val classifiedTweets = rawTweets.map(line => {
+      // 解析json
+      val gson = new Gson()
+      gson.fromJson(line._2, classOf[Status])
+    })
+      .filter(
+        // 过滤非英文tweet 和 非英文母语用户 数据
+        line => "en" == line.getLang && "en" == line.getUser.getLang)
+      .map(predictSentiment)
 
     // This delimiter was chosen as the probability of this character appearing in tweets is very less.
     val DELIMITER = "¦"
     val tweetsClassifiedPath = PropertiesLoader.tweetsClassifiedPath
 
-    // 过滤非英文tweet, 抛弃非英文tweet
-    // Actually uses profile's language as well as the Twitter ML predicted language to be sure
-    // that this tweet is indeed English.
-    val classifiedTweets = rawTweets.filter(line => "en" == line.getLang && "en" == line.getUser.getLang)
-      .map(predictSentiment)
-
-
     classifiedTweets.foreachRDD { rdd =>
       if (rdd != null && !rdd.isEmpty() && !rdd.partitions.isEmpty) {
-        // 保存数据到spark sql
+        // 保存tweet 数据
         saveClassifiedTweets(rdd, tweetsClassifiedPath)
 
         // Now publish the data to XXX
@@ -158,7 +173,8 @@ object TweetSentimentAnalyzer {
     * Saves the classified tweets to the csv file.
     * Uses DataFrames to accomplish this task.
     *
-    * @param rdd                  tuple with Tweet ID, Tweet Text, Core NLP Polarity, MLlib Polarity, Latitude, Longitude, Profile Image URL, Tweet Date.
+    * @param rdd                  tuple with Tweet ID, Tweet Text, Core NLP Polarity, MLlib Polarity,
+    *                             Latitude, Longitude, Profile Image URL, Tweet Date.
     * @param tweetsClassifiedPath Location of saving the data.
     */
   def saveClassifiedTweets(rdd: RDD[(Long, String, String, Int, Int, Double, Double, String, String)], tweetsClassifiedPath: String) = {

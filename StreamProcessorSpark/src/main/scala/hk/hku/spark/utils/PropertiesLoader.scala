@@ -28,6 +28,11 @@ object PropertiesLoader {
   val microBatchTimeInSeconds = conf.getInt("STREAMING_MICRO_BATCH_TIME_IN_SECONDS")
   val totalRunTimeInMinutes = conf.getInt("TOTAL_RUN_TIME_IN_MINUTES")
 
+  val bootstrapServers = conf.getString("BOOTSTRAP_SERVER")
+  val groupId = conf.getString("GROUP_ID")
+  val autoOffsetReset = conf.getString("AUTO_OFFSET_RESET")
+  val topis = conf.getString("KAFKA_TOPICS")
+
   def main(args: Array[String]): Unit = {
     println(PropertiesLoader.saveRawTweets)
   }
