@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.gson.Gson
 import hk.hku.spark.corenlp.CoreNLPSentimentAnalyzer
 import hk.hku.spark.mllib.MLlibSentimentAnalyzer
 import hk.hku.spark.utils._
@@ -18,10 +17,9 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.sql.SaveMode
 import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
-import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Durations, StreamingContext}
 import twitter4j.Status
-import twitter4j.auth.OAuthAuthorization
+
 
 /**
   * Analyzes and predicts Twitter Sentiment in [near] real-time using Spark Streaming and Spark MLlib.
@@ -58,6 +56,7 @@ object TweetSentimentAnalyzer {
       */
     def predictSentiment(status: Status): (Long, String, String, Int, Int, Double, Double, String, String) = {
       val tweetText = replaceNewLines(status.getText)
+
       //      val (corenlpSentiment, mllibSentiment) = {
       //        // If tweet is in English, compute the sentiment by MLlib and also with Stanford CoreNLP.
       //        if (isTweetInEnglish(status)) {
@@ -98,6 +97,7 @@ object TweetSentimentAnalyzer {
       "auto.offset.reset" -> PropertiesLoader.autoOffsetReset,
       "enable.auto.commit" -> (false: java.lang.Boolean)
     )
+
     // topics
     val topics = PropertiesLoader.topis.split(",").toSet
 
@@ -117,11 +117,10 @@ object TweetSentimentAnalyzer {
     //      }
     //    }
 
-    val classifiedTweets = rawTweets.map(line => {
-      // 解析json
-      val gson = new Gson()
-      gson.fromJson(line.value(), classOf[Status])
-    })
+    val classifiedTweets = rawTweets
+      .map(line => {
+        GsonSingleton.getInstance().fromJson(line.value(), classOf[Status])
+      })
       .filter(
         // 过滤非英文tweet 和 非英文母语用户 数据
         line => "en" == line.getLang && "en" == line.getUser.getLang)
