@@ -10,6 +10,7 @@ import hk.hku.spark.mllib.MLlibSentimentAnalyzer
 import hk.hku.spark.utils._
 import kafka.serializer.StringDecoder
 import org.apache.hadoop.io.compress.GzipCodec
+import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.log4j.{Level, LogManager}
 import org.apache.spark.SparkConf
 import org.apache.spark.mllib.classification.NaiveBayesModel
@@ -89,10 +90,13 @@ object TweetSentimentAnalyzer {
     //    val rawTweets = TwitterUtils.createStream(ssc, oAuth)
 
     // kafka 参数
-    val kafkaParams = Map[String, String](
+    val kafkaParams = Map[String, Object](
       "bootstrap.servers" -> PropertiesLoader.bootstrapServers,
+      "key.deserializer" -> classOf[StringDeserializer],
+      "value.deserializer" -> classOf[StringDeserializer],
       "group.id" -> PropertiesLoader.groupId,
-      "auto.offset.reset" -> PropertiesLoader.autoOffsetReset
+      "auto.offset.reset" -> PropertiesLoader.autoOffsetReset,
+      "enable.auto.commit" -> (false: java.lang.Boolean)
     )
     // topics
     val topics = PropertiesLoader.topis.split(",").toSet
