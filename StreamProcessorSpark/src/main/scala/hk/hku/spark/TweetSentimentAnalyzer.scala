@@ -16,13 +16,11 @@ import org.apache.spark.mllib.classification.NaiveBayesModel
 import org.apache.spark.rdd.RDD
 import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.sql.SaveMode
-import org.apache.spark.streaming.kafka.KafkaUtils
+import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Durations, StreamingContext}
 import twitter4j.Status
 import twitter4j.auth.OAuthAuthorization
-
-import org.apache.spark.streaming.kafka.KafkaCluster
 
 /**
   * Analyzes and predicts Twitter Sentiment in [near] real-time using Spark Streaming and Spark MLlib.
@@ -100,7 +98,10 @@ object TweetSentimentAnalyzer {
     val topics = PropertiesLoader.topis.split(",").toSet
 
     // 读取 Kafka 数据---json 格式字符串
-    val rawTweets = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics)
+    val rawTweets = KafkaUtils.createDirectStream[String, String](
+      ssc,
+      LocationStrategies.PreferConsistent,
+      ConsumerStrategies.Subscribe[String, String](topics, kafkaParams))
 
     // 保存Tweet 元数据
     //    if (PropertiesLoader.saveRawTweets) {
@@ -115,7 +116,7 @@ object TweetSentimentAnalyzer {
     val classifiedTweets = rawTweets.map(line => {
       // 解析json
       val gson = new Gson()
-      gson.fromJson(line._2, classOf[Status])
+      gson.fromJson(line.value(), classOf[Status])
     })
       .filter(
         // 过滤非英文tweet 和 非英文母语用户 数据
