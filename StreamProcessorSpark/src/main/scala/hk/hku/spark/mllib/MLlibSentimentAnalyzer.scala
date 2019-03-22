@@ -76,4 +76,26 @@ object MLlibSentimentAnalyzer {
   def transformFeatures(tweetText: Seq[String]): linalg.Vector = {
     hashingTF.transform(tweetText)
   }
+
+  def main(args: Array[String]): Unit = {
+    val tweetText = "@stellargirl I loooooooovvvvvveee my Kindle2. Not that the DX is cool, but the 2 is fantastic in its own right."
+    println(tweetText)
+
+    tweetText.toLowerCase()
+      .replaceAll("\n", "")
+      .replaceAll("rt\\s+", "")
+      .replaceAll("\\s+@\\w+", "")
+      .replaceAll("@\\w+", "")
+      .replaceAll("\\s+#\\w+", "")
+      .replaceAll("#\\w+", "")
+      .replaceAll("(?:https?|http?)://[\\w/%.-]+", "")
+      .replaceAll("(?:https?|http?)://[\\w/%.-]+\\s+", "")
+      .replaceAll("(?:https?|http?)//[\\w/%.-]+\\s+", "")
+      .replaceAll("(?:https?|http?)//[\\w/%.-]+", "")
+      .split("\\W+")
+      .filter(_.matches("^[a-zA-Z]+$"))
+
+    println(tweetText)
+
+  }
 }
