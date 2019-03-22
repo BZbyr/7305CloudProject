@@ -52,12 +52,20 @@ Developed By:
 [地理查询 API](http://jwd.funnyapi.com/#/index)
 
 
- ### Flume & Kafka Config
- [Flume](https://gist.github.com/AlexTK2012/1d3288f0e474b4ad66db80950b402230) https://flume.apache.org
+ ### Environment
+ [Hadoop](https://hadoop.apache.org) Version : hadoop-2.7.5
  
- [Flume conf Demo](https://gist.github.com/AlexTK2012/e30d0b392fda1c432da30c132e246629)
+ [Spark](https://spark.apache.org) Version : spark-2.4.0-bin-hadoop2.7
  
- [Kafka](https://gist.github.com/AlexTK2012/7a1c68ec2b904528c41e726ebece4b46) http://kafka.apache.org
+ [Flume](https://flume.apache.org) Version : apache-flume-1.9.0
+ 
+ [Kafka](http://kafka.apache.org) Version : kafka_2.11-2.1.1 
+ 
+ [Flink](https://flink.apache.org) Version : flink-1.7.2
+ 
+ [Scala](https://www.scala-lang.org) Version : Scala-2.11.12
+ 
+ [Python](https://www.python.org) Version : Python 3.6.7
  
  
  ### Git 

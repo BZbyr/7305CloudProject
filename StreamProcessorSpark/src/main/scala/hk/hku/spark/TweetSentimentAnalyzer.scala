@@ -22,6 +22,8 @@ import org.apache.spark.streaming.{Durations, StreamingContext}
 import twitter4j.Status
 import twitter4j.auth.OAuthAuthorization
 
+import org.apache.spark.streaming.kafka.KafkaCluster
+
 /**
   * Analyzes and predicts Twitter Sentiment in [near] real-time using Spark Streaming and Spark MLlib.
   * Uses the Naive Bayes Model created from the Training data and applies it to predict the sentiment of tweets
