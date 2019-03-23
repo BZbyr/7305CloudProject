@@ -43,7 +43,7 @@ object TweetSentimentAnalyzer {
 //    println(tmp.getUser.getLang)
 //  }
 
-  def main2(args: Array[String]): Unit = {
+  def main(args: Array[String]): Unit = {
     //    val ssc = StreamingContext.getActiveOrCreate(createSparkStreamingContext)
     val ssc = createSparkStreamingContext
     val simpleDateFormat = new SimpleDateFormat("EE MMM dd HH:mm:ss ZZ yyyy")
