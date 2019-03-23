@@ -76,9 +76,12 @@ def getAppLogger(logfile):
 class StdOutListener(tweepy.StreamListener):
     def on_data(self, data):
         # print to strout withput any filter to decoding
-        print ('%s' % json.dumps(json.loads(data)))
+        # print ('%s' % json.dumps(json.loads(data)))
         # str(json.load(data.strip())).replace("{u'","{'").replace(" u'"," '")
-        # print (data)
+        # print ("data:" + data)
+        # print ("str:" + str(data))
+        # print ("json : " + json.dumps(data))
+        print (json.dumps(data))
         return True
 
     def on_error(self, status):
