@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import hk.hku.spark.corenlp.CoreNLPSentimentAnalyzer
 import hk.hku.spark.mllib.MLlibSentimentAnalyzer
 import hk.hku.spark.utils._
-import kafka.serializer.StringDecoder
 import org.apache.hadoop.io.compress.GzipCodec
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.log4j.{Level, LogManager}
@@ -19,7 +18,7 @@ import org.apache.spark.sql.SaveMode
 import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Durations, StreamingContext}
-import twitter4j.{Status, StatusJSONImpl, TwitterFactory, TwitterObjectFactory}
+import twitter4j.{Status, TwitterObjectFactory}
 import twitter4j.auth.OAuthAuthorization
 
 /**
@@ -35,11 +34,12 @@ object TweetSentimentAnalyzer {
 
   //  def main(args: Array[String]): Unit = {
   //    val json = "{\"created_at\":\"Fri Mar 22 13:25:59 +0000 2019\",\"id\":1109083804667392005,\"id_str\":\"1109083804667392005\",\"text\":\"RT @RobertKlemko: Was talking to an NFL exec for another story and he went off on this tremendous rant on college football and amateurism t\\u2026\",\"source\":\"\\u003ca href=\\\"http:\\/\\/twitter.com\\/download\\/iphone\\\" rel=\\\"nofollow\\\"\\u003eTwitter for iPhone\\u003c\\/a\\u003e\",\"truncated\":false,\"in_reply_to_status_id\":null,\"in_reply_to_status_id_str\":null,\"in_reply_to_user_id\":null,\"in_reply_to_user_id_str\":null,\"in_reply_to_screen_name\":null,\"user\":{\"id\":172152165,\"id_str\":\"172152165\",\"name\":\"Boozer\",\"screen_name\":\"BBrown_DoesIt\",\"location\":\"BX \\u27a1\\ufe0f VA\",\"url\":null,\"description\":\"JMU Football Alum & NSU Grad Student \\u03a9\\u03c8\\u03c6 1\\/2 of @SnackzandSmack\",\"translator_type\":\"none\",\"protected\":false,\"verified\":false,\"followers_count\":2936,\"friends_count\":1553,\"listed_count\":5,\"favourites_count\":124871,\"statuses_count\":33759,\"created_at\":\"Thu Jul 29 01:12:21 +0000 2010\",\"utc_offset\":null,\"time_zone\":null,\"geo_enabled\":true,\"lang\":\"en\",\"contributors_enabled\":false,\"is_translator\":false,\"profile_background_color\":\"131516\",\"profile_background_image_url\":\"http:\\/\\/abs.twimg.com\\/images\\/themes\\/theme9\\/bg.gif\",\"profile_background_image_url_https\":\"https:\\/\\/abs.twimg.com\\/images\\/themes\\/theme9\\/bg.gif\",\"profile_background_tile\":true,\"profile_link_color\":\"009999\",\"profile_sidebar_border_color\":\"EEEEEE\",\"profile_sidebar_fill_color\":\"EFEFEF\",\"profile_text_color\":\"333333\",\"profile_use_background_image\":true,\"profile_image_url\":\"http:\\/\\/pbs.twimg.com\\/profile_images\\/1096379482326401025\\/wLf6TL1H_normal.jpg\",\"profile_image_url_https\":\"https:\\/\\/pbs.twimg.com\\/profile_images\\/1096379482326401025\\/wLf6TL1H_normal.jpg\",\"profile_banner_url\":\"https:\\/\\/pbs.twimg.com\\/profile_banners\\/172152165\\/1455316976\",\"default_profile\":false,\"default_profile_image\":false,\"following\":null,\"follow_request_sent\":null,\"notifications\":null},\"geo\":null,\"coordinates\":null,\"place\":null,\"contributors\":null,\"retweeted_status\":{\"created_at\":\"Thu Mar 21 19:56:58 +0000 2019\",\"id\":1108819810547191809,\"id_str\":\"1108819810547191809\",\"text\":\"Was talking to an NFL exec for another story and he went off on this tremendous rant on college football and amateu\\u2026 https:\\/\\/t.co\\/5n2ufgF2gR\",\"display_text_range\":[0,140],\"source\":\"\\u003ca href=\\\"https:\\/\\/mobile.twitter.com\\\" rel=\\\"nofollow\\\"\\u003eTwitter Web App\\u003c\\/a\\u003e\",\"truncated\":true,\"in_reply_to_status_id\":null,\"in_reply_to_status_id_str\":null,\"in_reply_to_user_id\":null,\"in_reply_to_user_id_str\":null,\"in_reply_to_screen_name\":null,\"user\":{\"id\":218129328,\"id_str\":\"218129328\",\"name\":\"Robert Klemko\",\"screen_name\":\"RobertKlemko\",\"location\":\"Denver, CO\",\"url\":\"https:\\/\\/www.si.com\\/author\\/robert-klemko\",\"description\":\"football writer, Sports Illustrated. co-advisor, Bruce Randolph School student newspaper, The Paw Print. Terrapin. Son of an immigrant.\",\"translator_type\":\"none\",\"protected\":false,\"verified\":true,\"followers_count\":40277,\"friends_count\":3185,\"listed_count\":1285,\"favourites_count\":20761,\"statuses_count\":27811,\"created_at\":\"Sun Nov 21 14:13:37 +0000 2010\",\"utc_offset\":null,\"time_zone\":null,\"geo_enabled\":true,\"lang\":\"en\",\"contributors_enabled\":false,\"is_translator\":false,\"profile_background_color\":\"000000\",\"profile_background_image_url\":\"http:\\/\\/abs.twimg.com\\/images\\/themes\\/theme1\\/bg.png\",\"profile_background_image_url_https\":\"https:\\/\\/abs.twimg.com\\/images\\/themes\\/theme1\\/bg.png\",\"profile_background_tile\":false,\"profile_link_color\":\"0084B4\",\"profile_sidebar_border_color\":\"FFFFFF\",\"profile_sidebar_fill_color\":\"DDEEF6\",\"profile_text_color\":\"333333\",\"profile_use_background_image\":true,\"profile_image_url\":\"http:\\/\\/pbs.twimg.com\\/profile_images\\/770633665181196288\\/H2NcwtQh_normal.jpg\",\"profile_image_url_https\":\"https:\\/\\/pbs.twimg.com\\/profile_images\\/770633665181196288\\/H2NcwtQh_normal.jpg\",\"profile_banner_url\":\"https:\\/\\/pbs.twimg.com\\/profile_banners\\/218129328\\/1526680996\",\"default_profile\":false,\"default_profile_image\":false,\"following\":null,\"follow_request_sent\":null,\"notifications\":null},\"geo\":null,\"coordinates\":null,\"place\":null,\"contributors\":null,\"is_quote_status\":false,\"extended_tweet\":{\"full_text\":\"Was talking to an NFL exec for another story and he went off on this tremendous rant on college football and amateurism that I have to share. \\n\\n\\\"This whole thing stinks...\\\" https:\\/\\/t.co\\/rQuixmVURo\",\"display_text_range\":[0,172],\"entities\":{\"hashtags\":[],\"urls\":[],\"user_mentions\":[],\"symbols\":[],\"media\":[{\"id\":1108819801906905090,\"id_str\":\"1108819801906905090\",\"indices\":[173,196],\"media_url\":\"http:\\/\\/pbs.twimg.com\\/media\\/D2NRvCyUgAIDxvi.jpg\",\"media_url_https\":\"https:\\/\\/pbs.twimg.com\\/media\\/D2NRvCyUgAIDxvi.jpg\",\"url\":\"https:\\/\\/t.co\\/rQuixmVURo\",\"display_url\":\"pic.twitter.com\\/rQuixmVURo\",\"expanded_url\":\"https:\\/\\/twitter.com\\/RobertKlemko\\/status\\/1108819810547191809\\/photo\\/1\",\"type\":\"photo\",\"sizes\":{\"medium\":{\"w\":1200,\"h\":934,\"resize\":\"fit\"},\"thumb\":{\"w\":150,\"h\":150,\"resize\":\"crop\"},\"small\":{\"w\":680,\"h\":529,\"resize\":\"fit\"},\"large\":{\"w\":1218,\"h\":948,\"resize\":\"fit\"}}}]},\"extended_entities\":{\"media\":[{\"id\":1108819801906905090,\"id_str\":\"1108819801906905090\",\"indices\":[173,196],\"media_url\":\"http:\\/\\/pbs.twimg.com\\/media\\/D2NRvCyUgAIDxvi.jpg\",\"media_url_https\":\"https:\\/\\/pbs.twimg.com\\/media\\/D2NRvCyUgAIDxvi.jpg\",\"url\":\"https:\\/\\/t.co\\/rQuixmVURo\",\"display_url\":\"pic.twitter.com\\/rQuixmVURo\",\"expanded_url\":\"https:\\/\\/twitter.com\\/RobertKlemko\\/status\\/1108819810547191809\\/photo\\/1\",\"type\":\"photo\",\"sizes\":{\"medium\":{\"w\":1200,\"h\":934,\"resize\":\"fit\"},\"thumb\":{\"w\":150,\"h\":150,\"resize\":\"crop\"},\"small\":{\"w\":680,\"h\":529,\"resize\":\"fit\"},\"large\":{\"w\":1218,\"h\":948,\"resize\":\"fit\"}}}]}},\"quote_count\":739,\"reply_count\":284,\"retweet_count\":5215,\"favorite_count\":11684,\"entities\":{\"hashtags\":[],\"urls\":[{\"url\":\"https:\\/\\/t.co\\/5n2ufgF2gR\",\"expanded_url\":\"https:\\/\\/twitter.com\\/i\\/web\\/status\\/1108819810547191809\",\"display_url\":\"twitter.com\\/i\\/web\\/status\\/1\\u2026\",\"indices\":[117,140]}],\"user_mentions\":[],\"symbols\":[]},\"favorited\":false,\"retweeted\":false,\"possibly_sensitive\":false,\"filter_level\":\"low\",\"lang\":\"en\"},\"is_quote_status\":false,\"quote_count\":0,\"reply_count\":0,\"retweet_count\":0,\"favorite_count\":0,\"entities\":{\"hashtags\":[],\"urls\":[],\"user_mentions\":[{\"screen_name\":\"RobertKlemko\",\"name\":\"Robert Klemko\",\"id\":218129328,\"id_str\":\"218129328\",\"indices\":[3,16]}],\"symbols\":[]},\"favorited\":false,\"retweeted\":false,\"filter_level\":\"low\",\"lang\":\"en\",\"timestamp_ms\":\"1553261159470\"}"
-  //    val tweet = new twitter4j.JSONObject(json)
-  //    println(tweet.getString("created_at"))
+  //    //      val tweet = new twitter4j.JSONObject(json)
+  //    //      println(tweet.getString("created_at"))
   //
   //    val tmp = TwitterObjectFactory.createStatus(json)
   //    println(tmp.getLang)
+  //    println(tmp.getUser.getLang)
   //  }
 
   def main(args: Array[String]): Unit = {
@@ -130,11 +130,18 @@ object TweetSentimentAnalyzer {
 
     val classifiedTweets = rawTweets
       .map(line => {
-        TwitterObjectFactory.createStatus(line.value())
+        println(line.key())
+        println(line.value())
+        val status: Status = TwitterObjectFactory.createStatus("{}")
+        if (line.value() != null && !line.value().isEmpty) {
+          val status = TwitterObjectFactory.createStatus(line.value())
+        }
+        status
       })
-      .filter(
-        // 过滤非英文tweet 和 非英文母语用户 数据
-        line => "en" == line.getLang && "en" == line.getUser.getLang)
+      .filter(status => {
+        // 过滤空数据 和 非英文tweet 和 非英文母语用户 数据
+        null != status && "en" == status.getLang && "en" == status.getUser.getLang
+      })
       .map(predictSentiment)
 
     // This delimiter was chosen as the probability of this character appearing in tweets is very less.
