@@ -37,7 +37,6 @@ object PropertiesLoader {
   // 往kafka 吐结果数据
   val bootstrapServersProducer = conf.getString("BOOTSTRAP_SERVER_PRODUCER")
   val groupIdProducer = conf.getString("GROUP_ID_PRODUCER")
-  val autoOffsetResetProducer = conf.getString("AUTO_OFFSET_RESET_PRODUCER")
   val topicProducer = conf.getString("KAFKA_TOPICS_PRODUCER")
 
   def main(args: Array[String]): Unit = {
