@@ -71,20 +71,9 @@ object TweetSentimentAnalyzer {
     def predictSentiment(status: Status): (Long, String, String, Int, Int, Double, Double, String, String) = {
       val tweetText = replaceNewLines(status.getText)
 
-      //      val (corenlpSentiment, mllibSentiment) = {
-      //        // If tweet is in English, compute the sentiment by MLlib and also with Stanford CoreNLP.
-      //        if (isTweetInEnglish(status)) {
-      //          (CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),
-      //            MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
-      //        } else {
-      //          // all non-English tweets are defaulted to neutral.
-      //          // this is a workaround :: as we cant compute the sentiment of non-English tweets with our current model.
-      //          (0, 0)
-      //        }
-      //      }
-
       val (corenlpSentiment, mllibSentiment) =
         (0, MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
+      //      CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),
 
       (status.getId,
         status.getUser.getScreenName,
@@ -141,10 +130,11 @@ object TweetSentimentAnalyzer {
             val status = TwitterObjectFactory.createStatus(line.value())
           } catch {
             case e: TwitterException =>
-              log.error("TwitterException : ")
+              log.error("classifiedTweets TwitterException : ")
               log.error(e)
               log.error(line.value())
             case e: Exception =>
+              log.error("classifiedTweets Exception : ")
               log.error(e)
           }
         } else {
@@ -174,6 +164,8 @@ object TweetSentimentAnalyzer {
             val write = sentimentTuple.productIterator.mkString(DELIMITER)
             log.info("classifiedTweets write : " + write)
           }
+          case _ =>
+            log.info("classifiedTweets write not match")
         }
       } else {
         log.warn("classifiedTweets rdd is null")
