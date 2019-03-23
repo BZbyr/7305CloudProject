@@ -121,56 +121,56 @@ object TweetSentimentAnalyzer {
     //      }
     //    }
 
+    //    try {
     val classifiedTweets = rawTweets
+      .filter(line => !line.value().isEmpty)
       .map(line => {
         // kafka key值是null
-        val status: Status = TwitterObjectFactory.createStatus("{}")
-        if (line.value() != null && !line.value().isEmpty) {
-          try {
-            val status = TwitterObjectFactory.createStatus(line.value())
-          } catch {
-            case e: TwitterException =>
-              log.error("classifiedTweets TwitterException : ")
-              log.error(e)
-              log.error(line.value())
-            case e: Exception =>
-              log.error("classifiedTweets Exception : ")
-              log.error(e)
-          }
-        } else {
-          log.info("line is empty")
-        }
-        status
+        TwitterObjectFactory.createStatus(line.value())
       })
       .filter(status => {
         // 过滤空数据 和 非英文tweet 和 非英文母语用户 数据
         null != status && "en" == status.getLang && "en" == status.getUser.getLang
       })
       .map(predictSentiment)
+    //    }
+    //    catch {
+    //      case e: TwitterException =>
+    //        log.error(e)
+    //      case e: Exception =>
+    //        log.error(e)
+    //    }
 
     // This delimiter was chosen as the probability of this character appearing in tweets is very less.
     val DELIMITER = "¦"
     val tweetsClassifiedPath = PropertiesLoader.tweetsClassifiedPath
 
     classifiedTweets.foreachRDD { rdd =>
-      if (rdd != null && !rdd.isEmpty() && !rdd.partitions.isEmpty) {
-        // 保存tweet 数据
-        saveClassifiedTweets(rdd, tweetsClassifiedPath)
+      try {
+        if (rdd != null && !rdd.isEmpty() && !rdd.partitions.isEmpty) {
+          // 保存tweet 数据
+          saveClassifiedTweets(rdd, tweetsClassifiedPath)
 
-        // Now publish the data to XXX
-        rdd.foreach {
-          case (id, screenName, text, sent1, sent2, lat, long, profileURL, date) => {
-            val sentimentTuple = (id, screenName, text, sent1, sent2, lat, long, profileURL, date)
-            val write = sentimentTuple.productIterator.mkString(DELIMITER)
-            log.info("classifiedTweets write : " + write)
+          // Now publish the data to XXX
+          rdd.foreach {
+            case (id, screenName, text, sent1, sent2, lat, long, profileURL, date) => {
+              val sentimentTuple = (id, screenName, text, sent1, sent2, lat, long, profileURL, date)
+              val write = sentimentTuple.productIterator.mkString(DELIMITER)
+              log.info("classifiedTweets write : " + write)
+            }
+            case _ =>
+              log.info("classifiedTweets write not match")
           }
-          case _ =>
-            log.info("classifiedTweets write not match")
+        } else {
+          log.warn("classifiedTweets rdd is null")
         }
-      } else {
-        log.warn("classifiedTweets rdd is null")
+      } catch {
+        case e: TwitterException =>
+          log.error("classifiedTweets TwitterException")
+          log.error(e)
+        case e: Exception =>
+          log.error(e)
       }
-
     }
 
     ssc.start()
@@ -208,7 +208,9 @@ object TweetSentimentAnalyzer {
   def saveClassifiedTweets(rdd: RDD[(Long, String, String, Int, Int, Double, Double, String, String)], tweetsClassifiedPath: String) = {
     val now = "%tY%<tm%<td%<tH%<tM%<tS" format new Date
     val sqlContext = SQLContextSingleton.getInstance(rdd.sparkContext)
+
     import sqlContext.implicits._
+
     val classifiedTweetsDF = rdd.toDF("ID", "ScreenName", "Text", "CoreNLP", "MLlib", "Latitude", "Longitude", "ProfileURL", "Date")
     classifiedTweetsDF.coalesce(1).write
       .format("com.databricks.spark.csv")
