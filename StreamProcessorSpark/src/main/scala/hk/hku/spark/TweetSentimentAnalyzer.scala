@@ -43,14 +43,17 @@ object TweetSentimentAnalyzer {
 //    println(tmp.getUser.getLang)
 //  }
 
+  @transient
+  lazy val log = LogManager.getRootLogger
+  log.setLevel(Level.INFO)
+
   def main(args: Array[String]): Unit = {
     //    val ssc = StreamingContext.getActiveOrCreate(createSparkStreamingContext)
     val ssc = createSparkStreamingContext
     val simpleDateFormat = new SimpleDateFormat("EE MMM dd HH:mm:ss ZZ yyyy")
 
     //    LogUtils.setLogLevels(ssc.sparkContext)
-    val log = LogManager.getRootLogger
-    log.setLevel(Level.INFO)
+
     log.info("TweetSentimentAnalyzer start ")
 
     // Load Naive Bayes Model from the location specified in the config file.
