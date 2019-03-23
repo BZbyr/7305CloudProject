@@ -18,7 +18,7 @@ import org.apache.spark.sql.SaveMode
 import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Durations, StreamingContext}
-import twitter4j.{Status, TwitterObjectFactory}
+import twitter4j.{Status, TwitterException, TwitterObjectFactory}
 import twitter4j.auth.OAuthAuthorization
 
 /**
@@ -130,11 +130,19 @@ object TweetSentimentAnalyzer {
 
     val classifiedTweets = rawTweets
       .map(line => {
-        println(line.key())
-        println(line.value())
+        // kafka key值是null
         val status: Status = TwitterObjectFactory.createStatus("{}")
         if (line.value() != null && !line.value().isEmpty) {
-          val status = TwitterObjectFactory.createStatus(line.value())
+          log.info("line is not empty")
+          try {
+            val status = TwitterObjectFactory.createStatus(line.value().toString)
+          } catch {
+            case e: TwitterException =>
+              log.error(e.getErrorMessage)
+              log.error(line.value().toString)
+            case e: _ =>
+              log.error(e)
+          }
         }
         status
       })
