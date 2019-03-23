@@ -1,16 +1,18 @@
 package hk.hku.spark
 
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.{Date, Properties}
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import hk.hku.spark.corenlp.CoreNLPSentimentAnalyzer
 import hk.hku.spark.mllib.MLlibSentimentAnalyzer
 import hk.hku.spark.utils._
 import org.apache.hadoop.io.compress.GzipCodec
-import org.apache.kafka.common.serialization.StringDeserializer
+import org.apache.kafka.clients.producer.{KafkaProducer, Producer, ProducerConfig}
+import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 import org.apache.log4j.{Level, LogManager}
 import org.apache.spark.SparkConf
+import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.mllib.classification.NaiveBayesModel
 import org.apache.spark.rdd.RDD
 import org.apache.spark.serializer.KryoSerializer
@@ -52,9 +54,22 @@ object TweetSentimentAnalyzer {
     val ssc = createSparkStreamingContext
     val simpleDateFormat = new SimpleDateFormat("EE MMM dd HH:mm:ss ZZ yyyy")
 
-    //    LogUtils.setLogLevels(ssc.sparkContext)
-
     log.info("TweetSentimentAnalyzer start ")
+
+    // 广播 Kafka Producer 到每一个excutors
+    val kafkaProducer: Broadcast[BroadcastKafkaProducer[String, String]] = {
+      val kafkaProducerConfig = {
+        val prop = new Properties()
+        prop.put("group.id", PropertiesLoader.groupIdProducer)
+        prop.put("acks", "all")
+        prop.put("retries ", "1")
+        prop.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, PropertiesLoader.bootstrapServersProducer)
+        prop.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, classOf[StringSerializer].getName) //key的序列化;
+        prop.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, classOf[StringSerializer].getName)
+        prop
+      }
+      ssc.sparkContext.broadcast(broadcastKafkaProducer[String, String](kafkaProducerConfig))
+    }
 
     // Load Naive Bayes Model from the location specified in the config file.
     val naiveBayesModel = NaiveBayesModel.load(ssc.sparkContext, PropertiesLoader.naiveBayesModelPath)
@@ -70,6 +85,8 @@ object TweetSentimentAnalyzer {
       */
     def predictSentiment(status: Status): (Long, String, String, Int, Int, Double, Double, String, String) = {
       val tweetText = replaceNewLines(status.getText)
+
+      log.info("tweetText : " + tweetText)
 
       val (corenlpSentiment, mllibSentiment) =
         (0, MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
@@ -92,7 +109,7 @@ object TweetSentimentAnalyzer {
     //    val rawTweets = TwitterUtils.createStream(ssc, oAuth)
 
 
-    // kafka 参数
+    // kafka consumer 参数
     val kafkaParams = Map[String, Object](
       "bootstrap.servers" -> PropertiesLoader.bootstrapServers,
       "key.deserializer" -> classOf[StringDeserializer],
@@ -103,7 +120,7 @@ object TweetSentimentAnalyzer {
     )
 
     // topics
-    val topics = PropertiesLoader.topis.split(",").toSet
+    val topics = PropertiesLoader.topics.split(",").toSet
 
     // 读取 Kafka 数据---json 格式字符串
     val rawTweets = KafkaUtils.createDirectStream[String, String](
@@ -121,7 +138,6 @@ object TweetSentimentAnalyzer {
     //      }
     //    }
 
-    //    try {
     val classifiedTweets = rawTweets
       .filter(line => !line.value().isEmpty)
       .map(line => {
@@ -129,38 +145,32 @@ object TweetSentimentAnalyzer {
         TwitterObjectFactory.createStatus(line.value())
       })
       .filter(status => {
-        // 过滤空数据 和 非英文tweet 和 非英文母语用户 数据
-        null != status && "en" == status.getLang && "en" == status.getUser.getLang
+        if (status == null || !isTweetInEnglish(status)) {
+          log.info("tweets filter data : " + status.getId)
+          false
+        }
+        else {
+          log.info("tweets : " + status.getId)
+          true
+        }
       })
       .map(predictSentiment)
-    //    }
-    //    catch {
-    //      case e: TwitterException =>
-    //        log.error(e)
-    //      case e: Exception =>
-    //        log.error(e)
-    //    }
 
-    // This delimiter was chosen as the probability of this character appearing in tweets is very less.
+    // 分隔符 was chosen as the probability of this character appearing in tweets is very less.
     val DELIMITER = "¦"
     val tweetsClassifiedPath = PropertiesLoader.tweetsClassifiedPath
 
     classifiedTweets.foreachRDD { rdd =>
       try {
         if (rdd != null && !rdd.isEmpty() && !rdd.partitions.isEmpty) {
-          // 保存tweet 数据
-          saveClassifiedTweets(rdd, tweetsClassifiedPath)
+          // saveClassifiedTweets(rdd, tweetsClassifiedPath)
 
-          // Now publish the data to XXX
-          rdd.foreach {
-            case (id, screenName, text, sent1, sent2, lat, long, profileURL, date) => {
-              val sentimentTuple = (id, screenName, text, sent1, sent2, lat, long, profileURL, date)
-              val write = sentimentTuple.productIterator.mkString(DELIMITER)
-              log.info("classifiedTweets write : " + write)
-            }
-            case _ =>
-              log.info("classifiedTweets write not match")
-          }
+          // produce message to kafka
+          rdd.foreach(message => {
+            log.info("producer msg to kafka : " + message)
+            // id, screenName, text, sent1, sent2, lat, long, profileURL, date
+            kafkaProducer.value.send(PropertiesLoader.topicProducer, message.productIterator.mkString(DELIMITER))
+          })
         } else {
           log.warn("classifiedTweets rdd is null")
         }

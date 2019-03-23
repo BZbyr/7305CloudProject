@@ -28,10 +28,17 @@ object PropertiesLoader {
   val microBatchTimeInSeconds = conf.getInt("STREAMING_MICRO_BATCH_TIME_IN_SECONDS")
   val totalRunTimeInMinutes = conf.getInt("TOTAL_RUN_TIME_IN_MINUTES")
 
+  // 读 kafka stream 数据
   val bootstrapServers = conf.getString("BOOTSTRAP_SERVER")
   val groupId = conf.getString("GROUP_ID")
   val autoOffsetReset = conf.getString("AUTO_OFFSET_RESET")
-  val topis = conf.getString("KAFKA_TOPICS")
+  val topics = conf.getString("KAFKA_TOPICS")
+
+  // 往kafka 吐结果数据
+  val bootstrapServersProducer = conf.getString("BOOTSTRAP_SERVER_PRODUCER")
+  val groupIdProducer = conf.getString("GROUP_ID_PRODUCER")
+  val autoOffsetResetProducer = conf.getString("AUTO_OFFSET_RESET_PRODUCER")
+  val topicProducer = conf.getString("KAFKA_TOPICS_PRODUCER")
 
   def main(args: Array[String]): Unit = {
     println(PropertiesLoader.saveRawTweets)
