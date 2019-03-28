@@ -79,8 +79,10 @@ object TweetSentimentAnalyzer {
       log.info("tweetText : " + tweetText)
 
       val (corenlpSentiment, mllibSentiment) =
-        (0, MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
-      //      CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),
+      //        (0, MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
+        (CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),
+          MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
+
 
       if (hasGeoLocation(status))
         (status.getId,
@@ -143,9 +145,7 @@ object TweetSentimentAnalyzer {
       .filter(line => !line.value().isEmpty)
       .map(line => {
         // kafka key值是null
-        log.info("message key : " + line.key())
-        log.info("message value : " + line.value())
-        log.info("message str : " + line.value().toString)
+        //        log.info("message value : " + line.value())
         TwitterObjectFactory.createStatus(line.value())
       })
       .filter({
@@ -178,8 +178,8 @@ object TweetSentimentAnalyzer {
 
           // produce message to kafka
           rdd.foreach(message => {
-            log.info(s"producer msg to kafka ${message.toString()}")
-            // id, screenName, text, sent1, sent2, lat, long, profileURL, date
+            //            log.info(s"producer msg to kafka ${message.toString()}")
+            // id, screenName, text, nlp, mllib, latitude, longitude, profileURL, date
             kafkaProducer.value.send(PropertiesLoader.topicProducer, message.productIterator.mkString(DELIMITER))
           })
         } else {

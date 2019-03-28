@@ -58,5 +58,10 @@ StreamProcessorSpark/target/
 
 StreamProcessorSpark/\.classpath
 
-######
+#################
+## test file
+#################
 /**/test.scala
+/**/test.java
+/**/test.json
+/**/test.txt
