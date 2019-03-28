@@ -30,7 +30,7 @@ object HDFSUtils {
       if (!fs.exists(new Path(realUrl))) {
         fs.mkdirs(new Path(realUrl))
       }
-      fs.close()
+//      fs.close()
       result = true
     }
     result
@@ -50,7 +50,7 @@ object HDFSUtils {
       val config = new Configuration()
       val fs = FileSystem.get(URI.create(realUrl), config)
       fs.delete(new Path(realUrl), true)
-      fs.close()
+//      fs.close()
       result = true
     }
     result
@@ -76,7 +76,7 @@ object HDFSUtils {
       val os = hdfs.create(new Path(realUrl))
       os.write(content.getBytes("UTF-8"))
       os.close()
-      hdfs.close()
+//      hdfs.close()
       result = true
     }
     result
@@ -96,7 +96,7 @@ object HDFSUtils {
       val hdfs = FileSystem.get(URI.create(realUrl), config)
       val path = new Path(realUrl)
       val isDeleted = hdfs.delete(path, true)
-      hdfs.close()
+//      hdfs.close()
       result = isDeleted
     }
     result
@@ -122,7 +122,7 @@ object HDFSUtils {
         val buffer = new Array[Byte](length)
         inputStream.readFully(buffer)
         inputStream.close()
-        hdfs.close()
+//        hdfs.close()
         result = buffer
       }
     }
@@ -151,7 +151,7 @@ object HDFSUtils {
         IOUtils.copyBytes(inputStream, outputStream, 4096, true)
         outputStream.close()
         inputStream.close()
-        hdfs.close()
+//        hdfs.close()
         result = true
       }
     } else {

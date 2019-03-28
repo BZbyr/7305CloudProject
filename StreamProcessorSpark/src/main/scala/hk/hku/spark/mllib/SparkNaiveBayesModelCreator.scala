@@ -69,11 +69,12 @@ object SparkNaiveBayesModelCreator {
     log.info("createAndSaveNBModel loadSentiment140File")
 
     val labeledRDD = tweetsDF.select("polarity", "status").rdd.map {
-      case Row(polarity: Int, tweet: String) =>
+      case Row(polarity: Int, tweet: String) => {
+//      text => {
         val tweetInWords: Seq[String] = MLlibSentimentAnalyzer.getBarebonesTweetText(tweet, stopWordsList.value)
         // 将tweet 过滤后的文本String 序列，打上polarity 标签值
         LabeledPoint(polarity, MLlibSentimentAnalyzer.transformFeatures(tweetInWords))
-
+      }
     }
     labeledRDD.cache()
 
