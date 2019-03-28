@@ -82,15 +82,26 @@ object TweetSentimentAnalyzer {
         (0, MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
       //      CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),
 
-      (status.getId,
-        status.getUser.getScreenName,
-        tweetText,
-        corenlpSentiment,
-        mllibSentiment,
-        status.getGeoLocation.getLatitude,
-        status.getGeoLocation.getLongitude,
-        status.getUser.getOriginalProfileImageURL,
-        simpleDateFormat.format(status.getCreatedAt))
+      if (hasGeoLocation(status))
+        (status.getId,
+          status.getUser.getScreenName,
+          tweetText,
+          corenlpSentiment,
+          mllibSentiment,
+          status.getGeoLocation.getLatitude,
+          status.getGeoLocation.getLongitude,
+          status.getUser.getOriginalProfileImageURL,
+          simpleDateFormat.format(status.getCreatedAt))
+      else
+        (status.getId,
+          status.getUser.getScreenName,
+          tweetText,
+          corenlpSentiment,
+          mllibSentiment,
+          -1,
+          -1,
+          status.getUser.getOriginalProfileImageURL,
+          simpleDateFormat.format(status.getCreatedAt))
     }
 
 
@@ -158,7 +169,7 @@ object TweetSentimentAnalyzer {
 
     // 分隔符 was chosen as the probability of this character appearing in tweets is very less.
     val DELIMITER = "¦"
-//    val tweetsClassifiedPath = PropertiesLoader.tweetsClassifiedPath
+    //    val tweetsClassifiedPath = PropertiesLoader.tweetsClassifiedPath
 
     classifiedTweets.foreachRDD { rdd =>
       try {
