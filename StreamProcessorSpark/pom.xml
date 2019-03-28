@@ -55,12 +55,13 @@
             <version>3.9.2</version>
         </dependency>
 
-        <dependency>
-            <groupId>edu.stanford.nlp</groupId>
-            <artifactId>stanford-corenlp</artifactId>
-            <version>3.9.2</version>
-            <classifier>models</classifier> <!--  will get the dependent model jars -->
-        </dependency>
+        <!--  will get the dependent model jars -->
+        <!--<dependency>-->
+            <!--<groupId>edu.stanford.nlp</groupId>-->
+            <!--<artifactId>stanford-corenlp</artifactId>-->
+            <!--<version>3.9.2</version>-->
+            <!--<classifier>models</classifier>-->
+        <!--</dependency>-->
 
         <!-- 中文 model -->
         <!--<dependency>-->

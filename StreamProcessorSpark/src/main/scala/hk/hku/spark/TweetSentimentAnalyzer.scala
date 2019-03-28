@@ -79,9 +79,9 @@ object TweetSentimentAnalyzer {
       log.info("tweetText : " + tweetText)
 
       val (corenlpSentiment, mllibSentiment) =
-      //        (0, MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
-        (CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),
-          MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
+        (0, MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
+      //        (CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),
+      //          MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
 
 
       if (hasGeoLocation(status))
