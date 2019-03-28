@@ -12,7 +12,7 @@
     <name>StreamProcessorSpark</name>
 
     <dependencies>
-                <!-- spark & streaming & kafka-->
+        <!-- spark & streaming & kafka-->
         <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core -->
         <dependency>
             <groupId>org.apache.spark</groupId>
@@ -40,10 +40,10 @@
             <artifactId>spark-mllib_2.11</artifactId>
             <version>2.4.0</version>
             <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<artifactId>breeze_2.11</artifactId>-->
-                    <!--<groupId>org.scalanlp</groupId>-->
-                <!--</exclusion>-->
+            <!--<exclusion>-->
+            <!--<artifactId>breeze_2.11</artifactId>-->
+            <!--<groupId>org.scalanlp</groupId>-->
+            <!--</exclusion>-->
             <!--</exclusions>-->
             <!--<scope>runtime</scope>-->
         </dependency>
@@ -61,6 +61,14 @@
             <version>3.9.2</version>
             <classifier>models</classifier> <!--  will get the dependent model jars -->
         </dependency>
+
+        <!-- 中文 model -->
+        <!--<dependency>-->
+            <!--<groupId>edu.stanford.nlp</groupId>-->
+            <!--<artifactId>stanford-corenlp</artifactId>-->
+            <!--<version>3.9.2</version>-->
+            <!--<classifier>models-chinese</classifier>-->
+        <!--</dependency>-->
 
 
         <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-streaming -->
@@ -101,9 +109,9 @@
 
         <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-streaming-kafka -->
         <!--<dependency>-->
-            <!--<groupId>org.apache.spark</groupId>-->
-            <!--<artifactId>spark-streaming-kafka_2.11</artifactId>-->
-            <!--<version>1.6.3</version>-->
+        <!--<groupId>org.apache.spark</groupId>-->
+        <!--<artifactId>spark-streaming-kafka_2.11</artifactId>-->
+        <!--<version>1.6.3</version>-->
         <!--</dependency>-->
 
         <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka -->
@@ -122,16 +130,16 @@
 
         <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-streams -->
         <!--<dependency>-->
-            <!--<groupId>org.apache.kafka</groupId>-->
-            <!--<artifactId>kafka-streams</artifactId>-->
-            <!--<version>2.1.1</version>-->
+        <!--<groupId>org.apache.kafka</groupId>-->
+        <!--<artifactId>kafka-streams</artifactId>-->
+        <!--<version>2.1.1</version>-->
         <!--</dependency>-->
 
         <!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
         <!--<dependency>-->
-            <!--<groupId>redis.clients</groupId>-->
-            <!--<artifactId>jedis</artifactId>-->
-            <!--<version>3.0.1</version>-->
+        <!--<groupId>redis.clients</groupId>-->
+        <!--<artifactId>jedis</artifactId>-->
+        <!--<version>3.0.1</version>-->
         <!--</dependency>-->
 
         <!-- https://mvnrepository.com/artifact/com.typesafe/config -->
@@ -150,9 +158,9 @@
 
         <!-- https://mvnrepository.com/artifact/org.scala-lang/scala-library -->
         <!--<dependency>-->
-            <!--<groupId>org.scala-lang</groupId>-->
-            <!--<artifactId>scala-library</artifactId>-->
-            <!--<version>2.11.12</version>-->
+        <!--<groupId>org.scala-lang</groupId>-->
+        <!--<artifactId>scala-library</artifactId>-->
+        <!--<version>2.11.12</version>-->
         <!--</dependency>-->
 
         <!-- https://mvnrepository.com/artifact/org.json4s/json4s-core -->
@@ -209,9 +217,9 @@
                 <version>2.5.5</version>
                 <configuration>
                     <!--<archive>-->
-                        <!--<manifest>-->
-                            <!--<mainClass>com.xxg.Main</mainClass>-->
-                        <!--</manifest>-->
+                    <!--<manifest>-->
+                    <!--<mainClass>com.xxg.Main</mainClass>-->
+                    <!--</manifest>-->
                     <!--</archive>-->
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
