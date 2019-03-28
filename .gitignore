@@ -63,5 +63,6 @@ StreamProcessorSpark/\.classpath
 #################
 /**/test.scala
 /**/test.java
+/**/tweetDemo.json
 /**/test.json
 /**/test.txt
