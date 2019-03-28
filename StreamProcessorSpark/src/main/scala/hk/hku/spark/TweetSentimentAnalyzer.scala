@@ -145,25 +145,19 @@ object TweetSentimentAnalyzer {
       .filter(line => !line.value().isEmpty)
       .map(line => {
         // kafka key值是null
-        //        log.info("message value : " + line.value())
+        // log.info("message value : " + line.value())
         TwitterObjectFactory.createStatus(line.value())
       })
-      .filter({
-        case null =>
-          false
-        case _ =>
-          true
-      }
-        //        status => {
-        //          if (status == null || !isTweetInEnglish(status)) {
-        //            log.info(s"tweets filter data : ${status.getId}")
-        //            false
-        //          }
-        //          else {
-        //            log.info(s"tweets : ${status.getId}")
-        //            true
-        //          }
-        //        }
+      .filter(
+        status => {
+          if (status == null || !isTweetInEnglish(status)) {
+            // log.info(s"tweets filter data : ${status.getId}")
+            false
+          }
+          else {
+            true
+          }
+        }
       )
       .map(predictSentiment)
 
