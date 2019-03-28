@@ -136,9 +136,9 @@ object TweetSentimentAnalyzer {
       })
       .filter({
         case null =>
-          return false
+          false
         case _ =>
-          return true
+          true
       }
         //        status => {
         //          if (status == null || !isTweetInEnglish(status)) {
@@ -155,7 +155,7 @@ object TweetSentimentAnalyzer {
 
     // 分隔符 was chosen as the probability of this character appearing in tweets is very less.
     val DELIMITER = "¦"
-    val tweetsClassifiedPath = PropertiesLoader.tweetsClassifiedPath
+//    val tweetsClassifiedPath = PropertiesLoader.tweetsClassifiedPath
 
     classifiedTweets.foreachRDD { rdd =>
       try {
@@ -164,7 +164,7 @@ object TweetSentimentAnalyzer {
 
           // produce message to kafka
           rdd.foreach(message => {
-            log.info(s"producer msg to kafka ${message}")
+            log.info(s"producer msg to kafka ${message.toString()}")
             // id, screenName, text, sent1, sent2, lat, long, profileURL, date
             kafkaProducer.value.send(PropertiesLoader.topicProducer, message.productIterator.mkString(DELIMITER))
           })
