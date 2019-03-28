@@ -57,3 +57,6 @@ StreamProcessorFlink/\.classpath
 StreamProcessorSpark/target/
 
 StreamProcessorSpark/\.classpath
+
+######
+/**/test.scala
