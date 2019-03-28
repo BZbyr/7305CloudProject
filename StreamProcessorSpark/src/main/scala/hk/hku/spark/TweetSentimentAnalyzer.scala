@@ -132,6 +132,9 @@ object TweetSentimentAnalyzer {
       .filter(line => !line.value().isEmpty)
       .map(line => {
         // kafka key值是null
+        log.info("message key : " + line.key())
+        log.info("message value : " + line.value())
+        log.info("message str : " + line.value().toString)
         TwitterObjectFactory.createStatus(line.value())
       })
       .filter({
