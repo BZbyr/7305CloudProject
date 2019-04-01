@@ -48,6 +48,7 @@
             <!--<scope>runtime</scope>-->
         </dependency>
 
+        <!-- stanford core nlp-->
         <!-- https://mvnrepository.com/artifact/edu.stanford.nlp/stanford-corenlp -->
         <dependency>
             <groupId>edu.stanford.nlp</groupId>
@@ -56,12 +57,12 @@
         </dependency>
 
         <!--  will get the dependent model jars -->
-        <!--<dependency>-->
-            <!--<groupId>edu.stanford.nlp</groupId>-->
-            <!--<artifactId>stanford-corenlp</artifactId>-->
-            <!--<version>3.9.2</version>-->
-            <!--<classifier>models</classifier>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>edu.stanford.nlp</groupId>
+            <artifactId>stanford-corenlp</artifactId>
+            <version>3.9.2</version>
+            <classifier>models</classifier>
+        </dependency>
 
         <!-- 中文 model -->
         <!--<dependency>-->

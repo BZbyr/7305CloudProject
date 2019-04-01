@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import hk.hku.spark.corenlp.CoreNLPSentimentAnalyzer
 import hk.hku.spark.mllib.MLlibSentimentAnalyzer
 import hk.hku.spark.utils._
-import org.apache.hadoop.io.compress.GzipCodec
 import org.apache.kafka.clients.producer.{KafkaProducer, Producer, ProducerConfig}
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 import org.apache.log4j.{Level, LogManager}
@@ -16,11 +15,9 @@ import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.mllib.classification.NaiveBayesModel
 import org.apache.spark.rdd.RDD
 import org.apache.spark.serializer.KryoSerializer
-import org.apache.spark.sql.SaveMode
 import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Durations, StreamingContext}
-import shaded.parquet.org.apache.thrift.Option.Some
 import twitter4j.{Status, TwitterException, TwitterObjectFactory}
 import twitter4j.auth.OAuthAuthorization
 
@@ -74,14 +71,12 @@ object TweetSentimentAnalyzer {
       *         Profile Image URL, Tweet Date.
       */
     def predictSentiment(status: Status): (Long, String, String, Int, Int, Double, Double, String, String) = {
-      val tweetText = replaceNewLines(status.getText)
-
-      log.info("tweetText : " + tweetText)
+      val tweetText = status.getText.replaceAll("\n", "")
+      //      log.info("tweetText : " + tweetText)
 
       val (corenlpSentiment, mllibSentiment) =
-        (0, MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
-      //        (CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),
-      //          MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
+        (CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),
+          MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
 
 
       if (hasGeoLocation(status))
@@ -125,55 +120,35 @@ object TweetSentimentAnalyzer {
     // topics
     val topics = PropertiesLoader.topics.split(",").toSet
 
-    // 读取 Kafka 数据---json 格式字符串
+    // 读取 Kafka 数据: key值是null,过滤value为空的数据
     val rawTweets = KafkaUtils.createDirectStream[String, String](
-      ssc,
-      LocationStrategies.PreferConsistent,
-      ConsumerStrategies.Subscribe[String, String](topics, kafkaParams))
+      ssc, LocationStrategies.PreferConsistent,
+      ConsumerStrategies.Subscribe[String, String](topics, kafkaParams)).filter(line => !line.value().isEmpty)
 
-    // 保存Tweet 元数据
-    //    if (PropertiesLoader.saveRawTweets) {
-    //      rawTweets.cache()
-    //      rawTweets.foreachRDD { rdd =>
-    //        if (rdd != null && !rdd.isEmpty() && !rdd.partitions.isEmpty) {
-    //          saveRawTweetsInJSONFormat(rdd, PropertiesLoader.tweetsRawPath)
-    //        }
-    //      }
-    //    }
-
-    val classifiedTweets = rawTweets
-      .filter(line => !line.value().isEmpty)
-      .map(line => {
-        // kafka key值是null
-        // log.info("message value : " + line.value())
-        TwitterObjectFactory.createStatus(line.value())
+    val classifiedTweets = rawTweets.map(line => {
+      // log.info("message value : " + line.value())
+      TwitterObjectFactory.createStatus(line.value())
+    })
+      .filter(status => {
+        if (status == null || !isTweetInEnglish(status))
+          false
+        else
+          true
       })
-      .filter(
-        status => {
-          if (status == null || !isTweetInEnglish(status)) {
-            // log.info(s"tweets filter data : ${status.getId}")
-            false
-          }
-          else {
-            true
-          }
-        }
-      )
       .map(predictSentiment)
 
     // 分隔符 was chosen as the probability of this character appearing in tweets is very less.
     val DELIMITER = "¦"
     //    val tweetsClassifiedPath = PropertiesLoader.tweetsClassifiedPath
 
+    // 数据格式:id, screenName, text, nlp, mllib, latitude, longitude, profileURL, date
     classifiedTweets.foreachRDD { rdd =>
       try {
         if (rdd != null && !rdd.isEmpty() && !rdd.partitions.isEmpty) {
           // saveClassifiedTweets(rdd, tweetsClassifiedPath)
 
-          // produce message to kafka
           rdd.foreach(message => {
-            //            log.info(s"producer msg to kafka ${message.toString()}")
-            // id, screenName, text, nlp, mllib, latitude, longitude, profileURL, date
+            // log.info(s"producer msg to kafka ${message.toString()}")
             kafkaProducer.value.send(PropertiesLoader.topicProducer, message.productIterator.mkString(DELIMITER))
           })
         } else {
@@ -189,7 +164,8 @@ object TweetSentimentAnalyzer {
     }
 
     ssc.start()
-    ssc.awaitTerminationOrTimeout(PropertiesLoader.totalRunTimeInMinutes * 60 * 1000) // auto-kill after processing rawTweets for n mins.
+    // auto-kill after processing rawTweets for n mins.
+    ssc.awaitTerminationOrTimeout(PropertiesLoader.totalRunTimeInMinutes * 60 * 1000)
   }
 
   /**
@@ -210,67 +186,6 @@ object TweetSentimentAnalyzer {
 
     val ssc = new StreamingContext(conf, Durations.seconds(PropertiesLoader.microBatchTimeInSeconds))
     ssc
-  }
-
-  /**
-    * Saves the classified tweets to the csv file.
-    * Uses DataFrames to accomplish this task.
-    *
-    * @param rdd                  tuple with Tweet ID, Tweet Text, Core NLP Polarity, MLlib Polarity,
-    *                             Latitude, Longitude, Profile Image URL, Tweet Date.
-    * @param tweetsClassifiedPath Location of saving the data.
-    */
-  def saveClassifiedTweets(rdd: RDD[(Long, String, String, Int, Int, Double, Double, String, String)], tweetsClassifiedPath: String) = {
-    val now = "%tY%<tm%<td%<tH%<tM%<tS" format new Date
-    val sqlContext = SQLContextSingleton.getInstance(rdd.sparkContext)
-
-    import sqlContext.implicits._
-
-    val classifiedTweetsDF = rdd.toDF("ID", "ScreenName", "Text", "CoreNLP", "MLlib", "Latitude", "Longitude", "ProfileURL", "Date")
-    classifiedTweetsDF.coalesce(1).write
-      .format("com.databricks.spark.csv")
-      .option("header", "true")
-      .option("delimiter", "\t")
-      // Compression codec to compress when saving to file.
-      .option("codec", classOf[GzipCodec].getCanonicalName)
-      // Will it be good if DF is partitioned by Sentiment value? Probably does not make sense.
-      //.partitionBy("Sentiment")
-      // TODO :: Bug in spark-csv package :: Append Mode does not work for CSV: https://github.com/databricks/spark-csv/issues/122
-      //.mode(SaveMode.Append)
-      .save(tweetsClassifiedPath + now)
-  }
-
-  /**
-    * Jackson Object Mapper for mapping twitter4j.Status object to a String for saving raw tweet.
-    */
-  val jacksonObjectMapper: ObjectMapper = new ObjectMapper()
-
-  /**
-    * Saves raw tweets received from Twitter Streaming API in
-    *
-    * @param rdd           -- RDD of Status objects to save.
-    * @param tweetsRawPath -- Path of the folder where raw tweets are saved.
-    */
-  def saveRawTweetsInJSONFormat(rdd: RDD[Status], tweetsRawPath: String): Unit = {
-    val sqlContext = SQLContextSingleton.getInstance(rdd.sparkContext)
-    val tweet = rdd.map(status => jacksonObjectMapper.writeValueAsString(status))
-    val rawTweetsDF = sqlContext.read.json(tweet)
-    rawTweetsDF.coalesce(1).write
-      .format("org.apache.spark.sql.json")
-      // Compression codec to compress when saving to file.
-      .option("codec", classOf[GzipCodec].getCanonicalName)
-      .mode(SaveMode.Append)
-      .save(tweetsRawPath)
-  }
-
-  /**
-    * Removes all new lines from the text passed.
-    *
-    * @param tweetText -- Complete text of a tweet.
-    * @return String without new lines.
-    */
-  def replaceNewLines(tweetText: String): String = {
-    tweetText.replaceAll("\n", "")
   }
 
   /**

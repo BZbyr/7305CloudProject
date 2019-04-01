@@ -49,8 +49,8 @@ object MLlibSentimentAnalyzer {
   def getBarebonesTweetText(tweetText: String, stopWordsList: List[String]): Seq[String] = {
     //Remove URLs, RT, MT and other redundant chars / strings from the tweets.
     tweetText.toLowerCase()
-      .replaceAll("\n", "")
-      .replaceAll("rt\\s+", "")
+      .replaceAll("\n", "")   //去掉换行符
+      .replaceAll("rt\\s+", "") //
       .replaceAll("\\s+@\\w+", "")
       .replaceAll("@\\w+", "")
       .replaceAll("\\s+#\\w+", "")
@@ -78,10 +78,11 @@ object MLlibSentimentAnalyzer {
   }
 
   def main(args: Array[String]): Unit = {
-    val tweetText = "@stellargirl I loooooooovvvvvveee my Kindle2. Not that the DX is cool, but the 2 is fantastic in its own right."
+    var tweetText = "@stellargirl I loooooooovvvvvveee my Kindle2. Not that the DX is cool, but the 2 is fantastic in its own right."
+    tweetText = "hello world"
     println(tweetText)
 
-    tweetText.toLowerCase()
+    val result = tweetText.toLowerCase()
       .replaceAll("\n", "")
       .replaceAll("rt\\s+", "")
       .replaceAll("\\s+@\\w+", "")
@@ -95,7 +96,8 @@ object MLlibSentimentAnalyzer {
       .split("\\W+")
       .filter(_.matches("^[a-zA-Z]+$"))
 
-    println(tweetText)
+    println(result.mkString(","))
 
+    println("abc".matches("^[a-zA-Z]+$"))
   }
 }

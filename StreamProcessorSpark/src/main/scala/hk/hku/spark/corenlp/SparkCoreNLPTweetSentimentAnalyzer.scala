@@ -25,7 +25,7 @@ object SparkCoreNLPTweetSentimentAnalyzer extends App {
     // val ssc = StreamingContext.getActiveOrCreate(createSparkStreamingContext)
     val ssc = createSparkStreamingContext
 
-//    LogUtils.setLogLevels(ssc.sparkContext)
+    //    LogUtils.setLogLevels(ssc.sparkContext)
     val log = LogManager.getRootLogger
     log.setLevel(Level.INFO)
     log.info("TweetSentimentAnalyzer start ")
@@ -103,7 +103,8 @@ object SparkCoreNLPTweetSentimentAnalyzer extends App {
       .option("header", "true")
       .option("delimiter", "\t")
       //.partitionBy("Sentiment") //Will it be good if DF is partitioned by Sentiment value?
-      //.mode(SaveMode.Append) //Bug::Append Mode does not work for CSV: https://github.com/databricks/spark-csv/issues/122
+      //.mode(SaveMode.Append)
+      // Bug in spark-csv package :: Append Mode does not work for CSV: https://github.com/databricks/spark-csv/issues/122
       .save(tweetsClassifiedPath + now)
   }
 
