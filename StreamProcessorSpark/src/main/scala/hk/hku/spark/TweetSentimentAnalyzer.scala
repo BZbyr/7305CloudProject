@@ -102,11 +102,6 @@ object TweetSentimentAnalyzer {
     }
 
 
-    // 直接读取Twitter API 数据
-    //    val oAuth: Some[OAuthAuthorization] = OAuthUtils.bootstrapTwitterOAuth()
-    //    val rawTweets = TwitterUtils.createStream(ssc, oAuth)
-
-
     // kafka consumer 参数
     val kafkaParams = Map[String, Object](
       "bootstrap.servers" -> PropertiesLoader.bootstrapServers,
