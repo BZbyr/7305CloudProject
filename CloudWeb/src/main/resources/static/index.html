@@ -1,17 +1,88 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset=utf-8>
-    <meta http-equiv=X-UA-Compatible content="IE=edge">
-    <meta content="initial-scale=1,maximum-scale=1,user-scalable=no;" name=viewport>
-    <link rel=icon href=/favicon.ico>
-    <link rel=stylesheet href=/css/reset.css>
-    <title>Group07</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Cache-Control" content="no-cache,must-revalidate"/>
+    <meta http-equiv="content-type" content="text/html; charset=UTF8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="HKU COMP7507 Term Project">
+    <meta name="author" content="LexKaing">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon"/>
+    <title>COMP7305 Cluster and cloud computing</title>
+
+    <!--加载cdn资源-->
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+
+     <!-- 加载本地文件 -->
+     <link href="./css/index.css" rel="stylesheet"/>
+     <link href="./css/barrage.css" rel="stylesheet"/>
+ 
+     <script src="./js/index.min.js"></script>
+     <script src="./js/barrage.js"></script>
 </head>
+
 <body>
-<div id=app>
-    Welcome!
+<div class="nav">
+    <div style="width: 5rem; height: 5rem; line-height: 5rem;">
+        <img src="./images/kaggle-logo.png" alt="The Movie Database (TMDb)"
+             style="width: 100px;vertical-align: middle;">
+    </div>
+    <ul class="menu">
+        <li><a href=""><span>Home</span></a></li>
+        <li><a href="#Barrage"><span>Barrage</span></a></li>
+        <li><a href="#WorldMap"><span>WorldMap</span></a></li>
+        <li><a href="https://github.com/BZbyr/7305CloudProject" target="_blank"><span>Git
+						Repo</span></a></li>
+    </ul>
 </div>
 
+<div class="header">
+    <div class="inner">
+        <div class="title">
+            <h1>Realtime Twitter Stream Analysis System</h1>
+            <h2>Group No : 7</h2>
+        </div>
+        <div class="bg"></div>
+    </div>
+</div>
+<div class="app">
+    <div class="content">
+        <section id="description">
+            <h2 class="subtitle">Description</h2>
+            <p>This project will provide real-time monitoring and analysing of the ...
+            </p>
+        </section>
+
+        <!-- 弹幕区域 -->
+        <a name="Barrage" style="position:relative; top:-80px; display:block; height:0; overflow:hidden;"></a>
+        <section>
+            <h2 class="subtitle">Realtime Twitter Barrage</h2>
+            <canvas class='canvas' width=1000 height=500; id='canvas'></canvas>
+            <div class='input-wrapper'>
+                <input type='text' placeholder='请输入弹幕内容' class='barrage-input'>
+                <button class='send-primary-btn'>普通发射</button>
+                <button class='clear-btn'>清空</button>
+                <button class='close-btn'>停止</button>
+                <button class='open-btn'>开始</button>
+            </div>
+        </section>
+
+        <!-- 地图区域 -->
+        <a name="WorldMap" style="position:relative; top:-80px; display:block; height:0; overflow:hidden;"></a>
+        <section>
+            <h2 class="subtitle">WorldMap</h2>
+            <p>This project will provide real-time monitoring and analysing of the ...
+            </p>
+        </section>
+    </div>
+
+    <div class="footer">
+        Copyright © 2019 Master of Computer Science, Faculty of Engineering, The
+        University of Hong Kong. All rights reserved.
+    </div>
+</div>
 </body>
+
 </html>
