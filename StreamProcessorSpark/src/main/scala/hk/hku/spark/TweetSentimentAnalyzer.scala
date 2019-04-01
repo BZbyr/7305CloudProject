@@ -67,7 +67,7 @@ object TweetSentimentAnalyzer {
       * Invokes Stanford Core NLP and MLlib methods for identifying the tweet sentiment.
       *
       * @param status -- twitter4j.Status object.
-      * @return tuple with Tweet ID, Tweet Text, Core NLP Polarity, MLlib Polarity, Latitude, Longitude,
+      * @return tuple with Tweet ID, Screen Name, Tweet Text, Core NLP Polarity, MLlib Polarity, Latitude, Longitude,
       *         Profile Image URL, Tweet Date.
       */
     def predictSentiment(status: Status): (Long, String, String, Int, Int, Double, Double, String, String) = {

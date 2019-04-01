@@ -1,4 +1,4 @@
-package hk.hku.cloud.kafka;
+package hk.hku.cloud.kafka.demo;
 
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.PartitionInfo;
