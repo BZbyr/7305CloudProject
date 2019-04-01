@@ -37,6 +37,10 @@ Developed By:
 
 ### Cluster Website
 
+Need to connect with cs vpn.
+
+[WebSite](http://202.45.128.135:20907/)
+
 [Namenode INFO](http://202.45.128.135:20107/dfshealth.html#tab-overview)
 
 [Hadoop Application](http://202.45.128.135:20207/cluster)
