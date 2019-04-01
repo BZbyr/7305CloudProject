@@ -34,20 +34,21 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     /**
      * 配置消息代理，实现推送功能，这里的消息代理是/topic
      * 服务端发送消息给客户端的域,多个用逗号隔开
+     *
      * @param registry
      */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         System.out.println("configureMessageBroker");
 
-        // 自定义调度器，用于控制心跳线程
-        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-        // 线程池线程数，心跳连接开线程
-        taskScheduler.setPoolSize(1);
-        // 线程名前缀
-        taskScheduler.setThreadNamePrefix("websocket-heartbeat-thread-");
-        // 初始化
-        taskScheduler.initialize();
+//        // 自定义调度器，用于控制心跳线程
+//        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+//        // 线程池线程数，心跳连接开线程
+//        taskScheduler.setPoolSize(1);
+//        // 线程名前缀
+//        taskScheduler.setThreadNamePrefix("websocket-heartbeat-thread-");
+//        // 初始化
+//        taskScheduler.initialize();
 
         /*
          * spring 内置broker对象
@@ -57,8 +58,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
          *    调度器也可以使用默认的调度器 new DefaultManagedTaskScheduler()
          */
         registry.enableSimpleBroker("/topic")
-                .setHeartbeatValue(new long[]{5000,5000})
-                .setTaskScheduler(taskScheduler);
+                .setHeartbeatValue(new long[]{5000, 5000})
+//                .setTaskScheduler(taskScheduler);
+                .setTaskScheduler(new DefaultManagedTaskScheduler());
 
     }
 

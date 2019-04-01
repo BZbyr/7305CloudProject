@@ -1,10 +1,11 @@
 :root {
-    --theme-color:#6cf}
+    --theme-color: #6cf
+}
 
-html,body {
+html, body {
     margin: 0;
     padding: 0;
-    font-family: 'PingFang SC','Helvetica'
+    font-family: 'PingFang SC', 'Helvetica'
 }
 
 .app {
@@ -37,7 +38,7 @@ html,body {
     left: 0;
     top: 0;
     background: no-repeat center center;
-    background-image: url("../images/banner_one.jpg");
+    background-image: url("../images/bg_2.jpg");
     background-size: cover;
     z-index: -1
 }
@@ -71,7 +72,14 @@ html,body {
     justify-content: center;
     align-items: center;
     background: #fff;
-    box-shadow: 0 1px 1px 0 rgba(0,0,0,0.16);
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.16);
+}
+
+.nav .icon {
+    width: 5rem;
+    height: 5rem;
+    line-height: 5rem;
+    display: inline-flex;
 }
 
 .nav .menu {
@@ -100,8 +108,8 @@ html,body {
 .nav .menu li a:hover {
     border-radius: 4px;
     padding: 4rem 2rem;
-    background-color: rgba(255,255,255,0.6);
-    box-shadow: 0 2px 10px 4px rgba(0,0,0,0.2);
+    background-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 2px 10px 4px rgba(0, 0, 0, 0.2);
 }
 
 .nav .menu li a:hover span {
@@ -137,7 +145,7 @@ section .data__layout {
 
 section .data__layout .screenshot {
     max-width: 68%;
-    box-shadow: 0 2px 6px 4px rgba(0,0,0,0.2)
+    box-shadow: 0 2px 6px 4px rgba(0, 0, 0, 0.2)
 }
 
 section .data__layout .intro {
@@ -168,7 +176,7 @@ section .progress__layout {
     overflow-x: auto;
     overflow-y: hidden;
     display: grid;
-    grid-template-rows: repeat(7,22px);
+    grid-template-rows: repeat(7, 22px);
     gap: 8px 8px;
 }
 
@@ -178,7 +186,7 @@ section .progress__layout::-webkit-scrollbar {
 
 section .progress__layout::-webkit-scrollbar-thumb {
     border-radius: 10px;
-    box-shadow: inset 0 0 5px rgba(102,204,255,0.16);
+    box-shadow: inset 0 0 5px rgba(102, 204, 255, 0.16);
     background: var(--theme-color)
 }
 
@@ -202,7 +210,7 @@ section .progress__layout .item {
 
 section .progress__layout .item:hover {
     background-color: #fff;
-    box-shadow: 0 2px 6px 2px rgba(0,0,0,0.16)
+    box-shadow: 0 2px 6px 2px rgba(0, 0, 0, 0.16)
 }
 
 section .progress__layout .item::before {
@@ -286,7 +294,7 @@ section .progress__layout .item.spark-streaming::before {
 
 @media (max-width: 1024px) {
     .nav .menu {
-        display:none
+        display: none
     }
 
     .app {

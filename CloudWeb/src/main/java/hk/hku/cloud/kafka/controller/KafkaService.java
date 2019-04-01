@@ -29,7 +29,7 @@ public class KafkaService {
 
     private static Gson gson = new Gson();
 
-    private volatile boolean consumeKafka = true;
+    private static volatile boolean consumeKafka = true;
 
     @Autowired
     private SimpMessagingTemplate template;
@@ -47,7 +47,7 @@ public class KafkaService {
         //配置项
         Properties props = new Properties();
 
-        props.put("bootstrap.servers", "202.45.128.135:29107");
+        props.put("bootstrap.servers", "gpu7:9092,gpu7-x1:9092,gpu7-x2:9092");
         props.put("group.id", "web-consumer");
         props.put("auto.offset.reset", "latest");  //[latest(default), earliest, none]
         props.put("enable.auto.commit", "true");// 自动commit
@@ -117,7 +117,7 @@ public class KafkaService {
 
         while (consumeKafka) {
             try {
-                TimeUnit.SECONDS.sleep(5);
+                TimeUnit.SECONDS.sleep(2);
                 String msg = "1112703626613583872¦RachelJ_1D¦I wish the weather would act like it’s actually spring.¦-1¦1¦-1.0¦-1.0¦http://pbs.twimg.com/profile_images/1082338556050317312/c5W1hGXM.jpg¦Mon Apr 01 13:09:52 +0000 2019";
                 String[] line = msg.split("¦");
 

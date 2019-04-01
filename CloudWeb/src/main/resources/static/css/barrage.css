@@ -1,7 +1,7 @@
 .canvas {
     /*margin-top: 10px;*/
     border: brown 1px solid;
-    background: url('../images/background_0.png');
+    background: url('../images/bg_0.png');
     background-size: cover;
 }
 .input-wrapper {

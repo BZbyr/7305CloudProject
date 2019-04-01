@@ -56,11 +56,11 @@ public class KafkaController {
         }
     }
 
-    @OnClose
-    public void onClose (){
-        logger.info("websocket onClose");
-        kafkaService.setConsumeKafka(false);
-    }
+//    @OnClose
+//    public void onClose (){
+//        logger.info("websocket onClose");
+//        kafkaService.setConsumeKafka(false);
+//    }
 
 //    @OnOpen
 //    public void onOpen (Session session){

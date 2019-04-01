@@ -34,8 +34,8 @@ $(document).ready(function () {
 
             stompClient.disconnect();
             stompClient = null;
+            console.log('Disconnected socket');
         }
-        console.log('Disconnected socket');
     }
 
     document.querySelector('.open-btn').onclick = function () {
@@ -110,6 +110,7 @@ $(document).ready(function () {
 
             stompClient.disconnect();
             stompClient = null;
+            console.log("stompClient disconnect");
         }
         console.log("onbeforeunload");
     }
