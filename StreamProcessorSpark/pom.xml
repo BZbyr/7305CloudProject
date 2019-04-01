@@ -48,7 +48,8 @@
             <!--<scope>runtime</scope>-->
         </dependency>
 
-        <!-- stanford core nlp-->
+
+        <!-- https://stanfordnlp.github.io/CoreNLP/download.html-->
         <!-- https://mvnrepository.com/artifact/edu.stanford.nlp/stanford-corenlp -->
         <dependency>
             <groupId>edu.stanford.nlp</groupId>
@@ -57,6 +58,7 @@
         </dependency>
 
         <!--  will get the dependent model jars -->
+        <!-- 需要设置 export MAVEN_OPTS="-Xmx14000m" -->
         <dependency>
             <groupId>edu.stanford.nlp</groupId>
             <artifactId>stanford-corenlp</artifactId>
