@@ -38,9 +38,9 @@ public class KafkaController {
         // 开启线程处理标志
         kafkaService.setConsumeKafka(true);
         // 启动测试线程
-        kafkaService.consumeKafkaTest();
+//        kafkaService.consumeKafkaTest();
         // 启动kafka 线程
-//        kafkaService.consumeKafka();
+        kafkaService.consumeKafka();
         return message;
     }
 
