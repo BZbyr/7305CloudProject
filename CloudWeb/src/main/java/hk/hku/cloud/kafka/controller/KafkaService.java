@@ -103,6 +103,8 @@ public class KafkaService {
         }
 
         consumer.close();
+        // 后端断开连接时,通知一下前端，可以前端做校验---暂时不处理这种情况
+        // template.convertAndSend("/topic/close", "closed");
         logger.info("Consumer Kafka End.");
     }
 
@@ -116,7 +118,7 @@ public class KafkaService {
         while (consumeKafka) {
             try {
                 TimeUnit.SECONDS.sleep(5);
-                String msg = "1112703626613583872¦RachelJ_1D¦I wish the weather would act like it’s actually spring.¦-1¦-1¦-1.0¦-1.0¦http://pbs.twimg.com/profile_images/1082338556050317312/c5W1hGXM.jpg¦Mon Apr 01 13:09:52 +0000 2019";
+                String msg = "1112703626613583872¦RachelJ_1D¦I wish the weather would act like it’s actually spring.¦-1¦1¦-1.0¦-1.0¦http://pbs.twimg.com/profile_images/1082338556050317312/c5W1hGXM.jpg¦Mon Apr 01 13:09:52 +0000 2019";
                 String[] line = msg.split("¦");
 
                 sentimentTuple.setId(line[0]);

@@ -1,29 +1,15 @@
 package hk.hku.cloud.kafka.controller;
 
-import com.google.gson.Gson;
-import com.sun.corba.se.impl.protocol.giopmsgheaders.RequestMessage;
-import hk.hku.cloud.kafka.domain.SentimentTuple;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
+import javax.websocket.OnClose;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author: LexKaing
@@ -69,4 +55,21 @@ public class KafkaController {
             kafkaService.setConsumeKafka(true);
         }
     }
+
+    @OnClose
+    public void onClose (){
+        logger.info("websocket onClose");
+        kafkaService.setConsumeKafka(false);
+    }
+
+//    @OnOpen
+//    public void onOpen (Session session){
+//        System.out.println("有新链接加入!当前在线人数为" + 123);
+//    }
+
+//    @OnMessage
+//    public void onMessage (String message, Session session) throws IOException {
+//        System.out.println("来自客户端的消息:" + message);
+//    }
+
 }
