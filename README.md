@@ -5,6 +5,8 @@
 
 Term Project for **COMP7305 Cluster and Cloud Computing**.
 
+## Title : Realtime Twitter Stream Analysis System
+
 Developed By:
 
   - [@GaryGao](https://github.com/GaryGao829)
