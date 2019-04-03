@@ -72,7 +72,7 @@ Need to connect with cs vpn.
 
  [Python](https://www.python.org) Version : Python 3.6.7
 
-### Git
+### Related Project
 
  [Spark-MLlib-Twitter-Sentiment-Analysis](https://github.com/P7h/Spark-MLlib-Twitter-Sentiment-Analysis)
 
