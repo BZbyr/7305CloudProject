@@ -11,6 +11,9 @@ $(document).ready(function () {
     let canvasEle = document.querySelector('canvas')
     let barrage = new Barrage(canvasEle, 100, 10)
 
+    // 设置缓冲区，解决kafka 一次性读到大量数据的情况
+    let barrageData = [];
+
     // let inputEle = document.querySelector('.barrage-input')
     // document.querySelector('.send-primary-btn').onclick = function () {
     //     // 测试普通发射弹幕
@@ -24,6 +27,9 @@ $(document).ready(function () {
     }
 
     document.querySelector('.close-btn').onclick = function () {
+        // 关闭定时器
+        clearInterval();
+
         // 关闭弹幕滚动
         barrage.close();
 
@@ -41,6 +47,9 @@ $(document).ready(function () {
     document.querySelector('.open-btn').onclick = function () {
         // 开启弹幕滚动
         barrage.open();
+
+        // 定时器 50 毫秒显示一条弹幕，优化弹幕显示效果
+        startTimer(50);
 
         // 创建 socket 连接
         let socket = new SockJS('/endpointSang');
@@ -69,9 +78,17 @@ $(document).ready(function () {
                 barrage.pushMessage({text: "😊" + response.body, color: 'white', speed: 1.5});
             })
 
-            // 订阅 /topic/consumeKafka, 解析消息并显示弹幕
+            // 订阅 /topic/consumeKafka
             stompClient.subscribe('/topic/consumeKafka', function (response) {
-                showResponse(JSON.parse(response.body));
+                // showResponse(JSON.parse(response.body));
+
+                //解析消息并加入弹幕缓冲区
+                barrageData.push(JSON.parse(response.body))
+
+                if (barrageData.length > 1000) {
+                    // 缓冲区弹幕过多，直接清理
+                    barrageData.slice(1, 1000)
+                }
             })
         });
     }
@@ -102,6 +119,11 @@ $(document).ready(function () {
         analysisMethod.innerHTML = "spark mllib naive bayes";
     }
 
+    document.querySelector('.open-btn').onclick = function () {
+        let period = $("#interval-input").value()
+        startTimer(period)
+    }
+
     //刷新or关闭浏览器前，先断开socket连接，onbeforeunload 在 onunload之前执行
     window.onbeforeunload = function () {
         if (stompClient != null) {
@@ -113,5 +135,14 @@ $(document).ready(function () {
             console.log("stompClient disconnect");
         }
         console.log("onbeforeunload");
+    }
+
+    function startTimer(interval) {
+        clearInterval();
+        // 定时器 50 毫秒显示一条弹幕，优化弹幕显示效果
+        setInterval(function () {
+            let data = barrageData.shift()
+            showResponse(data)
+        }, interval);
     }
 })
