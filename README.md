@@ -1,5 +1,7 @@
 # CloudProject
 
+Term Project for **COMP7305 Cluster and Cloud Computing**.
+
 ### Environment
 
 [![](https://img.shields.io/badge/Hadoop-v2.7.5-blue.svg)](https://hadoop.apache.org)
@@ -9,8 +11,6 @@
 [![](https://img.shields.io/badge/Flink-1.7.2-blue.svg)](https://flink.apache.org)
 [![](https://img.shields.io/badge/Scala-2.11.12-brightgreen.svg)](https://www.scala-lang.org)
 [![](https://img.shields.io/badge/Python-3.6.7-brightgreen.svg)](https://www.python.org)
-
-Term Project for **COMP7305 Cluster and Cloud Computing**.
 
 ## Title : Realtime Twitter Stream Analysis System
 
