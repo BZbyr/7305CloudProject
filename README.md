@@ -1,12 +1,14 @@
 # CloudProject
 
+### Environment
+
 [![](https://img.shields.io/badge/Hadoop-v2.7.5-blue.svg)](https://hadoop.apache.org)
-![](https://img.shields.io/badge/Spark-v2.4.0-blue.svg)
-![](https://img.shields.io/badge/Flume-1.9.0-blue.svg)
-![](https://img.shields.io/badge/Kafka-2.1.1-blue.svg)
-![](https://img.shields.io/badge/Flink-1.7.2-blue.svg)
-![](https://img.shields.io/badge/Scala-2.11.12-brightgreen.svg)
-![](https://img.shields.io/badge/Python-3.6.7-brightgreen.svg)
+[![](https://img.shields.io/badge/Spark-v2.4.0-blue.svg)](https://spark.apache.org)
+[![](https://img.shields.io/badge/Flume-1.9.0-blue.svg)](https://flume.apache.org)
+[![](https://img.shields.io/badge/Kafka-2.1.1-blue.svg)](http://kafka.apache.org)
+[![](https://img.shields.io/badge/Flink-1.7.2-blue.svg)](https://flink.apache.org)
+[![](https://img.shields.io/badge/Scala-2.11.12-brightgreen.svg)](https://www.scala-lang.org)
+[![](https://img.shields.io/badge/Python-3.6.7-brightgreen.svg)](https://www.python.org)
 
 Term Project for **COMP7305 Cluster and Cloud Computing**.
 
@@ -61,21 +63,6 @@ Need to connect with cs vpn.
 [Meeting Record](https://docs.google.com/document/d/1NkYv8v_0XF8zxkrgxPIUUTsgPG1U0NvSgCrm8yrpxfo/edit?usp=sharing)
 
 [地理查询 API](http://jwd.funnyapi.com/#/index)
-
-### Environment
- [Hadoop](https://hadoop.apache.org) Version : hadoop-2.7.5
-
- [Spark](https://spark.apache.org) Version : spark-2.4.0-bin-hadoop2.7
-
- [Flume](https://flume.apache.org) Version : apache-flume-1.9.0
-
- [Kafka](http://kafka.apache.org) Version : kafka_2.11-2.1.1 
-
- [Flink](https://flink.apache.org) Version : flink-1.7.2
-
- [Scala](https://www.scala-lang.org) Version : Scala-2.11.12
-
- [Python](https://www.python.org) Version : Python 3.6.7
 
 ### Related Project
 
