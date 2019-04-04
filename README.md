@@ -1,8 +1,12 @@
 # CloudProject
 
-![](https://img.shields.io/badge/hadoop-v2.7.5-blue.svg)
-![](https://img.shields.io/badge/spark-v2.4.0-blue.svg)
-![](https://img.shields.io/badge/Flume-1.9.1-blue.svg)
+![](https://img.shields.io/badge/Hadoop-v2.7.5-blue.svg)
+![](https://img.shields.io/badge/Spark-v2.4.0-blue.svg)
+![](https://img.shields.io/badge/Flume-1.9.0-blue.svg)
+![](https://img.shields.io/badge/Kafka-2.1.1-blue.svg)
+![](https://img.shields.io/badge/Flink-1.7.2-blue.svg)
+![](https://img.shields.io/badge/Scala-2.11.12-brightgreen.svg)
+![](https://img.shields.io/badge/Python-3.6.7-brightgreen.svg)
 
 Term Project for **COMP7305 Cluster and Cloud Computing**.
 
