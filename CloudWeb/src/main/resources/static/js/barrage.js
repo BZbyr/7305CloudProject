@@ -1,6 +1,6 @@
 // jquery
 $(document).ready(function () {
-    console.log("页面已经加载完毕");
+    console.log("弹幕页面开始加载");
 
     // 默认显示的情绪为 nlp 的结果；否则显示naive bayes 的结果
     let sentiment = "nlp";
@@ -13,6 +13,9 @@ $(document).ready(function () {
 
     // 设置缓冲区，解决kafka 一次性读到大量数据的情况
     let barrageData = [];
+
+    // 定时器id
+    let intervalID;
 
     // let inputEle = document.querySelector('.barrage-input')
     // document.querySelector('.send-primary-btn').onclick = function () {
@@ -28,7 +31,7 @@ $(document).ready(function () {
 
     document.querySelector('.close-btn').onclick = function () {
         // 关闭定时器
-        clearInterval();
+        clearInterval(intervalID);
 
         // 关闭弹幕滚动
         barrage.close();
@@ -138,9 +141,10 @@ $(document).ready(function () {
     }
 
     function startTimer(interval) {
-        clearInterval();
+        clearInterval(intervalID);
+    
         // 定时器 50 毫秒显示一条弹幕，优化弹幕显示效果
-        setInterval(function () {
+        intervalID = setInterval(function () {
             let data = barrageData.shift()
             showResponse(data)
         }, interval);

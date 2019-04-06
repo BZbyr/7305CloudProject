@@ -20,7 +20,7 @@ class Word2VecSentimentRNNTest {
     val truncateReviewsToLength: Int = 256
 
     // 加载词向量文件
-    val wordVectors: WordVectors = WordVectorSerializer.loadStaticModel(new File("/Users/woora/Downloads/GoogleNews-vectors-negative300.bin.gz"))
+    val wordVectors: WordVectors = WordVectorSerializer.loadStaticModel(new File(lo))
 
     // test 迭代器
     val test: SentimentExampleIterator = new SentimentExampleIterator(wordVectors)
