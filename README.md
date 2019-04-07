@@ -114,12 +114,22 @@ Need to connect with cs vpn.
  - Lang 统计结果 ```en|jp|ch|other```
  - Fans 统计结果 ```under 100|100~500|500~1000|above 1000```
 
-### Operation
+### Operation & Conf
 
 - [Kafka Operation](https://gist.github.com/AlexTK2012/7a1c68ec2b904528c41e726ebece4b46)
 
 - [Flume Conf](https://gist.github.com/AlexTK2012/1d3288f0e474b4ad66db80950b402230)
 
+- HDFS 配置项
+
+    - Naive Bayes 模型路径 ```/tweets_sentiment/NBModel/```
+
+    - Naive Bayes 训练/测试文件路径 ```/data/training.1600000.processed.noemoticon.csv```
+    
+    - Stanford Core NLP 模型路径，maven 依赖中 [stanford-corenlp-models](https://stanfordnlp.github.io/CoreNLP/download.html)
+    
+    - Deep Learning 模型&词向量路径 ```/tweets_sentiment/dl4j/```
+    
 ### Run
 
 1. Start *Flume* to collect twitter data and transport into *Kafka*.
