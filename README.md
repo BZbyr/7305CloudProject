@@ -11,6 +11,12 @@ Term Project for **COMP7305 Cluster and Cloud Computing**.
 [![](https://img.shields.io/badge/Flink-1.7.2-blue.svg)](https://flink.apache.org)
 [![](https://img.shields.io/badge/Scala-2.11.12-brightgreen.svg)](https://www.scala-lang.org)
 [![](https://img.shields.io/badge/Python-3.6.7-brightgreen.svg)](https://www.python.org)
+[![](https://img.shields.io/badge/Java-1.8-brightgreen.svg)](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+[![](https://img.shields.io/badge/SpringBoot-2.1.3-brightgreen.svg)](https://docs.spring.io)
+[![](https://img.shields.io/badge/JQuery-3.3.1-brightgreen.svg)](https://jquery.com)
+[![](https://img.shields.io/badge/Sockjs-1.3.0-brightgreen.svg)](https://github.com/sockjs/sockjs-client)
+[![](https://img.shields.io/badge/Stomp-2.3.3-brightgreen.svg)](http://stomp.github.io)
+[![](https://img.shields.io/badge/Echarts-4.2.1-brightgreen.svg)](https://echarts.baidu.com)
 
 ## Title : Realtime Twitter Stream Analysis System
 
@@ -35,13 +41,16 @@ Developed By:
 
  ```
  - __CloudWeb__: 
+   - Show statistics data and sentiment analysis result.
  - __Collector__:
-   - Collect data from Twitter
- - __HBaser__:
-   - a Kafka-HBase Connector
+   - Collect real-time data by Twitter Python Api.
+   - Transform data to Kafka by Flume.
  - __StreamProcessorFlink__:
+   - Analyze statistics from different dimensions.
  - __StreamProcessorSpark__:
-
+   - Train and generate Naive Bayes Model.
+   - Analyze sentiment of Twitter.
+   
 ### Cluster Website
 
 Need to connect with cs vpn.
@@ -64,6 +73,8 @@ Need to connect with cs vpn.
 
 [地理查询 API](http://jwd.funnyapi.com/#/index)
 
+[环境信息](https://docs.google.com/spreadsheets/d/1ikzBeQ43pcnHpoRPA4PIFMfDF4OV6SeimAASWj7pVvA/edit#gid=0)
+
 ### Related Project
 
  [Spark-MLlib-Twitter-Sentiment-Analysis](https://github.com/P7h/Spark-MLlib-Twitter-Sentiment-Analysis)
@@ -79,6 +90,29 @@ Need to connect with cs vpn.
 ### Data
 
  [train data](http://help.sentiment140.com/for-students)
+ 
+ 数据走向:
+ 
+ ```
+ Flume-> Kafka -> Spark Streaming -> Kafka  
+         
+               -> Flink -> Kafka
+ ```
+ 
+ *Flume*  将*Twitter Data* 搬运存储到 ```topic : alex1```
+ 
+ *Spark Streaming* 读取```topic : alex1``` 进行情感分析，存储结果数据到 ```topic : twitter-result1```
+ 
+ *Flink* 读取```topic : alex1``` 进行数据统计分析，
+ - twitter 语言统计结果存储到```topic : twitter-flink-lang```
+ - twitter 用户fans统计结果存储到```topic : twitter-flink-fans``` 
+ 
+ 数据格式:
+ 
+ - Twitter 元数据 ```twitter4j.Status```
+ - 情感分析结果 ```ID¦Name¦Text¦NLP¦MLlib¦DeepLearning¦Latitude¦Longitude¦Profile¦Date```
+ - Lang 统计结果 ```en|jp|ch|other```
+ - Fans 统计结果 ```under 100|100~500|500~1000|above 1000```
 
 ### Operation
 
