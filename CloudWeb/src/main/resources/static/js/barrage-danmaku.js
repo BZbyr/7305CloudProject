@@ -17,6 +17,8 @@ $(document).ready(function () {
 
     // 设置缓冲区，解决kafka 一次性读到大量数据的情况
     let barrageData = [];
+    // detailed 数据
+    let detailBarrageData = [];
 
     // stomp socket 客户端
     let stompClient = null;
@@ -48,6 +50,9 @@ $(document).ready(function () {
                     // 缓冲区弹幕过多，直接清理
                     barrageData.slice(1, 1000)
                 }
+
+                // detailed barrage 数据保存并展示
+                detailBarrageData.push(JSON.parse(response.body))
             })
         });
     }
@@ -164,23 +169,24 @@ $(document).ready(function () {
 
 
     let scrollUpIntervalId;
-    let running;    // 用于pause后暂停鼠标悬停事件
+    let running; // 用于pause后暂停鼠标悬停事件
     let scrollUpBox = document.getElementById('scrollUpBox');
     // detail 弹幕部分悬停事件
     scrollUpBox.onmouseover = function () {
         clearInterval(scrollUpIntervalId);
     }
     scrollUpBox.onmouseout = function () {
-        if(running)
+        if (running)
             scrollUp(300);
     }
 
+    // 自动滚屏
     function scrollUp(duration) {
         scrollUpIntervalId = setInterval(function () {
             if (scrollUpBox.scrollTop >= (content.clientHeight - scrollUpBox.clientHeight)) {
                 scrollUpBox.scrollTop = 0;
             } else {
-                scrollUpBox.scrollTop +=25;
+                scrollUpBox.scrollTop += 25;
             }
         }, duration)
     }
@@ -188,12 +194,29 @@ $(document).ready(function () {
     let detailIntervalId;
     // detailed 弹幕显示
     function displayDetailBarrage(duration) {
+        running = true
         clearInterval(detailIntervalId)
         detailIntervalId = setInterval(function () {
-            let text = "test" + getRandomInt(10)
-            $("#content").append("<li id='test' title=" + text + ">" + text + "</li>")
+            let message = {
+                id: getRandomInt(10),
+                text: "test" + getRandomInt(10),
+                author: "Tommy Wang" + getRandomInt(10),
+                nlpPolarity: "😐",
+                nbPolarity: "😢",
+                dlPolarity: "😊",
+                date: "Sun Apr  7 16:27:05 HKT 2019",
+                latitude: getRandomInt(100),
+                longitude: getRandomInt(100),
+            }
+            detailBarrageData.push(message)
+            appendDetailBarrageOnce(message)
         }, duration)
     }
+
+    function appendDetailBarrageOnce(message) {
+        $("#content").append("<li id=" + message.id + " title=" + message.text + ">" + message.text + "</li>")
+    }
+
 
     // detailed basic操作
     window.basicDetailOperation = function (opera) {
@@ -209,6 +232,7 @@ $(document).ready(function () {
                 break
             case 'clear':
                 $("#content").empty()
+                detailBarrageData = []
                 break
             default:
                 console.log("detailed opera : " + opera)
@@ -216,9 +240,18 @@ $(document).ready(function () {
     };
 
     // detail 弹幕点击事件
-    $('#scrollUpBox li').on('click', function (element) {
-        let cnt = $(this).index()
-        console.log("事件绑定成功！" + cnt);
+    $('#content').on('click', function (event) {
+        // console.log(event.target);
+        let item = detailBarrageData.filter(x => x.id == event.target.id)[0]
+        // console.log(item)
+        $("#twitter-text-p").text(item.text)
+        $("#detail-author").text(item.author)
+        $("#detail-nb").text(item.nbPolarity)
+        $("#detail-nlp").text(item.nlpPolarity)
+        $("#detail-dl").text(item.dlPolarity)
+        $("#detail-date").text(item.date)
+        $("#detail-latitude").text(item.latitude)
+        $("#detail-longitude").text(item.longitude)
     });
 })
 

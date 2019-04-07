@@ -125,15 +125,57 @@
             <a name="Detailed" class="mark"></a>
             <section>
                 <h2 class="subtitle">Detailed barrage display:</h2>
-                <div id="scrollUpBox">
-                    <ul id="content"></ul>
+                <div style="display: inline-flex;">
+                    <div id="scrollUpBox">
+                        <ul id="content"></ul>
+                    </div>
+                    <div class="detail-text">
+                        <div class="text-dom">
+                            <span class="twitter-title">Twitter Text : </span>
+                            <div class="twitter-text">
+                                <p id="twitter-text-p"></p>
+                            </div>
+                        </div>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td><span>Author : </span></td>
+                                    <td><span id="detail-author"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><span>Naive Bayes : </span></td>
+                                    <td><span id="detail-nb"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><span>Stanford Core NLP : </span></td>
+                                    <td><span id="detail-nlp"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><span>Deep Learning : </span></td>
+                                    <td><span id="detail-dl"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><span>Date : </span></td>
+                                    <td><span id="detail-date"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><span>latitude : </span></td>
+                                    <td><span id="detail-latitude"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><span>longitude : </span></td>
+                                    <td><span id="detail-longitude"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <!--基础操作-->
                 <div class='basic-operation'>
-                        <button class="btn btn-default" onclick="basicDetailOperation('start')">Start</button>
-                        <button class="btn btn-default" onclick="basicDetailOperation('pause')">Pause</button>
-                        <button class="btn btn-default" onclick="basicDetailOperation('clear')">Clear</button>
-                    </div>
+                    <button class="btn btn-default" onclick="basicDetailOperation('start')">Start</button>
+                    <button class="btn btn-default" onclick="basicDetailOperation('pause')">Pause</button>
+                    <button class="btn btn-default" onclick="basicDetailOperation('clear')">Clear</button>
+                </div>
             </section>
 
             <!-- 地图区域 -->
