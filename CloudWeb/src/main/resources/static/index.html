@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Pragma" content="no-cache" />
@@ -15,7 +14,6 @@
 
     <!--加载地图-->
     <!-- <script src="http://api.map.baidu.com/api?v=3.0&ak=iRyl18zAppPIzw4YNYX87yGS6sB6raKp"></script> -->
-
     <!--加载cdn资源-->
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
     <script src="https://cdn.bootcss.com/stomp.js/2.3.3/stomp.min.js"></script>
@@ -24,16 +22,17 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/extension/dataTool.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/extension/bmap.js"></script> -->
-
-
     <!-- 加载本地文件 -->
     <link href="./css/index.css" rel="stylesheet" />
     <link href="./css/statistics.css" rel="stylesheet" />
     <link href="./css/barrage.css" rel="stylesheet" />
+    <link href="./css/basic.css" rel="stylesheet" />
 
-    <script src="./js/index.min.js"></script>
+    <script src="./dist/danmaku.js"></script>
+    <!-- <script src="./dist/index.min.js"></script> -->
+
     <script src="./js/statistics.js"></script>
-    <script src="./js/barrage.js"></script>
+    <script src="./js/barrage-danmaku.js"></script>
 
     <!-- <script src="js/echart/echarts-gl.js"></script>
     <script src="js/echart/ecStat.js"></script> -->
@@ -42,16 +41,14 @@
 <body>
     <div class="nav">
         <div class="icon">
-            <img src="./images/icon_twitter3.svg" alt="The Movie Database (TMDb)"
-                style="width: 100px;vertical-align: middle;">
+            <img src="./images/icon_twitter3.svg" style="width: 100px;vertical-align: middle;">
         </div>
         <ul class="menu">
             <li><a href=""><span>Home</span></a></li>
             <li><a href="#Statistics"><span>Statistics</span></a></li>
             <li><a href="#Barrage"><span>Barrage</span></a></li>
-            <li><a href="/map.html" target="_blank"><span>WorldMap</span></a></li>
-            <li><a href="https://github.com/BZbyr/7305CloudProject" target="_blank"><span>Git
-                        Repo</span></a></li>
+            <li><a href="/map.html" target="_blank"><span>World Map</span></a></li>
+            <li><a href="https://github.com/BZbyr/7305CloudProject" target="_blank"><span>Git Repo</span></a></li>
         </ul>
     </div>
 
@@ -68,12 +65,11 @@
         <div class="content">
             <section id="description">
                 <h2 class="subtitle">Description</h2>
-                <p>This project will provide real-time monitoring and analysing of the ...
-                </p>
+                <p>This project will provide real-time monitoring and analysing of the ...</p>
             </section>
 
             <!-- 数据统计区域 -->
-            <a name="Statistics" style="position:relative; top:-80px; display:block; height:0; overflow:hidden;"></a>
+            <a name="Statistics" class="mark"></a>
             <section>
                 <h2 class="subtitle">Realtime Statistics</h2>
                 <div class="charts">
@@ -81,32 +77,63 @@
                     <div id="PieChart" class="pie-chart"></div>
                 </div>
                 <div id="charts-controller" class="charts-controller">
-                    <button id='switch-bar-btn' class="btn btn-default" onclick="switchBarTimer()" style="margin-right:10px;">start/pause bar</button>
-                    <button id='switch-pie-btn' class="btn btn-default" onclick="switchPieTimer()">start/pause pie</button>
+                    <button class="btn btn-default mr10" onclick="switchBarTimer()">start/pause bar</button>
+                    <button class="btn btn-default" onclick="switchPieTimer()">start/pause pie</button>
                 </div>
             </section>
 
             <!-- 弹幕区域 -->
-            <a name="Barrage" style="position:relative; top:-80px; display:block; height:0; overflow:hidden;"></a>
+            <a name="Barrage" class="mark"></a>
             <section>
                 <h2 class="subtitle">Realtime Twitter Barrage</h2>
-                <div>Current analysis method : <p id="method" style="display: inline-block;">stanford core nlp</p>
+                <div>Current analysis method : 
+                    <p id="method" style="display:inline-block;">stanford core nlp</p>
                 </div>
-                <canvas class='canvas' width=1000 height=500; id='canvas'></canvas>
-                <div class='input-wrapper'>
-                    <!--<input type='text' placeholder='请输入弹幕内容' class='barrage-input'>-->
-                    <!--<button class='send-primary-btn'>普通发射</button>-->
-                    <button class='clear-btn'>Clear</button>
-                    <button class='close-btn'>Stop</button>
-                    <button class='open-btn'>Start</button>
-                   
+                <div id="barrage-canvas" class="barrage-dom"></div>
+
+                <!--基础操作-->
+                <div class='basic-operation'>
+                    <button class="btn btn-default" onclick="basicOperation('show')">Show</button>
+                    <button class="btn btn-default" onclick="basicOperation('hide')">Hide</button>
+                    <button class="btn btn-default" onclick="basicOperation('clear')">Clear</button>
+                    <button class="btn btn-default" onclick="switchAdvancedOperation()">More</button>
                 </div>
+                <!--more operation-->
                 <div class="barrage-controller">
-                    <button class='nlp-btn'>Display nlp result</button>
-                    <button class='nb-btn'>Display naive bayes result</button>
-                    <input id="interval-input" />
-                    <button class='interval-btn'>change interval</button>
+                    <div class="barrage-controller-inline">
+                        <button class="btn btn-default" onclick="switchAnalysisMethod('nlp')">Display nlp result</button>
+                        <button class="btn btn-default" onclick="switchAnalysisMethod('nb')">Display naive bayes result</button>
+                        <button class="btn btn-default" onclick="switchAnalysisMethod('dl')">Display deep learning result</button>
+                    </div>
+                    <!-- <div class="barrage-controller-inline">
+                        <input id="interval-input" placeholder='滚动屏输出速率:x毫秒/条' class="interval-input" />
+                        <button id='interval-btn' class="btn btn-default">change interval</button>
+                    </div> -->
+                    <div class="barrage-controller-inline">
+                        <input type='text' placeholder='input...' class='barrage-input'>
+                        <button class="btn btn-default" onclick="lanuchBarrage()">Lanuch</button>
+                    </div>
+                    <div class="barrage-controller-inline">
+                        <button class="btn btn-default" onclick="switchBarrageBackground()">Switch Background</button>
+                        <button class="btn btn-default" onclick="startSocket()">Start Socket </button>
+                        <button class="btn btn-default" onclick="stopSocket()">Stop Socket </button>
+                    </div>
                 </div>
+            </section>
+
+            <!-- 弹幕区域 -->
+            <a name="Detailed" class="mark"></a>
+            <section>
+                <h2 class="subtitle">Detailed barrage display:</h2>
+                <div id="scrollUpBox">
+                    <ul id="content"></ul>
+                </div>
+                <!--基础操作-->
+                <div class='basic-operation'>
+                        <button class="btn btn-default" onclick="basicDetailOperation('start')">Start</button>
+                        <button class="btn btn-default" onclick="basicDetailOperation('pause')">Pause</button>
+                        <button class="btn btn-default" onclick="basicDetailOperation('clear')">Clear</button>
+                    </div>
             </section>
 
             <!-- 地图区域 -->
@@ -122,8 +149,7 @@
         </div>
 
         <div class="footer">
-            Copyright © 2019 Master of Computer Science, Faculty of Engineering, The
-            University of Hong Kong. All rights reserved.
+            Copyright © 2019 Master of Computer Science, Faculty of Engineering, The University of Hong Kong. All rights reserved.
         </div>
     </div>
 </body>

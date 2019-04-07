@@ -103,7 +103,7 @@ $(document).ready(function () {
         if (pieTimerId == undefined) {
             function pieTimer() {
                 // 更新pie 显示数据
-                let name = ['Number of fans <= 100', '100 < Number of fans <= 300', '300 < Number of fans <= 500', '500 < Number of fans <= 1000', '1000 < Number of fans']
+                let name = ['fans <= 100', '100 < fans <= 300', '300 < fans <= 500', '500 < fans <= 1000', '1000 < fans']
                 let data = []
                 for (let i = 0; i < 5; i++) {
                     data.push({
