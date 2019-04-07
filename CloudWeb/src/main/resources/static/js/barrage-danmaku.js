@@ -34,16 +34,16 @@ $(document).ready(function () {
 
         stompClient.connect({}, function (frame) {
             console.log('Connected:' + frame);
-            // 启动时往socket /welcome 发条消息，触发kafka 线程
-            stompClient.send("/welcome", {}, "hello world");
+            // 启动时往socket /initSentiment 发条消息，触发kafka 线程
+            stompClient.send("/initSentiment", {}, "hello world");
 
-            // 订阅 /topic/init
-            stompClient.subscribe('/topic/init', function (response) {
+            // 订阅 /topic/initSentiment
+            stompClient.subscribe('/topic/initSentiment', function (response) {
                 lanuchBarrageOnce("😊" + response.body);
             })
 
-            // 订阅 /topic/consumeKafka
-            stompClient.subscribe('/topic/consumeKafka', function (response) {
+            // 订阅 /topic/consumeSentiment
+            stompClient.subscribe('/topic/consumeSentiment', function (response) {
                 //解析消息并加入弹幕缓冲区
                 barrageData.push(JSON.parse(response.body))
                 if (barrageData.length > 1000) {

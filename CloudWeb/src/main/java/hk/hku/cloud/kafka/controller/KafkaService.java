@@ -98,7 +98,7 @@ public class KafkaService {
                 String data = gson.toJson(sentimentTuple);
                 logger.info("sendData : " + data);
                 // 发送消息给订阅 "/topic/notice" 且在线的用户
-                template.convertAndSend("/topic/consumeKafka", data);
+                template.convertAndSend("/topic/consumeSentiment", data);
             }
         }
 
@@ -106,6 +106,79 @@ public class KafkaService {
         // 后端断开连接时,通知一下前端，可以前端做校验---暂时不处理这种情况
         // template.convertAndSend("/topic/close", "closed");
         logger.info("Consumer Kafka End.");
+    }
+
+    /**
+     * consume kafka Lang data 并发送到前端 /topic/consumeLang
+     * 根据Lang语言分类
+     */
+    @Async
+    public void consumeStatisticLang() {
+        //配置项
+        Properties props = new Properties();
+        props.put("bootstrap.servers", "gpu7:9092,gpu7-x1:9092,gpu7-x2:9092");
+        props.put("group.id", "web-consumer");
+        props.put("auto.offset.reset", "latest");  //[latest(default), earliest, none]
+        props.put("enable.auto.commit", "true");// 自动commit
+        props.put("auto.commit.interval.ms", "1000");// 自动commit的间隔
+        props.put("session.timeout.ms", "30000");
+        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+        Collection<String> topics = Arrays.asList("twitter-flink-lang");
+        consumer.subscribe(topics);
+
+        ConsumerRecords<String, String> consumerRecords;
+
+        logger.info("Consumer Statistic Lang start.");
+
+        while (true) {
+            consumerRecords = consumer.poll(Duration.ofMillis(1000));
+            logger.info("consumerRecords count is : " + consumerRecords.count());
+
+            for (ConsumerRecord consumerRecord : consumerRecords) {
+                String value = consumerRecord.value().toString();
+                template.convertAndSend("/topic/consumeLang", value);
+            }
+        }
+    }
+
+
+    /**
+     * consume kafka Fans data 并发送到前端 /topic/consumeFans
+     * 根据Lang语言分类
+     */
+    @Async
+    public void consumeStatisticFans() {
+        //配置项
+        Properties props = new Properties();
+        props.put("bootstrap.servers", "gpu7:9092,gpu7-x1:9092,gpu7-x2:9092");
+        props.put("group.id", "web-consumer");
+        props.put("auto.offset.reset", "latest");  //[latest(default), earliest, none]
+        props.put("enable.auto.commit", "true");// 自动commit
+        props.put("auto.commit.interval.ms", "1000");// 自动commit的间隔
+        props.put("session.timeout.ms", "30000");
+        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+        Collection<String> topics = Arrays.asList("twitter-flink-fans");
+        consumer.subscribe(topics);
+
+        ConsumerRecords<String, String> consumerRecords;
+
+        logger.info("Consumer Statistic Fans start.");
+
+        while (true) {
+            consumerRecords = consumer.poll(Duration.ofMillis(1000));
+            logger.info("consumerRecords count is : " + consumerRecords.count());
+
+            for (ConsumerRecord consumerRecord : consumerRecords) {
+                String value = consumerRecord.value().toString();
+                template.convertAndSend("/topic/consumeFans", value);
+            }
+        }
     }
 
     @Async

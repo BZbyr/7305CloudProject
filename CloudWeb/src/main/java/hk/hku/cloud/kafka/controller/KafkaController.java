@@ -31,9 +31,9 @@ public class KafkaController {
      * MessageMapping和 RequestMapping功能类似
      * 如果服务器接受到了消息，就会对订阅了@SendTo括号中的地址传送消息。
      */
-    @MessageMapping("/welcome")
-    @SendTo("/topic/init")
-    public String welcome(String message) {
+    @MessageMapping("/initSentiment")
+    @SendTo("/topic/initSentiment")
+    public String initSentiment(String message) {
         logger.info("receive msg : " + message);
         // 开启线程处理标志
         kafkaService.setConsumeKafka(true);
@@ -45,7 +45,7 @@ public class KafkaController {
     }
 
     /**
-     * 开关kafka 订阅
+     * 开关kafka sentiment 的订阅
      */
     @MessageMapping("/updateConsumer")
     public void updateConsumer(String message) {
@@ -54,6 +54,20 @@ public class KafkaController {
         } else {
             kafkaService.setConsumeKafka(true);
         }
+    }
+
+    /**
+     * 开启statistic kafka 订阅
+     */
+    @MessageMapping("/initStatistic")
+    @SendTo("/topic/initStatistic")
+    public String initStatistic(String message) {
+        logger.info("receive statistic : " + message);
+        // 启动kafka 线程consume lang 统计数据
+        kafkaService.consumeStatisticLang();
+        // 启动kafka 线程consume fans 统计数据
+        kafkaService.consumeStatisticFans();
+        return message;
     }
 
 //    @OnClose
