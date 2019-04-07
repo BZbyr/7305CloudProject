@@ -39,8 +39,8 @@ body {
     position: absolute;
     left: 0;
     top: 0;
-    background: no-repeat center center;
-    background-image: url("../images/bg_2.jpg");
+    background: no-repeat center -30px;
+    background-image: url("../images/bg_4.jpg");
     background-size: cover;
     z-index: -1
 }
@@ -52,14 +52,14 @@ body {
 
 .header .title h1 {
     margin: 0 auto;
-    color: #fff;
+    /* color: #fff; */
     width: fit-content;
     border-bottom: 2px solid var(--theme-color)
 }
 
 .header .title h2 {
     margin: 0 auto;
-    color: #fff;
+    /* color: #fff; */
     width: fit-content;
 }
 
