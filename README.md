@@ -116,6 +116,12 @@ Need to connect with cs vpn.
 
 ### Operation
 
+- [Kafka Operation](https://gist.github.com/AlexTK2012/7a1c68ec2b904528c41e726ebece4b46)
+
+- [Flume Conf](https://gist.github.com/AlexTK2012/1d3288f0e474b4ad66db80950b402230)
+
+### Run
+
 1. Start *Flume* to collect twitter data and transport into *Kafka*.
 
   ```sh
