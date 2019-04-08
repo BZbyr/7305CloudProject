@@ -68,10 +68,10 @@ object TweetSentimentAnalyzer {
     val naiveBayesModel = NaiveBayesModel.load(ssc.sparkContext, PropertiesLoader.naiveBayesModelPath)
     val stopWordsList = ssc.sparkContext.broadcast(StopWordsLoader.loadStopWords(PropertiesLoader.nltkStopWords))
 
-    // 加载 Deep Learning 模型和词向量
-    val dl4jModel: MultiLayerNetwork = ModelSerializer.restoreMultiLayerNetwork(PropertiesLoader.dl4jModelPath)
+    // 加载 Deep Learning 模型和词向量--broadcast
+    val dl4jModel: Broadcast[MultiLayerNetwork] = ssc.sparkContext.broadcast(ModelSerializer.restoreMultiLayerNetwork(PropertiesLoader.dl4jModelPath))
     val modelFile: File = new File(PropertiesLoader.dl4jModelPath)
-    val dl4jWordVector: WordVectors = WordVectorSerializer.loadStaticModel(modelFile)
+    val dl4jWordVector: Broadcast[WordVectors] = ssc.sparkContext.broadcast(WordVectorSerializer.loadStaticModel(modelFile))
 
     //    val dl4jModel = HDFSUtils.readHDFSFile(PropertiesLoader.dl4jModelPath)
     //    val dl4jWordVector = HDFSUtils.readHDFSFile(PropertiesLoader.dl4jWordVectorPath)
@@ -93,7 +93,7 @@ object TweetSentimentAnalyzer {
         (
           CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),
           MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel),
-          //          0)
+          //                    0,
           Word2VecSentimentRNNAnalyzer.computeSentiment(tweetText, dl4jWordVector, dl4jModel)
         )
 

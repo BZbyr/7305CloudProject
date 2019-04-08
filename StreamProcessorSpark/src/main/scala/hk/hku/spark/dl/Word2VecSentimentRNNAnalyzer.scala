@@ -3,6 +3,7 @@ package hk.hku.spark.dl
 import java.io.File
 
 import hk.hku.spark.utils.{HDFSUtils, PropertiesLoader}
+import org.apache.spark.broadcast.Broadcast
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
@@ -67,14 +68,14 @@ object Word2VecSentimentRNNAnalyzer {
     * 计算文本情感值
     * 入参
     */
-  def computeSentiment(text: String, wordVectors: WordVectors, restored: MultiLayerNetwork): Int = {
+  def computeSentiment(text: String, wordVectors: Broadcast[WordVectors], restored: Broadcast[MultiLayerNetwork]): Int = {
 
     // 迭代器
-    val sentimentIterator: SentimentExampleIterator = new SentimentExampleIterator(wordVectors)
+    val sentimentIterator: SentimentExampleIterator = new SentimentExampleIterator(wordVectors.value)
 
     val features: INDArray = sentimentIterator.loadFeaturesFromString(text, 256)
 
-    val networkOutput_restored: INDArray = restored.output(features)
+    val networkOutput_restored: INDArray = restored.value.output(features)
     val timeSeriesLength_restored: Long = networkOutput_restored.size(2)
 
     val probabilitiesAtLastWord_restored: INDArray = networkOutput_restored.get(NDArrayIndex.point(0), NDArrayIndex.all, NDArrayIndex.point(timeSeriesLength_restored - 1))
