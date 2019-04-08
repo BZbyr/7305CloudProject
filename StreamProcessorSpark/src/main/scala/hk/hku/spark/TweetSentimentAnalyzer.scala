@@ -1,10 +1,12 @@
 package hk.hku.spark
 
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.{Date, Properties}
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import hk.hku.spark.corenlp.CoreNLPSentimentAnalyzer
+import hk.hku.spark.dl.Word2VecSentimentRNNAnalyzer
 import hk.hku.spark.mllib.MLlibSentimentAnalyzer
 import hk.hku.spark.utils._
 import org.apache.kafka.clients.producer.{KafkaProducer, Producer, ProducerConfig}
@@ -18,6 +20,10 @@ import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Durations, StreamingContext}
+import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer
+import org.deeplearning4j.models.embeddings.wordvectors.WordVectors
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
+import org.deeplearning4j.util.ModelSerializer
 import twitter4j.{Status, TwitterException, TwitterObjectFactory}
 import twitter4j.auth.OAuthAuthorization
 
@@ -63,8 +69,12 @@ object TweetSentimentAnalyzer {
     val stopWordsList = ssc.sparkContext.broadcast(StopWordsLoader.loadStopWords(PropertiesLoader.nltkStopWords))
 
     // 加载 Deep Learning 模型和词向量
-    val dl4jModel = HDFSUtils.readHDFSFile(PropertiesLoader.dl4jModelPath)
-    val dl4jWordVector = HDFSUtils.readHDFSFile(PropertiesLoader.dl4jWordVectorPath)
+    val dl4jModel: MultiLayerNetwork = ModelSerializer.restoreMultiLayerNetwork(PropertiesLoader.dl4jModelPath)
+    val modelFile: File = new File(PropertiesLoader.dl4jModelPath)
+    val dl4jWordVector: WordVectors = WordVectorSerializer.loadStaticModel(modelFile)
+
+    //    val dl4jModel = HDFSUtils.readHDFSFile(PropertiesLoader.dl4jModelPath)
+    //    val dl4jWordVector = HDFSUtils.readHDFSFile(PropertiesLoader.dl4jWordVectorPath)
 
     /**
       * Predicts the sentiment of the tweet passed.
@@ -75,16 +85,17 @@ object TweetSentimentAnalyzer {
       *         Core NLP Polarity, MLlib Polarity, Deep Learning Polarity
       *         Latitude, Longitude, Profile Image URL, Tweet Date.
       */
-    def predictSentiment(status: Status): (Long, String, String, Int, Int,Int, Double, Double, String, String) = {
+    def predictSentiment(status: Status): (Long, String, String, Int, Int, Int, Double, Double, String, String) = {
       val tweetText = status.getText.replaceAll("\n", "")
       //      log.info("tweetText : " + tweetText)
 
-      val (corenlpSentiment, mllibSentiment,dl4jSentiment) =
+      val (corenlpSentiment, mllibSentiment, dl4jSentiment) =
         (
           CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),
           MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel),
-          0)
-
+          //          0)
+          Word2VecSentimentRNNAnalyzer.computeSentiment(tweetText, dl4jWordVector, dl4jModel)
+        )
 
 
       if (hasGeoLocation(status))
