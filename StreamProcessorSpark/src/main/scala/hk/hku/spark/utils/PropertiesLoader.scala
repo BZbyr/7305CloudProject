@@ -34,7 +34,7 @@ object PropertiesLoader {
   // core nlp 的模型都在maven依赖里，暂无需要配置的参数
 
   // deep learning 参数
-  val dl4jModelPath = conf.getString("DL4J_MODEL_PATH")
+  val dl4jModelFileName = conf.getString("DL4J_MODEL_FILE_NAME")
   val dl4jWordVectorPath = conf.getString("WORD_VECTOR_PATH")
 
   // consume kafka stream 数据

@@ -21,11 +21,11 @@ object Word2VecSentimentRNNAnalyzer {
     //对于大于256 词数, 只取前256 词
     val truncateReviewsToLength: Int = 256
 
-    val modelFile: File = new File("hdfs://gpu7:9000/tweets_sentiment/dl4j/GoogleNews-vectors-negative300.bin.gz")
+    val wordFile: File = new File("hdfs://gpu7:9000/tweets_sentiment/dl4j/GoogleNews-vectors-negative300.bin.gz")
 
-    System.out.println("path : " + modelFile.getPath)
+    System.out.println("path : " + wordFile.getPath)
     // 加载词向量文件
-    val wordVectors: WordVectors = WordVectorSerializer.loadStaticModel(modelFile)
+    val wordVectors: WordVectors = WordVectorSerializer.loadStaticModel(wordFile)
 
     // test 迭代器
     val test: SentimentExampleIterator = new SentimentExampleIterator(wordVectors)
@@ -61,7 +61,6 @@ object Word2VecSentimentRNNAnalyzer {
 
     System.out.println("p(positive): " + positive)
     System.out.println("p(negative): " + probabilitiesAtLastWord_restored.getDouble(1L))
-
   }
 
   /**

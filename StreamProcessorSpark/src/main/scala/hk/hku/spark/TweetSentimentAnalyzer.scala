@@ -68,13 +68,18 @@ object TweetSentimentAnalyzer {
     val naiveBayesModel = NaiveBayesModel.load(ssc.sparkContext, PropertiesLoader.naiveBayesModelPath)
     val stopWordsList = ssc.sparkContext.broadcast(StopWordsLoader.loadStopWords(PropertiesLoader.nltkStopWords))
 
-    // 加载 Deep Learning 模型和词向量--broadcast
-    val dl4jModel: Broadcast[MultiLayerNetwork] = ssc.sparkContext.broadcast(ModelSerializer.restoreMultiLayerNetwork(PropertiesLoader.dl4jModelPath))
-    val modelFile: File = new File(PropertiesLoader.dl4jModelPath)
-    val dl4jWordVector: Broadcast[WordVectors] = ssc.sparkContext.broadcast(WordVectorSerializer.loadStaticModel(modelFile))
+    // 广播 Deep Learning 模型
+    log.info("dl4j model : " + PropertiesLoader.dl4jModelFileName)
+    val dl4jModel = ssc.sparkContext.broadcast(Dl4jModelLoader.loadDl4jModel(PropertiesLoader.dl4jModelFileName))
+    //    val dl4jModel: Broadcast[MultiLayerNetwork] = ssc.sparkContext.broadcast(ModelSerializer.restoreMultiLayerNetwork(PropertiesLoader.dl4jModelPath))
 
-    //    val dl4jModel = HDFSUtils.readHDFSFile(PropertiesLoader.dl4jModelPath)
-    //    val dl4jWordVector = HDFSUtils.readHDFSFile(PropertiesLoader.dl4jWordVectorPath)
+    log.info(dl4jModel.toString())
+
+    // 广播 Deep Learning 词向量
+    log.info("dl4j word vector : " + PropertiesLoader.dl4jWordVectorPath)
+    val wordFile: File = new File(PropertiesLoader.dl4jWordVectorPath)
+    val dl4jWordVector: Broadcast[WordVectors] = ssc.sparkContext.broadcast(WordVectorSerializer.loadStaticModel(wordFile))
+//        val dl4jWordVector = HDFSUtils.readHDFSFile(PropertiesLoader.dl4jWordVectorPath)
 
     /**
       * Predicts the sentiment of the tweet passed.
