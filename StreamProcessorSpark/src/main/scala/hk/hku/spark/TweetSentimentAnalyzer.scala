@@ -1,33 +1,21 @@
 package hk.hku.spark
 
-import java.io.File
-import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.{Date, Properties}
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import hk.hku.spark.corenlp.CoreNLPSentimentAnalyzer
-import hk.hku.spark.dl.Word2VecSentimentRNNAnalyzer
 import hk.hku.spark.mllib.MLlibSentimentAnalyzer
 import hk.hku.spark.utils._
-import org.apache.hadoop.conf.{Configurable, Configuration}
-import org.apache.hadoop.fs.{FSDataInputStream, FileSystem, LocalFileSystem, Path}
-import org.apache.hadoop.hdfs.DistributedFileSystem
 import org.apache.kafka.clients.producer.{KafkaProducer, Producer, ProducerConfig}
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 import org.apache.log4j.{Level, LogManager}
 import org.apache.spark.SparkConf
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.mllib.classification.NaiveBayesModel
-import org.apache.spark.rdd.RDD
 import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Durations, StreamingContext}
-import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer
-import org.deeplearning4j.models.embeddings.wordvectors.WordVectors
-import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
-import org.deeplearning4j.util.ModelSerializer
 import twitter4j.{Status, TwitterException, TwitterObjectFactory}
 import twitter4j.auth.OAuthAuthorization
 
@@ -84,7 +72,7 @@ object TweetSentimentAnalyzer {
     //    val tmpWordFile = ssc.sparkContext.textFile(PropertiesLoader.dl4jWordVectorPath)  // test ok
     //    log.info("dl4j word vector"  + tmpWordFile)
     //    log.info("dl4j word vector"  + tmpWordFile.count()) // 9242603 条
-    //
+    //    // 这样是能读取的，但loadStaticModel 还是不行
     //    val hdfsVector = HDFSUtils.readHDFSFile("/tweets_sentiment/dl4j/GoogleNews-vectors-negative300.bin.gz")
     //    log.info("hdfs file hdfsVector : " + hdfsVector.length)
     //    val vectorFile = new File("vector.tmp")

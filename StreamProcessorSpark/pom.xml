@@ -205,11 +205,12 @@
         <!--</dependency>-->
 
         <!-- ND4J backend. You need one in every DL4J project. Normally define artifactId as either "nd4j-native-platform" or "nd4j-cuda-9.2-platform" -->
-        <dependency>
-            <groupId>org.nd4j</groupId>
-            <artifactId>nd4j-native-platform</artifactId>
-            <version>1.0.0-beta3</version>
-        </dependency>
+        <!-- 从master 分支中暂时去除此依赖-->
+        <!--<dependency>-->
+            <!--<groupId>org.nd4j</groupId>-->
+            <!--<artifactId>nd4j-native-platform</artifactId>-->
+            <!--<version>1.0.0-beta3</version>-->
+        <!--</dependency>-->
 
         <!-- Core DL4J functionality -->
         <!--<dependency>-->
@@ -218,11 +219,12 @@
             <!--<version>1.0.0-beta3</version>-->
         <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.deeplearning4j</groupId>
-            <artifactId>deeplearning4j-nlp</artifactId>
-            <version>1.0.0-beta3</version>
-        </dependency>
+        <!-- 从master 分支中暂时去除此依赖-->
+        <!--<dependency>-->
+            <!--<groupId>org.deeplearning4j</groupId>-->
+            <!--<artifactId>deeplearning4j-nlp</artifactId>-->
+            <!--<version>1.0.0-beta3</version>-->
+        <!--</dependency>-->
 
         <!--<dependency>-->
             <!--<groupId>org.deeplearning4j</groupId>-->
