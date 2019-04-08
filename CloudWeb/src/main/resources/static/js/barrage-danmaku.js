@@ -48,8 +48,8 @@ $(document).ready(function () {
                 barrageData.push(JSON.parse(response.body))
                 if (barrageData.length > 1000) {
                     // 缓冲区弹幕过多，直接清理
-                    // barrageData.slice(1, 1000)
-                    barrageData.shift()
+                    barrageData.splice(50, 200)
+                    // barrageData.shift()
                 }
 
                 // detailed barrage 数据保存并展示
@@ -98,7 +98,7 @@ $(document).ready(function () {
     function startTimer(interval) {
         // clearInterval(intervalID);
         let message = barrageData.shift()
-        if (message != undefined && message.length > 0) {
+        if (message != undefined) {
             let emoji = "";
             if (sentiment == "nlp")
                 emoji = message.nlpPolarity == 1 ? "😍" : (message.nlpPolarity == 0 ? "😐" : "😭"); // stanford core nlp
