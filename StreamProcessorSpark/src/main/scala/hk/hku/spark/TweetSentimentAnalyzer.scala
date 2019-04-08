@@ -62,21 +62,29 @@ object TweetSentimentAnalyzer {
     val naiveBayesModel = NaiveBayesModel.load(ssc.sparkContext, PropertiesLoader.naiveBayesModelPath)
     val stopWordsList = ssc.sparkContext.broadcast(StopWordsLoader.loadStopWords(PropertiesLoader.nltkStopWords))
 
+    // 加载 Deep Learning 模型和词向量
+    val dl4jModel = HDFSUtils.readHDFSFile(PropertiesLoader.dl4jModelPath)
+    val dl4jWordVector = HDFSUtils.readHDFSFile(PropertiesLoader.dl4jWordVectorPath)
+
     /**
       * Predicts the sentiment of the tweet passed.
       * Invokes Stanford Core NLP and MLlib methods for identifying the tweet sentiment.
       *
       * @param status -- twitter4j.Status object.
-      * @return tuple with Tweet ID, Screen Name, Tweet Text, Core NLP Polarity, MLlib Polarity, Latitude, Longitude,
-      *         Profile Image URL, Tweet Date.
+      * @return tuple with Tweet ID, Screen Name, Tweet Text,
+      *         Core NLP Polarity, MLlib Polarity, Deep Learning Polarity
+      *         Latitude, Longitude, Profile Image URL, Tweet Date.
       */
-    def predictSentiment(status: Status): (Long, String, String, Int, Int, Double, Double, String, String) = {
+    def predictSentiment(status: Status): (Long, String, String, Int, Int,Int, Double, Double, String, String) = {
       val tweetText = status.getText.replaceAll("\n", "")
       //      log.info("tweetText : " + tweetText)
 
-      val (corenlpSentiment, mllibSentiment) =
-        (CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),
-          MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel))
+      val (corenlpSentiment, mllibSentiment,dl4jSentiment) =
+        (
+          CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),
+          MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel),
+          0)
+
 
 
       if (hasGeoLocation(status))
@@ -85,6 +93,7 @@ object TweetSentimentAnalyzer {
           tweetText,
           corenlpSentiment,
           mllibSentiment,
+          dl4jSentiment,
           status.getGeoLocation.getLatitude,
           status.getGeoLocation.getLongitude,
           status.getUser.getOriginalProfileImageURL,
@@ -95,6 +104,7 @@ object TweetSentimentAnalyzer {
           tweetText,
           corenlpSentiment,
           mllibSentiment,
+          dl4jSentiment,
           -1,
           -1,
           status.getUser.getOriginalProfileImageURL,
