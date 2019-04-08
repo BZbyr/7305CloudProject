@@ -48,7 +48,8 @@ $(document).ready(function () {
                 barrageData.push(JSON.parse(response.body))
                 if (barrageData.length > 1000) {
                     // 缓冲区弹幕过多，直接清理
-                    barrageData.slice(1, 1000)
+                    // barrageData.slice(1, 1000)
+                    barrageData.shift()
                 }
 
                 // detailed barrage 数据保存并展示
@@ -56,6 +57,7 @@ $(document).ready(function () {
             })
         });
     }
+
     window.startSocket = startSocket
 
     // 关闭socket
@@ -68,6 +70,7 @@ $(document).ready(function () {
         }
         console.log('Disconnected socket');
     }
+
     window.stopSocket = stopSocket
 
     // 发送弹幕
@@ -88,15 +91,14 @@ $(document).ready(function () {
         danmaku.emit(comment);
     }
 
+
     let intervalID;
+
     // 定时器 显示缓冲区里的弹幕，优化弹幕显示效果
     function startTimer(interval) {
-        clearInterval(intervalID);
-
-        intervalID = setInterval(function () {
-            let message = barrageData.shift()
-            if (message == undefined || message.length <= 0)
-                return
+        // clearInterval(intervalID);
+        let message = barrageData.shift()
+        if (message != undefined && message.length > 0) {
             let emoji = "";
             if (sentiment == "nlp")
                 emoji = message.nlpPolarity == 1 ? "😍" : (message.nlpPolarity == 0 ? "😐" : "😭"); // stanford core nlp
@@ -106,8 +108,12 @@ $(document).ready(function () {
                 emoji = message.dlPolarity == 1 ? "😍" : "😭"; // deep learning 2元分类
             let line = emoji + " " + (message.text.length < 50 ? message.text : message.text.substr(0, 50) + "..");
             lanuchBarrageOnce(line)
-        }, interval);
+        }
+        intervalID = setTimeout(startTimer, 20 + getRandomInt(40));
     }
+
+    // 启动弹幕显示
+    startTimer()
 
     //刷新or关闭浏览器前，先断开socket连接，onbeforeunload 在 onunload之前执行
     window.onbeforeunload = function () {
@@ -192,6 +198,7 @@ $(document).ready(function () {
     }
 
     let detailIntervalId;
+
     // detailed 弹幕显示
     function displayDetailBarrage(duration) {
         running = true
