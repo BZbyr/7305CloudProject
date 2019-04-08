@@ -4,12 +4,20 @@ import java.io.File
 
 import hk.hku.spark.utils.{HDFSUtils, PropertiesLoader}
 import org.apache.spark.broadcast.Broadcast
+import org.apache.spark.rdd.RDD
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors
+import org.deeplearning4j.models.word2vec.wordstore.VocabCache
+import org.deeplearning4j.models.word2vec.wordstore.inmemory.AbstractCache
+import org.deeplearning4j.models.word2vec.{StaticWord2Vec, VocabWord}
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.util.ModelSerializer
+import org.nd4j.compression.impl.NoOp
 import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.factory.Nd4j
 import org.nd4j.linalg.indexing.NDArrayIndex
+import org.nd4j.linalg.primitives.Pair
+import org.nd4j.storage.CompressedRamStorage
 
 /**
   * 去掉了 deep learning 训练部分的依赖包，只进行正向预测.
@@ -86,4 +94,33 @@ object Word2VecSentimentRNNAnalyzer {
     else
       -1
   }
+
+//  def loadModel(wordVectorFile: RDD[String]): WordVectors = {
+//    val storage = new CompressedRamStorage.Builder[Integer]()
+//      .useInplaceCompression(false).setCompressor(new NoOp)
+//      .emulateIsAbsent(false).build
+//
+//    var vocabCache = new AbstractCache.Builder[VocabWord]().build
+//
+//
+//    // otherwise it's probably google model. which might be compressed or not
+//    storage.clear()
+//
+//    // 遍历文件
+////    wordVectorFile.foreach( itor =>{
+////      System
+////    })
+////    val tmp : WordVectorSerializer.Reader =
+//
+//
+////      val pair = reader.next
+////      val word = pair.getFirst
+////      storage.store(word.getIndex, pair.getSecond)
+////      vocabCache.addToken(word)
+////      vocabCache.addWordToIndex(word.getIndex, word.getLabel)
+////      Nd4j.getMemoryManager.invokeGcOccasionally()
+//
+//    val word2Vec = new StaticWord2Vec.Builder(storage, vocabCache).build
+//
+//  }
 }
