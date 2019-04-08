@@ -57,6 +57,8 @@ Need to connect with cs vpn.
 
 [WebSite](http://202.45.128.135:20907/)
 
+[Ganglia Cluster Monitor](http://202.45.128.135:20007/ganglia/)
+
 [Namenode INFO](http://202.45.128.135:20107/dfshealth.html#tab-overview)
 
 [Hadoop Application](http://202.45.128.135:20207/cluster)
