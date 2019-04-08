@@ -72,14 +72,55 @@ object TweetSentimentAnalyzer {
     log.info("dl4j model : " + PropertiesLoader.dl4jModelFileName)
     val dl4jModel = ssc.sparkContext.broadcast(Dl4jModelLoader.loadDl4jModel(PropertiesLoader.dl4jModelFileName))
     //    val dl4jModel: Broadcast[MultiLayerNetwork] = ssc.sparkContext.broadcast(ModelSerializer.restoreMultiLayerNetwork(PropertiesLoader.dl4jModelPath))
-
     log.info(dl4jModel.toString())
+    log.info(dl4jModel.value)
 
     // 广播 Deep Learning 词向量
     log.info("dl4j word vector : " + PropertiesLoader.dl4jWordVectorPath)
-    val wordFile: File = new File(PropertiesLoader.dl4jWordVectorPath)
-    val dl4jWordVector: Broadcast[WordVectors] = ssc.sparkContext.broadcast(WordVectorSerializer.loadStaticModel(wordFile))
-//        val dl4jWordVector = HDFSUtils.readHDFSFile(PropertiesLoader.dl4jWordVectorPath)
+    val tmpWordFile = ssc.sparkContext.textFile(PropertiesLoader.dl4jWordVectorPath)
+    log.info(tmpWordFile)
+
+
+    //测试加载hdfs 文件
+    try {
+      val wordFile: File = new File("hdsf://gpu7:9000/tweets_sentiment/dl4j/GoogleNews-vectors-negative300.bin.gz")
+      val wordVectorsFile: WordVectors = WordVectorSerializer.readWord2VecModel(wordFile)
+
+      log.info("wordVectorsFile : ")
+      log.info(wordVectorsFile)
+
+      val dl4jWordVector: Broadcast[WordVectors] = ssc.sparkContext.broadcast(WordVectorSerializer.loadStaticModel(wordFile))
+
+      log.info("dl4jWordVector : ")
+      log.info(dl4jWordVector.value)
+      log.info(dl4jWordVector.toString())
+
+    } catch {
+      case e: Exception =>
+        log.error(e)
+        log.error(e.getMessage)
+    }
+
+    //测试加载 本地 文件
+    try {
+      val wordFileLocal: File = new File("/home/hduser/dl4j/GoogleNews-vectors-negative300.bin.gz")
+      val wordVectorsFileLocal: WordVectors = WordVectorSerializer.readWord2VecModel(wordFileLocal)
+
+      log.info("local file wordVectorsFile : ")
+      log.info(wordVectorsFileLocal.toString())
+
+      val dl4jWordVectorLocal: Broadcast[WordVectors] = ssc.sparkContext.broadcast(WordVectorSerializer.loadStaticModel(wordFileLocal))
+
+      log.info("local file dl4jWordVector : ")
+      log.info(dl4jWordVectorLocal)
+      log.info(dl4jWordVectorLocal.toString())
+    } catch {
+      case e: Exception =>
+        log.error(e)
+        log.error(e.getMessage)
+    }
+    log.info("test over")
+    //        val dl4jWordVector = HDFSUtils.readHDFSFile(PropertiesLoader.dl4jWordVectorPath)
 
     /**
       * Predicts the sentiment of the tweet passed.
@@ -98,8 +139,8 @@ object TweetSentimentAnalyzer {
         (
           CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),
           MLlibSentimentAnalyzer.computeSentiment(tweetText, stopWordsList, naiveBayesModel),
-          //                    0,
-          Word2VecSentimentRNNAnalyzer.computeSentiment(tweetText, dl4jWordVector, dl4jModel)
+          0
+          //          Word2VecSentimentRNNAnalyzer.computeSentiment(tweetText, dl4jWordVector, dl4jModel)
         )
 
 
