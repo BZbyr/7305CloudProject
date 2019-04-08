@@ -66,7 +66,7 @@ public class KafkaService {
 
         logger.info("Consumer Kafka start.");
 
-        // ID, Name, Text, NLP Polarity, MLlib Polarity,Latitude, Longitude, Image URL, Tweet Date.
+        // ID, Name, Text, NLP Polarity, MLlib Polarity, DL Polarity, Latitude, Longitude, Image URL, Tweet Date.
         SentimentTuple sentimentTuple = new SentimentTuple();
 
         while (consumeKafka) {
@@ -87,10 +87,11 @@ public class KafkaService {
                     sentimentTuple.setText(line[2]);
                     sentimentTuple.setNlpPolarity(Integer.parseInt(line[3]));
                     sentimentTuple.setNbPolarity(Integer.parseInt(line[4]));
-                    sentimentTuple.setLatitude(Double.parseDouble(line[5]));
-                    sentimentTuple.setLongitude(Double.parseDouble(line[6]));
-                    sentimentTuple.setImage(line[7]);
-                    sentimentTuple.setDate(line[8]);
+                    sentimentTuple.setDlPolarity(Integer.parseInt(line[5]));
+                    sentimentTuple.setLatitude(Double.parseDouble(line[6]));
+                    sentimentTuple.setLongitude(Double.parseDouble(line[7]));
+                    sentimentTuple.setImage(line[8]);
+                    sentimentTuple.setDate(line[9]);
                 } catch (Exception e) {
                     logger.error("", e);
                 }
@@ -191,7 +192,7 @@ public class KafkaService {
         while (consumeKafka) {
             try {
                 TimeUnit.SECONDS.sleep(2);
-                String msg = "1112703626613583872¦RachelJ_1D¦I wish the weather would act like it’s actually spring.¦-1¦1¦-1.0¦-1.0¦http://pbs.twimg.com/profile_images/1082338556050317312/c5W1hGXM.jpg¦Mon Apr 01 13:09:52 +0000 2019";
+                String msg = "1112703626613583872¦RachelJ_1D¦I wish the weather would act like it’s actually spring.¦-1¦1¦1¦-1.0¦-1.0¦http://pbs.twimg.com/profile_images/1082338556050317312/c5W1hGXM.jpg¦Mon Apr 01 13:09:52 +0000 2019";
                 String[] line = msg.split("¦");
 
                 sentimentTuple.setId(line[0]);
@@ -199,10 +200,11 @@ public class KafkaService {
                 sentimentTuple.setText(line[2]);
                 sentimentTuple.setNlpPolarity(Integer.parseInt(line[3]));
                 sentimentTuple.setNbPolarity(Integer.parseInt(line[4]));
-                sentimentTuple.setLatitude(Double.parseDouble(line[5]));
-                sentimentTuple.setLongitude(Double.parseDouble(line[6]));
-                sentimentTuple.setImage(line[7]);
-                sentimentTuple.setDate(line[8]);
+                sentimentTuple.setDlPolarity(Integer.parseInt(line[5]));
+                sentimentTuple.setLatitude(Double.parseDouble(line[6]));
+                sentimentTuple.setLongitude(Double.parseDouble(line[7]));
+                sentimentTuple.setImage(line[8]);
+                sentimentTuple.setDate(line[9]);
 
             } catch (Exception e) {
                 logger.error("", e);

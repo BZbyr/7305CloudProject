@@ -6,13 +6,12 @@ package hk.hku.cloud.kafka.domain;
  * @description: 从Kafka中读取的 Spark 实时处理完的数据
  * Tuple format: Tweet ID, Screen Name, Tweet Text, Core NLP Polarity, MLlib Polarity,
  * Latitude, Longitude,Profile Image URL, Tweet Date.
- *
+ * <p>
  * Long, String, String, Int, Int, Double, Double, String, String
- *
+ * <p>
  * Polarity: 1:positive; 0:neutral; -1:negative
  * Latitude/Longitude: -1.0: 地理信息缺失
  * Date 格式: new SimpleDateFormat("EE MMM dd HH:mm:ss ZZ yyyy")
- *
  **/
 public class SentimentTuple {
     private String id;
@@ -20,6 +19,7 @@ public class SentimentTuple {
     private String text;
     private int nlpPolarity;
     private int nbPolarity;
+    private int dlPolarity;
     private double latitude;
     private double longitude;
     private String image;
@@ -95,5 +95,13 @@ public class SentimentTuple {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getDlPolarity() {
+        return dlPolarity;
+    }
+
+    public void setDlPolarity(int dlPolarity) {
+        this.dlPolarity = dlPolarity;
     }
 }
