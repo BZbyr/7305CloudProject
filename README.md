@@ -136,19 +136,24 @@ Need to connect with cs vpn.
 
 1. Start *Flume* to collect twitter data and transport into *Kafka*.
 
-  ```sh
-  # read boot_flume_sh
-  nohup flume-ng agent -f /opt/spark-twitter/7305CloudProject/Collector/TwitterToKafka.conf -Dflume.root.logger=DEBUG,console -n a1
-  ```
+```sh
+# read boot_flume_sh
+nohup flume-ng agent -f /opt/spark-twitter/7305CloudProject/Collector/TwitterToKafka.conf -Dflume.root.logger=DEBUG,console -n a1 >> flume.log 2>&1 &
+```
 
 2. Start *Spark Streaming* to analysis twitter text sentiment using stanford nlp & naive bayes.
 
 ```sh
+单机模式
 spark-submit --class "hk.hku.spark.TweetSentimentAnalyzer" --master local[3] /opt/spark-twitter/7305CloudProject/StreamProcessorSpark/target/StreamProcessorSpark-jar-with-dependencies.jar
+
+集群模式
+spark-submit --class "hk.hku.spark.TweetSentimentAnalyzer" --master yarn --deploy-mode cluster /opt/spark-twitter/7305CloudProject/StreamProcessorSpark/target/StreamProcessorSpark-jar-with-dependencies.jar
 ```
 
 3. Start *CloudWeb* to show the result on the [website](http://202.45.128.135:20907).
 
 ```sh
-nohup java -jar /opt/spark-twitter/7305CloudProject/CloudWeb/target/CloudWeb-1.0-SNAPSHOT.jar &
+cd /opt/spark-twitter/7305CloudProject/CloudWeb/target
+nohup java -jar /opt/spark-twitter/7305CloudProject/CloudWeb/target/CloudWeb-1.0-SNAPSHOT.jar & 
 ```
