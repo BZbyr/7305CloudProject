@@ -68,8 +68,8 @@ public class KafkaConsumer {
         geoInfo.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_3), new SimpleStringSchema(), propProducer));
 
 
-        DataStream<LangWithCount> countsLang = tweets.filter(tweet -> (TweetFunctions.getTweetLanguage(tweet) != null)).flatMap(new TweetToLang()).keyBy("word").countWindow(3000,300).sum("count");
-        DataStream<String> langString = countsLang.keyBy("word").fold("lang",new FoldFunction<LangWithCount, String>() {
+        DataStream<LangWithCount> countsLang = tweets.filter(tweet -> (TweetFunctions.getTweetLanguage(tweet) != null)).flatMap(new TweetToLang()).keyBy("lang").countWindow(3000,300).sum("count");
+        DataStream<String> langString = countsLang.keyBy("lang").fold("lang",new FoldFunction<LangWithCount, String>() {
             @Override
             public String fold(String current, LangWithCount value) {
                 Map<String, Long> langMap = new HashMap<>();
@@ -155,8 +155,8 @@ public class KafkaConsumer {
         public String lang;
         public long count;
         public LangWithCount(){}
-        public LangWithCount(String word, long count) {
-            this.lang = word;
+        public LangWithCount(String lang, long count) {
+            this.lang = lang;
             this.count = count;
         }
 
