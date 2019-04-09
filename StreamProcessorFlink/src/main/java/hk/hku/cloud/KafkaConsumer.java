@@ -146,13 +146,8 @@ public class KafkaConsumer {
             Status status = null;
             try {
                 status = TwitterObjectFactory.createStatus(value);
-<<<<<<< HEAD
-            } catch(TwitterException e) {
-
-=======
             } catch (TwitterException e) {
                 logger.error("TwitterException : ", e);
->>>>>>> 16fb643dcbe3e4c4046f13496def766ef9b59bc8
             } finally {
                 // return the parsed tweet, or null if exception occured
                 return status;
