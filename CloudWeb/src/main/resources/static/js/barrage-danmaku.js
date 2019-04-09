@@ -311,8 +311,8 @@ $(document).ready(function () {
             $("#detail-nlp").text(item.nlpPolarity == 1 ? "😍" : (message.nlpPolarity == 0 ? "😐" : "😭"))
             $("#detail-dl").text(item.dlPolarity == 1 ? "😍" : "😭")
             $("#detail-date").text(item.date)
-            $("#detail-latitude").text(item.latitude)
-            $("#detail-longitude").text(item.longitude)
+            $("#detail-latitude").text(item.latitude == -1 ? "NULL" : item.latitude)
+            $("#detail-longitude").text(item.longitude == -1 ? "NULL" : item.longitude)
         }
     });
 })
