@@ -114,6 +114,7 @@ Need to connect with cs vpn.
  *Flink* 读取```topic : alex1``` 进行数据统计分析，
  - twitter 语言统计结果存储到```topic : twitter-flink-lang```
  - twitter 用户fans统计结果存储到```topic : twitter-flink-fans``` 
+ - twitter 用户fans统计结果存储到```topic : twitter-flink-geo``` 
  
  数据格式:
  
