@@ -99,11 +99,15 @@ Need to connect with cs vpn.
  Flume-> Kafka -> Spark Streaming -> Kafka  
          
                -> Flink -> Kafka
+               
+               -> DL4J -> Kafka
  ```
  
  *Flume*  将*Twitter Data* 搬运存储到 ```topic : alex1```
  
  *Spark Streaming* 读取```topic : alex1``` 进行情感分析，存储结果数据到 ```topic : twitter-result1```
+ 
+ *Cloud Web DL4J* 读取```topic : alex1``` 进行 dl4j 情感分析，存储结果数据到 ```topic : twitter-dl4j```
  
  *Flink* 读取```topic : alex1``` 进行数据统计分析，
  - twitter 语言统计结果存储到```topic : twitter-flink-lang```

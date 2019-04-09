@@ -1,17 +1,33 @@
 package hk.hku.cloud.kafka.controller;
 
 import com.google.gson.Gson;
+import hk.hku.cloud.dl4j.SentimentExampleIterator;
 import hk.hku.cloud.kafka.domain.SentimentTuple;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
+import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.util.ModelSerializer;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.indexing.NDArrayIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import twitter4j.Status;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.TwitterObjectFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,9 +46,36 @@ public class KafkaService {
     private static Gson gson = new Gson();
 
     private static volatile boolean consumeKafka = true;
-
     @Autowired
     private SimpMessagingTemplate template;
+
+    // kafka consumer 配置项
+    public static Properties getConsumerProperties() {
+        Properties props = new Properties();
+        props.put("bootstrap.servers", "gpu7:9092,gpu7-x1:9092,gpu7-x2:9092");
+        props.put("group.id", "web-consumer");
+        props.put("auto.offset.reset", "latest");  //[latest(default), earliest, none]
+        props.put("enable.auto.commit", "true");// 自动commit
+        props.put("auto.commit.interval.ms", "1000");// 自动commit的间隔
+        props.put("session.timeout.ms", "30000");
+        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        return props;
+    }
+
+    // kafka producer 配置项
+    public static Properties getProducerProperties() {
+        Properties props = new Properties();
+        props.put("bootstrap.servers", "gpu7:9092,gpu7-x1:9092,gpu7-x2:9092");
+        props.put("acks", "all");
+        props.put("delivery.timeout.ms", 30000);
+        props.put("batch.size", 16384);
+//        props.put("linger.ms", 1);
+        props.put("buffer.memory", 33554432);
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        return props;
+    }
 
     public void setConsumeKafka(boolean consumeKafka) {
         this.consumeKafka = consumeKafka;
@@ -44,18 +87,7 @@ public class KafkaService {
      */
     @Async
     public void consumeKafka() {
-        //配置项
-        Properties props = new Properties();
-
-        props.put("bootstrap.servers", "gpu7:9092,gpu7-x1:9092,gpu7-x2:9092");
-        props.put("group.id", "web-consumer");
-        props.put("auto.offset.reset", "latest");  //[latest(default), earliest, none]
-        props.put("enable.auto.commit", "true");// 自动commit
-        props.put("auto.commit.interval.ms", "1000");// 自动commit的间隔
-        props.put("session.timeout.ms", "30000");
-        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-
+        Properties props = getConsumerProperties();
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
 
         // 消费者订阅多个topic
@@ -115,16 +147,7 @@ public class KafkaService {
      */
     @Async
     public void consumeStatisticLang() {
-        //配置项
-        Properties props = new Properties();
-        props.put("bootstrap.servers", "gpu7:9092,gpu7-x1:9092,gpu7-x2:9092");
-        props.put("group.id", "web-consumer");
-        props.put("auto.offset.reset", "latest");  //[latest(default), earliest, none]
-        props.put("enable.auto.commit", "true");// 自动commit
-        props.put("auto.commit.interval.ms", "1000");// 自动commit的间隔
-        props.put("session.timeout.ms", "30000");
-        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        Properties props = getConsumerProperties();
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         Collection<String> topics = Arrays.asList("twitter-flink-lang");
@@ -152,16 +175,7 @@ public class KafkaService {
      */
     @Async
     public void consumeStatisticFans() {
-        //配置项
-        Properties props = new Properties();
-        props.put("bootstrap.servers", "gpu7:9092,gpu7-x1:9092,gpu7-x2:9092");
-        props.put("group.id", "web-consumer");
-        props.put("auto.offset.reset", "latest");  //[latest(default), earliest, none]
-        props.put("enable.auto.commit", "true");// 自动commit
-        props.put("auto.commit.interval.ms", "1000");// 自动commit的间隔
-        props.put("session.timeout.ms", "30000");
-        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        Properties props = getConsumerProperties();
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         Collection<String> topics = Arrays.asList("twitter-flink-fans");
@@ -182,12 +196,14 @@ public class KafkaService {
         }
     }
 
-    // 定时往socket 地址发送一条消息，保证web socket 存活
+    /**
+     * 定时往socket 地址发送一条消息，保证web socket 存活
+     */
     @Async
     public void putSentimentTimingMessage() {
         while (true) {
             try {
-                TimeUnit.SECONDS.sleep(2);
+                TimeUnit.SECONDS.sleep(3);
                 String value = "ping-alive";
                 template.convertAndSend("/topic/consumeSentiment", value);
             } catch (Exception e) {
@@ -196,11 +212,14 @@ public class KafkaService {
         }
     }
 
+    /*
+    同上
+     */
     @Async
     public void putStatisticTimingMessage() {
         while (true) {
             try {
-                TimeUnit.SECONDS.sleep(2);
+                TimeUnit.SECONDS.sleep(3);
                 String value = "ping-alive";
                 template.convertAndSend("/topic/consumeLang", value);
                 template.convertAndSend("/topic/consumeFans", value);
@@ -211,9 +230,79 @@ public class KafkaService {
     }
 
 
+    /**
+     * 启动Deep Learning 分析器, 加载本地存储的分析好的模型+词向量,
+     * 读取kafka twitter 元数据, 进行分析并存储到kafka 中
+     */
     @Async
-    public void computeDL4JSentiment(){
+    public void computeDL4JSentiment() {
+        logger.info("compute DL4J sentiment start.");
 
+        System.out.println("用户的当前工作目录: " + System.getProperties().getProperty("user.dir"));
+
+        // 从 classpath 加载模型
+        MultiLayerNetwork restored = null;
+        try {
+            restored = ModelSerializer.restoreMultiLayerNetwork(new File("./CloudWeb/src/main/resources/DumpedModel.zip"));
+            logger.info("load model successful");
+        } catch (IOException e) {
+            logger.error("computeDL4JSentiment load model exception", e);
+        }
+
+        // 词向量本地路径
+        String WORD_VECTORS_PATH = "~/dl4j/GoogleNews-vectors-negative300.bin.gz";
+        File wordVectorsFile = new File(WORD_VECTORS_PATH);
+        // 加载词向量
+        WordVectors wordVectors = WordVectorSerializer.loadStaticModel(wordVectorsFile);
+        logger.info("load static model successful");
+
+        SentimentExampleIterator iterator = new SentimentExampleIterator(wordVectors);
+        logger.info("init SentimentExampleIterator");
+
+        // 加载 kafka consumer
+        Properties propsConsumer = getConsumerProperties();
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(propsConsumer);
+        // 消费 twitter 元数据
+        Collection<String> topics = Arrays.asList("alex1");
+        consumer.subscribe(topics);
+
+        // 加载 kafka producer
+        Properties propsProducer = getProducerProperties();
+        Producer<String, String> producer = new KafkaProducer<>(propsProducer);
+        String topicsProducer = "twitter-dl4j";
+
+        // dl4j 处理情感
+        ConsumerRecords<String, String> consumerRecords;
+        logger.info("Consumer Kafka start.");
+
+        while (true) {
+            consumerRecords = consumer.poll(Duration.ofMillis(3000));
+            logger.info("consumerRecords count is : " + consumerRecords.count());
+
+            for (ConsumerRecord consumerRecord : consumerRecords) {
+                try {
+                    String value = consumerRecord.value().toString();
+                    Status status = TwitterObjectFactory.createStatus(value);
+                    logger.info("get twitter status : " + status.getText());
+
+                    producer.send(new ProducerRecord<>(topicsProducer, status.getText()));
+
+//                    INDArray features = iterator.loadFeaturesFromString(status.getText(), 256);
+//                    INDArray networkOutput_restored = restored.output(features);
+//                    long timeSeriesLength_restored = networkOutput_restored.size(2);
+//                    INDArray probabilitiesAtLastWord_restored = networkOutput_restored
+//                            .get(NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(timeSeriesLength_restored - 1));
+//
+//                    // 吐出分析结果
+//                    Double positive = probabilitiesAtLastWord_restored.getDouble(0);
+//                    if (positive > 0.5)
+//                        logger.info("positive");
+
+                } catch (TwitterException e) {
+                    logger.error("TwitterException : ", e);
+                }
+            }
+        }
     }
 
 

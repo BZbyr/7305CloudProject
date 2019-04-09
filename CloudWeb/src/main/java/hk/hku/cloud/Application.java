@@ -1,5 +1,6 @@
 package hk.hku.cloud;
 
+import hk.hku.cloud.kafka.controller.KafkaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -31,10 +32,10 @@ public class Application {
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 		logger.info("CloudWeb start ! ");
-//		test();
 	}
 
-	public static void test() {
+	@Deprecated
+	private static void test() {
 		try {
 			Properties props = System.getProperties();
 			System.out.println("用户的当前工作目录：    " + props.getProperty("user.dir"));
