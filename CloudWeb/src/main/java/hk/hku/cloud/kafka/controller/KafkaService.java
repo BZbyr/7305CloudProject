@@ -136,7 +136,7 @@ public class KafkaService {
 
         while (true) {
             consumerRecords = consumer.poll(Duration.ofMillis(1000));
-            logger.info("consumerRecords count is : " + consumerRecords.count());
+            logger.debug("consumerRecords count is : " + consumerRecords.count());
 
             for (ConsumerRecord consumerRecord : consumerRecords) {
                 String value = consumerRecord.value().toString();
@@ -173,7 +173,7 @@ public class KafkaService {
 
         while (true) {
             consumerRecords = consumer.poll(Duration.ofMillis(1000));
-            logger.info("consumerRecords count is : " + consumerRecords.count());
+            logger.debug("consumerRecords count is : " + consumerRecords.count());
 
             for (ConsumerRecord consumerRecord : consumerRecords) {
                 String value = consumerRecord.value().toString();

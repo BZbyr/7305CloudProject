@@ -48,7 +48,7 @@ $(document).ready(function () {
 
             // 订阅 /topic/consumeSentiment
             stompClient.subscribe('/topic/consumeSentiment', function (response) {
-                if (response.body == "ping-alive"){
+                if (response.body == "ping-alive") {
                     console.log("consumeSentiment alive")
                 } else {
                     //解析消息并加入弹幕缓冲区
@@ -277,7 +277,7 @@ $(document).ready(function () {
                 break
             case 'clear':
                 $("#content").empty()
-                detailBarrageData = []
+                // detailBarrageData = []
                 detailDisplayData = []
                 break
             case 'reset':
@@ -307,9 +307,9 @@ $(document).ready(function () {
             // console.log(item)
             $("#twitter-text-p").text(item.text)
             $("#detail-author").text(item.author)
-            $("#detail-nb").text(item.nbPolarity)
-            $("#detail-nlp").text(item.nlpPolarity)
-            $("#detail-dl").text(item.dlPolarity)
+            $("#detail-nb").text(item.nbPolarity == 1 ? "😍" : (message.nlpPolarity == 0 ? "😐" : "😭"))
+            $("#detail-nlp").text(item.nlpPolarity == 1 ? "😍" : (message.nlpPolarity == 0 ? "😐" : "😭"))
+            $("#detail-dl").text(item.dlPolarity == 1 ? "😍" : "😭")
             $("#detail-date").text(item.date)
             $("#detail-latitude").text(item.latitude)
             $("#detail-longitude").text(item.longitude)
