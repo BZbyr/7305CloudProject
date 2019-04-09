@@ -167,5 +167,5 @@ spark-submit --class "hk.hku.spark.TweetSentimentAnalyzer" --master yarn --deplo
 
 ```sh
 cd /opt/spark-twitter/7305CloudProject/CloudWeb/target
-nohup java -jar /opt/spark-twitter/7305CloudProject/CloudWeb/target/CloudWeb-1.0-SNAPSHOT.jar & 
+nohup java -Xmx3072m -jar /opt/spark-twitter/7305CloudProject/CloudWeb/target/CloudWeb-1.0-SNAPSHOT.jar & 
 ```

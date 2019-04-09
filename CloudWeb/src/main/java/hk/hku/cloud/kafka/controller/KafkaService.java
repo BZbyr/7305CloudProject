@@ -250,7 +250,7 @@ public class KafkaService {
         }
 
         // 词向量本地路径
-        String WORD_VECTORS_PATH = "~/dl4j/GoogleNews-vectors-negative300.bin.gz";
+        String WORD_VECTORS_PATH = "/home/hduser/dl4j/GoogleNews-vectors-negative300.bin.gz";
         File wordVectorsFile = new File(WORD_VECTORS_PATH);
         // 加载词向量
         WordVectors wordVectors = WordVectorSerializer.loadStaticModel(wordVectorsFile);
