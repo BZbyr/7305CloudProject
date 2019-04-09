@@ -22,7 +22,13 @@ import java.lang.Math;
  * @date: 2019-04-09 11:51
  */
 public class TweetFunctions {
-    // Provide (the most likely) Country of Origin of the Tweet
+
+    /**
+     *
+     *
+     * @param tweet the tweet
+     * @return  java.lang.String
+     */
     public static String getTweetCountry(Status tweet) {
         String country = null;
 
@@ -117,17 +123,35 @@ public class TweetFunctions {
         return sb.toString();
     }
 
+    public static String getTweetLanguage(Status tweet){
+        String language = null;
+
+        if(tweet.getLang() != null) {
+            language = tweet.getLang();
+        }
+
+        else if (tweet.getUser().getLang() != null){
+            language = tweet.getUser().getLang();
+        }
+
+        return language;
+    }
+
     public static GeoLocation getTweetGPSCoordinates(Status tweet) {
         GeoLocation coordinates = null;
 
-        // favorite metric
+        /*
+         favorite metric
+         fallback to place "associated" with tweet and extract center GPS coordinates from bounding box
+         */
         if(tweet.getGeoLocation() != null) {
             coordinates = tweet.getGeoLocation();
         }
 
-        // fallback to place "associated" with tweet and extract center GPS coordinates from bounding box
+
         else if(tweet.getPlace() != null && tweet.getPlace().getBoundingBoxCoordinates() != null) {
-            GeoLocation[] boundingBox =  tweet.getPlace().getBoundingBoxCoordinates()[0]; // get bounding box
+            // get bounding box
+            GeoLocation[] boundingBox =  tweet.getPlace().getBoundingBoxCoordinates()[0];
             // compute center of bounding box
             double centerLatitude = Arrays.stream(boundingBox).map(location -> location.getLatitude())
                     .collect(Collectors.averagingDouble(d -> d));

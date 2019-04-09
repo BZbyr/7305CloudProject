@@ -1,0 +1,11 @@
+zh
+en
+ja
+es
+ms
+pt
+ar
+fr
+tr
+ko
+ot

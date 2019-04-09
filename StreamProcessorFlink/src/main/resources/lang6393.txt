@@ -1,0 +1,11 @@
+zho
+eng
+jpn
+spa
+msa
+por
+ara
+fra
+tur
+kon
+oth

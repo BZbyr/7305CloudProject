@@ -5,6 +5,7 @@ package hk.hku.cloud;
  * Author: Boyang
  * Date: 2019-04-09 11:45
  */
+import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RuntimeContext;
 import org.apache.flink.api.common.state.ListState;
@@ -20,6 +21,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
+import org.apache.flink.util.Collector;
 import twitter4j.Status;
 import twitter4j.TwitterException;
 import twitter4j.TwitterObjectFactory;
@@ -67,12 +69,15 @@ public class KafkaConsumer {
 
         // create a stream of GPS information
         DataStream<String> geoInfo =
-                tweets.filter(tweet -> (TweetFunctions.getTweetCountry(tweet) != null))
-                        .filter(tweet -> TweetFunctions.getTweetGPSCoordinates(tweet) != null)
+                tweets.filter(tweet -> TweetFunctions.getTweetGPSCoordinates(tweet) != null)
                         .map(new TweetToLocation());
-        //geoInfo.print();
+        //write GPS information into kafka topic3
         geoInfo.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_3), new SimpleStringSchema(), propProducer));
 
+
+        //create a stream of language count
+        DataStream<LangWithCount> CountLanguageInfo = tweets.filter(tweet -> (TweetFunctions.getTweetLanguage(tweet) != null))
+                                                            .flatMap(new TweetToLang());
         // create a stream of Sentiment Analysis
         DataStream<Tuple2<Long, String>> sentimentInfo = tweets.map(new TweetToSentiment());
         //sentimentInfo.print();
@@ -189,12 +194,16 @@ public class KafkaConsumer {
 
     /**
      * Maps a tweet to its country, latitude, longitude, and timestamp
+     *
+     * @package: hk.hku.cloud
+     * @class: KafkaConsumer
+     * @author: Boyang
+     * @date: 2019-04-09 19:10
      */
     public static class TweetToLocation implements MapFunction<Status, String> {
         @Override
         public String map(Status tweet) throws Exception {
-            return new String(TweetFunctions.getTweetCountry(tweet)+"|"
-                    +TweetFunctions.getTweetGPSCoordinates(tweet).getLatitude()+"|"
+            return new String(TweetFunctions.getTweetGPSCoordinates(tweet).getLatitude()+"|"
                     +TweetFunctions.getTweetGPSCoordinates(tweet).getLongitude()+"|"
                     +tweet.getCreatedAt().getTime()
             );
@@ -202,7 +211,7 @@ public class KafkaConsumer {
     }
 
     /**
-     * Maps a tweet to its country, latitude, longitude, and timestamp
+     * Maps a tweet to its timestamp, sentiment score
      */
     public static class TweetToSentiment implements MapFunction<Status, Tuple2<Long, String>>, CheckpointedFunction {
 
@@ -245,6 +254,48 @@ public class KafkaConsumer {
     }
 
     /**
+     * Maps a tweet to lang, count
+     */
+    public static class TweetToLang implements FlatMapFunction<String, LangWithCount>, CheckpointedFunction {
+
+        private transient ListState<LangCount> modelState;
+
+        private transient LangCount model;
+
+        @Override
+        public LangWithCount flatMap(Status tweet, Collector<LangWithCount> out) throws Exception {
+            String text = tweet.get;
+            String score = this.model.getSentimentLabel(text);
+            return new Tuple2<>(String, score);
+        }
+
+        @Override
+        public void snapshotState(FunctionSnapshotContext functionSnapshotContext) throws Exception {
+            // constant model, so nothing to do
+        }
+
+        @Override
+        public void initializeState(FunctionInitializationContext context) throws Exception {
+            ListStateDescriptor<LangCount> listStateDescriptor = new ListStateDescriptor<>("model", LangCount.class);
+
+            modelState = context.getOperatorStateStore().getUnionListState(listStateDescriptor);
+
+            if (context.isRestored()) {
+                // restore the model from state
+                model = modelState.get().iterator().next();
+            } else {
+                modelState.clear();
+
+                // read the model from somewhere, e.g. read from a file
+                model = new LangCount("lang6391.txt", "lang6393.txt","zhCode.txt","enCode.txt");
+
+                // update the modelState so that it is checkpointed from now
+                modelState.add(model);
+            }
+        }
+    }
+
+    /**
      * Implements the JSON parser provided by twitter4J into Flink MapFunction
      */
     public static final class JSONParser implements MapFunction<String, Status> {
@@ -259,6 +310,27 @@ public class KafkaConsumer {
             } finally {
                 return status; // return the parsed tweet, or null if exception occured
             }
+        }
+    }
+
+    /**
+     * 主要为了存储单词以及单词出现的次数
+     */
+    public static class LangWithCount{
+        public String lang;
+        public long count;
+        public LangWithCount(){}
+        public LangWithCount(String word, long count) {
+            this.lang = word;
+            this.count = count;
+        }
+
+        @Override
+        public String toString() {
+            return "LangWithCount{" +
+                    "lang='" + lang + '\'' +
+                    ", count=" + count +
+                    '}';
         }
     }
 }
