@@ -143,6 +143,11 @@ Need to connect with cs vpn.
     - Deep Learning 模型&词向量路径 ```/tweets_sentiment/dl4j/```
     
 ### Run
+0. Modify Zsh Environment
+```sh
+#使用zsh, 自定义环境变量需要修改:
+vi ~/sh/env_zsh 
+```
 
 1. Start *Flume* to collect twitter data and transport into *Kafka*.
 
@@ -173,4 +178,9 @@ spark-submit --class "hk.hku.spark.TweetSentimentAnalyzer" --master yarn --deplo
 ```sh
 cd /opt/spark-twitter/7305CloudProject/CloudWeb/target
 nohup java -Xmx3072m -jar /opt/spark-twitter/7305CloudProject/CloudWeb/target/CloudWeb-1.0-SNAPSHOT.jar & 
+```
+
+4. Start *Flink* 
+```sh
+flink -c run hk.hku.cloud.KafkaConsumer /opt/spark-twitter/7305CloudProject/StreamProcessorFlink/target/StreamProcessorFlink-1.0-SNAPSHOT.jar
 ```
