@@ -86,10 +86,6 @@ public class KafkaConsumer {
     }
 
     public static void main(String[] args) {
-        if (args.length != 1){
-            System.err.println("USAGE:\nKafkaConsumer <configFilePath>");
-            return;
-        }
         try {
             String configFileLocation = "kafka.properties";
             Context context = new Context(configFileLocation);
