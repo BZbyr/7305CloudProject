@@ -77,7 +77,7 @@ public class KafkaConsumer {
                 return gson.toJson(langMap);
             }
         });
-        geoInfo.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_1), new SimpleStringSchema(), propProducer));
+        langString.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_1), new SimpleStringSchema(), propProducer));
 
 
 
