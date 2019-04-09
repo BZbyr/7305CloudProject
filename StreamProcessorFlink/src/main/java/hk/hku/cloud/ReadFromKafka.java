@@ -36,7 +36,7 @@ public class ReadFromKafka {
         Properties properties = new Properties();
         properties.setProperty("bootstrap.servers", "gpu7:9092,gpu7-x1:9092,gpu7-x2:9092");
         properties.setProperty("group.id", "flink-consumer");
-        DataStream<String> stream = env.addSource(new FlinkKafkaConsumer<>("topic", new SimpleStringSchema(), properties));
+        DataStream<String> stream = env.addSource(new FlinkKafkaConsumer<>("alex1", new SimpleStringSchema(), properties));
 
         LOG.info("Read: start.");
 
