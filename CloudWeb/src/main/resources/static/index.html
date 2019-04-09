@@ -106,13 +106,17 @@
                         <button class="btn btn-default" onclick="switchAnalysisMethod('nb')">Display naive bayes result</button>
                         <button class="btn btn-default" onclick="switchAnalysisMethod('dl')">Display deep learning result</button>
                     </div>
-                    <!-- <div class="barrage-controller-inline">
-                        <input id="interval-input" placeholder='滚动屏输出速率:x毫秒/条' class="interval-input" />
-                        <button id='interval-btn' class="btn btn-default">change interval</button>
-                    </div> -->
+                    <div class="barrage-controller-inline">
+                        <input id="interval-input" placeholder='输出速率:x+random(100)毫秒' class="interval-input" />
+                        <button id='interval-btn' class="btn btn-default" onclick="updateBasicBarrageTimer()">change interval</button>
+                    </div>
                     <div class="barrage-controller-inline">
                         <input type='text' placeholder='input...' class='barrage-input'>
                         <button class="btn btn-default" onclick="lanuchBarrage()">Lanuch</button>
+                    </div>
+                    <div class="barrage-controller-inline">
+                        <input id="detail-input" placeholder='滚动速率:x毫秒' class="interval-input" />
+                        <button id='detail-speed-btn' class="btn btn-default" onclick="updateDetailBarrageSpeed()">change detail speed</button>
                     </div>
                     <div class="barrage-controller-inline">
                         <button class="btn btn-default" onclick="switchBarrageBackground()">Switch Background</button>

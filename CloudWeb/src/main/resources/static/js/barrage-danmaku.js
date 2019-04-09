@@ -29,7 +29,7 @@ $(document).ready(function () {
         let socket = new SockJS('/endpointSang');
         stompClient = Stomp.over(socket);
 
-        stompClient.heartbeat.outgoing = 5000;
+        stompClient.heartbeat.outgoing = 15000;
         stompClient.heartbeat.incoming = 0;
 
         stompClient.connect({}, function (frame) {
@@ -93,6 +93,7 @@ $(document).ready(function () {
 
 
     let intervalID;
+    let basicSpeed = 100;
 
     // 定时器 显示缓冲区里的弹幕，优化弹幕显示效果
     function startTimer(interval) {
@@ -109,11 +110,20 @@ $(document).ready(function () {
             let line = emoji + " " + (message.text.length < 50 ? message.text : message.text.substr(0, 50) + "..");
             lanuchBarrageOnce(line)
         }
-        intervalID = setTimeout(startTimer, 20 + getRandomInt(40));
+        intervalID = setTimeout(startTimer, basicSpeed + getRandomInt(100));
     }
 
-    // 启动弹幕显示
+    // 更改基础速率
+    window.updateBasicBarrageTimer = function () {
+        let inputText = document.querySelector('.interval-input');
+        basicSpeed = inputEle.value;
+        inputText.value = '';
+        console.log("change barrage speed : " + basicSpeed)
+    };
+
+    // 启动弹幕显示 & socket连接
     startTimer()
+    startSocket()
 
     //刷新or关闭浏览器前，先断开socket连接，onbeforeunload 在 onunload之前执行
     window.onbeforeunload = function () {
@@ -183,7 +193,7 @@ $(document).ready(function () {
     }
     scrollUpBox.onmouseout = function () {
         if (running)
-            scrollUp(300);
+            scrollUp(detailBarrageBasicSpeed);
     }
 
     // 自动滚屏
@@ -197,26 +207,38 @@ $(document).ready(function () {
         }, duration)
     }
 
+
     let detailIntervalId;
+    let detailBarrageBasicSpeed = 300;
+
+    // 更改 detail barrage 基础速率
+    window.updateDetailBarrageSpeed = function () {
+        let inputText = document.querySelector('.detail-input');
+        detailBarrageBasicSpeed = inputEle.value;
+        inputText.value = '';
+        console.log("change detail barrage speed : " + detailBarrageBasicSpeed)
+    };
 
     // detailed 弹幕显示
     function displayDetailBarrage(duration) {
         running = true
         clearInterval(detailIntervalId)
         detailIntervalId = setInterval(function () {
-            let message = {
-                id: getRandomInt(10),
-                text: "test" + getRandomInt(10),
-                author: "Tommy Wang" + getRandomInt(10),
-                nlpPolarity: "😐",
-                nbPolarity: "😢",
-                dlPolarity: "😊",
-                date: "Sun Apr  7 16:27:05 HKT 2019",
-                latitude: getRandomInt(100),
-                longitude: getRandomInt(100),
+            let message = detailBarrageData.shift()
+            if (message != undefined) {
+                // message = {
+                //     id: getRandomInt(10),
+                //     text: "test" + getRandomInt(10),
+                //     author: "Tommy Wang" + getRandomInt(10),
+                //     nlpPolarity: "😐",
+                //     nbPolarity: "😢",
+                //     dlPolarity: "😊",
+                //     date: "Sun Apr  7 16:27:05 HKT 2019",
+                //     latitude: getRandomInt(100),
+                //     longitude: getRandomInt(100),
+                // }
+                appendDetailBarrageOnce(message)
             }
-            detailBarrageData.push(message)
-            appendDetailBarrageOnce(message)
         }, duration)
     }
 
@@ -229,8 +251,8 @@ $(document).ready(function () {
     window.basicDetailOperation = function (opera) {
         switch (opera) {
             case 'start':
-                displayDetailBarrage(300)
-                scrollUp(300)
+                displayDetailBarrage(detailBarrageBasicSpeed)
+                scrollUp(detailBarrageBasicSpeed)
                 break
             case 'pause':
                 clearInterval(detailIntervalId)

@@ -50,7 +50,7 @@ $(document).ready(function () {
         let socket = new SockJS('/endpointSang');
         stompClient = Stomp.over(socket);
 
-        stompClient.heartbeat.outgoing = 5000;
+        stompClient.heartbeat.outgoing = 15000;
         stompClient.heartbeat.incoming = 0;
 
         stompClient.connect({}, function (frame) {
@@ -92,6 +92,8 @@ $(document).ready(function () {
     }
 
 
+    // 开启统计图表更新 & socket 连接
+    startSocket()
     switchBarTimer()
     switchPieTimer()
 
