@@ -69,6 +69,8 @@ Need to connect with cs vpn.
 
 [Flink Server](http://202.45.128.135:20807/)
 
+[Flink Dashboard](http://202.45.128.135:20807)
+
 ### Project Documents
 
 [Proposal](https://docs.google.com/document/d/1zzrZSWjRAz3FpL2EyyuIOGwQPduTtCBiCcYJMfmvA4I/edit?usp=sharing)
@@ -114,6 +116,7 @@ Need to connect with cs vpn.
  *Flink* 读取```topic : alex1``` 进行数据统计分析，
  - twitter 语言统计结果存储到```topic : twitter-flink-lang```
  - twitter 用户fans统计结果存储到```topic : twitter-flink-fans``` 
+ - twitter 用户fans统计结果存储到```topic : twitter-flink-geo``` 
  
  数据格式:
  

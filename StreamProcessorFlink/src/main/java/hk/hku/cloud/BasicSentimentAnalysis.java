@@ -1,0 +1,82 @@
+package hk.hku.cloud;
+/**
+ * Created by IntelliJ IDEA
+ * Project: CloudProject
+ * Author: Boyang
+ * Date: 2019-04-09 11:54
+ */
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ *
+ *
+ * @package: hk.hku.cloud
+ * @class: BasicSentimentAnalysis
+ * @author: Boyang
+ * @date: 2019-04-09 11:54
+ */
+public class BasicSentimentAnalysis {
+    private List<String> positiveWords = new ArrayList<>();
+    private List<String> negativeWords = new ArrayList<>();
+
+    public BasicSentimentAnalysis(String negativeKeywordsPath, String positiveKeywordsPath) throws IOException {
+        BufferedReader negativeWordsReader;
+        BufferedReader positiveWordsReader;
+
+        negativeWordsReader = new BufferedReader(new FileReader(new File(negativeKeywordsPath)));
+        positiveWordsReader = new BufferedReader(new FileReader(new File(positiveKeywordsPath)));
+
+        String word; // tmp
+        // build lists
+        while ((word = negativeWordsReader.readLine()) != null) {
+            negativeWords.add(word);
+        }
+        while ((word = positiveWordsReader.readLine()) != null) {
+            positiveWords.add(word);
+        }
+
+        negativeWordsReader.close();
+        positiveWordsReader.close();
+    }
+
+    // get the sentiment score of the tweet (negative, neutral, positive) in a range [-1;1]
+    // the higher, the more positive the sentiment
+    public double getSentimentScore(String text) {
+        int score = 0;
+        int negCounter = 0;
+        int posCounter = 0;
+        text = text.toLowerCase().trim().replaceAll("[^a-zA-Z0-9\\s]", "");
+        String[] words = text.split(" ");
+
+        // check if the current word appears in our reference lists...
+        for (int i = 0; i < words.length; i++) {
+            if (positiveWords.contains(words[i])) {
+                posCounter++;
+            }
+            if (negativeWords.contains(words[i])) {
+                negCounter++;
+            }
+        }
+
+        // compute total result
+        score = posCounter - negCounter;
+
+        return Math.tanh(score);
+    }
+
+    public String getSentimentLabel(String text) {
+        double score = this.getSentimentScore(text);
+        if(score > 0.3) {
+            return "Positive";
+        }
+        else if(score < 0.3) {
+            return "Negative";
+        }
+        else {
+            return "Neutral";
+        }
+    }
+}
