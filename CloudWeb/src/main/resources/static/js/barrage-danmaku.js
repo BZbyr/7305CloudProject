@@ -17,8 +17,10 @@ $(document).ready(function () {
 
     // 设置缓冲区，解决kafka 一次性读到大量数据的情况
     let barrageData = [];
-    // detailed 数据
+    // detailed 缓冲区数据（来源是socket）
     let detailBarrageData = [];
+    // detailed 显示过的数据（为了点击事件能索引到，会比socket慢点）
+    let detailDisplayData = []
 
     // stomp socket 客户端
     let stompClient = null;
@@ -228,6 +230,7 @@ $(document).ready(function () {
         running = true
         // clearInterval(detailIntervalId)
         detailIntervalId = setInterval(function () {
+            // 不应是shift
             let message = detailBarrageData.shift()
             if (message != undefined) {
                 // message = {
@@ -241,6 +244,7 @@ $(document).ready(function () {
                 //     latitude: getRandomInt(100),
                 //     longitude: getRandomInt(100),
                 // }
+                detailDisplayData.push(message)
                 appendDetailBarrageOnce(message)
             }
         }, duration)
@@ -266,11 +270,13 @@ $(document).ready(function () {
             case 'clear':
                 $("#content").empty()
                 detailBarrageData = []
+                detailDisplayData = []
                 break
             case 'reset':
                 // 清空弹幕
                 $("#content").empty()
                 detailBarrageData = []
+                detailDisplayData = []
                 // 清空detail 定时器
                 clearInterval(detailIntervalId)
                 clearInterval(scrollUpIntervalId)
@@ -288,16 +294,18 @@ $(document).ready(function () {
     // detail 弹幕点击事件
     $('#content').on('click', function (event) {
         // console.log(event.target);
-        let item = detailBarrageData.filter(x => x.id == event.target.id)[0]
-        // console.log(item)
-        $("#twitter-text-p").text(item.text)
-        $("#detail-author").text(item.author)
-        $("#detail-nb").text(item.nbPolarity)
-        $("#detail-nlp").text(item.nlpPolarity)
-        $("#detail-dl").text(item.dlPolarity)
-        $("#detail-date").text(item.date)
-        $("#detail-latitude").text(item.latitude)
-        $("#detail-longitude").text(item.longitude)
+        let item = detailDisplayData.filter(x => x.id == event.target.id)[0]
+        if (item != undefined) {
+            // console.log(item)
+            $("#twitter-text-p").text(item.text)
+            $("#detail-author").text(item.author)
+            $("#detail-nb").text(item.nbPolarity)
+            $("#detail-nlp").text(item.nlpPolarity)
+            $("#detail-dl").text(item.dlPolarity)
+            $("#detail-date").text(item.date)
+            $("#detail-latitude").text(item.latitude)
+            $("#detail-longitude").text(item.longitude)
+        }
     });
 })
 
