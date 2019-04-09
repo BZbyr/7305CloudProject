@@ -69,6 +69,8 @@ Need to connect with cs vpn.
 
 [Flink Server](http://202.45.128.135:20807/)
 
+[Flink Dashboard](http://202.45.128.135:20807)
+
 ### Project Documents
 
 [Proposal](https://docs.google.com/document/d/1zzrZSWjRAz3FpL2EyyuIOGwQPduTtCBiCcYJMfmvA4I/edit?usp=sharing)
