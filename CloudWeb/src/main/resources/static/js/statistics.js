@@ -64,20 +64,28 @@ $(document).ready(function () {
 
             // 订阅 /topic/consumeLang 语言统计数据
             stompClient.subscribe('/topic/consumeLang', function (response) {
-                let tmp = response.body.split("|")
-                if (tmp.length < 4)
-                    console.log("consume lang data format exeception : " + response.body)
-                else
-                    langDataNewest = [tmp[0], tmp[1], tmp[2], tmp[3]]
+                if (response.body == "ping-alive"){
+                    console.log("consumeLang alive")
+                } else {
+                    let tmp = response.body.split("|")
+                    if (tmp.length < 4)
+                        console.log("consume lang data format exeception : " + response.body)
+                    else
+                        langDataNewest = [tmp[0], tmp[1], tmp[2], tmp[3]]
+                }
             })
 
             // 订阅 /topic/consumeFans 用户fans统计数据
             stompClient.subscribe('/topic/consumeFans', function (response) {
-                let tmp = response.body.split("|")
-                if (tmp.length < 5)
-                    console.log("consume fans data format exeception : " + response.body)
-                else
-                    fansDataNewest = [tmp[0], tmp[1], tmp[2], tmp[3], tmp[4]]
+                if (response.body == "ping-alive"){
+                    console.log("consumeFans alive")
+                } else {
+                    let tmp = response.body.split("|")
+                    if (tmp.length < 5)
+                        console.log("consume fans data format exeception : " + response.body)
+                    else
+                        fansDataNewest = [tmp[0], tmp[1], tmp[2], tmp[3], tmp[4]]
+                }
             })
         });
     }

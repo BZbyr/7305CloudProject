@@ -44,16 +44,20 @@ $(document).ready(function () {
 
             // 订阅 /topic/consumeSentiment
             stompClient.subscribe('/topic/consumeSentiment', function (response) {
-                //解析消息并加入弹幕缓冲区
-                barrageData.push(JSON.parse(response.body))
-                if (barrageData.length > 1000) {
-                    // 缓冲区弹幕过多，直接清理
-                    barrageData.splice(50, 200)
-                    // barrageData.shift()
-                }
+                if (response.body == "ping-alive"){
+                    console.log("consumeSentiment alive")
+                } else {
+                    //解析消息并加入弹幕缓冲区
+                    barrageData.push(JSON.parse(response.body))
+                    if (barrageData.length > 1000) {
+                        // 缓冲区弹幕过多，直接清理
+                        barrageData.splice(50, 200)
+                        // barrageData.shift()
+                    }
 
-                // detailed barrage 数据保存并展示
-                detailBarrageData.push(JSON.parse(response.body))
+                    // detailed barrage 数据保存并展示
+                    detailBarrageData.push(JSON.parse(response.body))
+                }
             })
         });
     }
@@ -222,7 +226,7 @@ $(document).ready(function () {
     // detailed 弹幕显示
     function displayDetailBarrage(duration) {
         running = true
-        clearInterval(detailIntervalId)
+        // clearInterval(detailIntervalId)
         detailIntervalId = setInterval(function () {
             let message = detailBarrageData.shift()
             if (message != undefined) {
@@ -263,6 +267,19 @@ $(document).ready(function () {
                 $("#content").empty()
                 detailBarrageData = []
                 break
+            case 'reset':
+                // 清空弹幕
+                $("#content").empty()
+                detailBarrageData = []
+                // 清空detail 定时器
+                clearInterval(detailIntervalId)
+                clearInterval(scrollUpIntervalId)
+                // 开启定时器
+                displayDetailBarrage(detailBarrageBasicSpeed)
+                scrollUp(detailBarrageBasicSpeed)
+                // 重启socket
+                stopSocket()
+                startSocket()
             default:
                 console.log("detailed opera : " + opera)
         }
