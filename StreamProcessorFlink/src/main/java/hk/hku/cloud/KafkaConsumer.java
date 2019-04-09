@@ -87,7 +87,7 @@ public class KafkaConsumer {
 
     public static void main(String[] args) {
         try {
-            String configFileLocation = "kafka.properties";
+            String configFileLocation = "/opt/spark-twitter/7305CloudProject/StreamProcessorFlink/src/main/resources/kafka.properties";
             Context context = new Context(configFileLocation);
             KafkaConsumer.run(context);
         } catch (Exception e) {
