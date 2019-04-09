@@ -5,6 +5,7 @@ package hk.hku.cloud;
  * Author: Boyang
  * Date: 2019-04-09 11:45
  */
+
 import com.google.gson.Gson;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.FoldFunction;
@@ -15,14 +16,15 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.util.Collector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import twitter4j.Status;
 import twitter4j.TwitterException;
 import twitter4j.TwitterObjectFactory;
 
 import java.util.*;
+
 /**
- *
- *
  * @package: hk.hku.cloud
  * @class: KafkaConsumer
  * @author: Boyang
@@ -32,15 +34,15 @@ public class KafkaConsumer {
     private static final String BOOTSTRAP_SERVERS = "bootstrap.servers";
     private static final String GROUP_ID = "group.id";
     private static final String KAFKA_TOPIC = "kafka.topic";
-
     private static final String BOOTSTRAP_SERVERS_PRODUCER = "bootstrap.servers.producer";
     private static final String GROUP_ID_PRODUCER = "group.id.producer";
     private static final String KAFKA_TOPIC_PRODUCER_1 = "kafka.topic.producer1";
     private static final String KAFKA_TOPIC_PRODUCER_2 = "kafka.topic.producer2";
     private static final String KAFKA_TOPIC_PRODUCER_3 = "kafka.topic.producer3";
-
-    private static final List<String> LANG_CODE_0 = new ArrayList<>(Arrays.asList("zh","en","ja","es","ms","pt","ar","fr","ko","ot"));
+    private static final List<String> LANG_CODE_0 = new ArrayList<>(Arrays.asList("zh", "en", "ja", "es", "ms", "pt", "ar", "fr", "ko", "ot"));
     public static Gson gson = new Gson();
+    private static Logger logger = LoggerFactory.getLogger(KafkaConsumer.class);
+
     public static void run(Context context) throws Exception {
         // set up the execution environment
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -53,12 +55,13 @@ public class KafkaConsumer {
         propProducer.setProperty("group.id", context.getString(GROUP_ID_PRODUCER));
 
 
-
         // get input data
         DataStream<String> stream = env.addSource(new FlinkKafkaConsumer<>(context.getString(KAFKA_TOPIC), new SimpleStringSchema(), propConsumer));
 
         // Stream transformations
-        DataStream<Status> tweets = stream.map(new JSONParser()).filter(tweet -> ((tweet.getCreatedAt() != null) && (tweet.getText() != null)));
+        DataStream<Status> tweets = stream.filter(line -> line.toString().trim().length() > 0)
+                .map(new JSONParser())
+                .filter(tweet -> (tweet != null && (tweet.getCreatedAt() != null) && (tweet.getText() != null)));
 
         // create a stream of GPS information
         DataStream<String> geoInfo =
@@ -68,17 +71,16 @@ public class KafkaConsumer {
         geoInfo.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_3), new SimpleStringSchema(), propProducer));
 
 
-        DataStream<LangWithCount> countsLang = tweets.filter(tweet -> (TweetFunctions.getTweetLanguage(tweet) != null)).flatMap(new TweetToLang()).keyBy("lang").countWindow(3000,300).sum("count");
-        DataStream<String> langString = countsLang.keyBy("lang").fold("lang",new FoldFunction<LangWithCount, String>() {
+        DataStream<LangWithCount> countsLang = tweets.filter(tweet -> (TweetFunctions.getTweetLanguage(tweet) != null)).flatMap(new TweetToLang()).keyBy("lang").countWindow(3000, 300).sum("count");
+        DataStream<String> langString = countsLang.keyBy("lang").fold("lang", new FoldFunction<LangWithCount, String>() {
             @Override
             public String fold(String current, LangWithCount value) {
                 Map<String, Long> langMap = new HashMap<>();
-                langMap.put(value.getLang(),value.getCount());
+                langMap.put(value.getLang(), value.getCount());
                 return gson.toJson(langMap);
             }
         });
         geoInfo.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_1), new SimpleStringSchema(), propProducer));
-
 
 
         // execute program
@@ -123,7 +125,7 @@ public class KafkaConsumer {
         @Override
         public void flatMap(Status tweet, Collector<LangWithCount> out) {
             String lang = TweetFunctions.getTweetLanguage(tweet);
-            out.collect(new LangWithCount(lang,1L));
+            out.collect(new LangWithCount(lang, 1L));
         }
 
 
@@ -138,9 +140,8 @@ public class KafkaConsumer {
             Status status = null;
             try {
                 status = TwitterObjectFactory.createStatus(value);
-            } catch(TwitterException e) {
-                // TODO: use LOGGER class and add a small explaining message
-                e.printStackTrace();
+            } catch (TwitterException e) {
+                logger.error("TwitterException : ", e);
             } finally {
                 // return the parsed tweet, or null if exception occured
                 return status;
@@ -151,10 +152,13 @@ public class KafkaConsumer {
     /**
      * 主要为了存储单词以及单词出现的次数
      */
-    public static class LangWithCount{
+    public static class LangWithCount {
         public String lang;
         public long count;
-        public LangWithCount(){}
+
+        public LangWithCount() {
+        }
+
         public LangWithCount(String lang, long count) {
             this.lang = lang;
             this.count = count;
