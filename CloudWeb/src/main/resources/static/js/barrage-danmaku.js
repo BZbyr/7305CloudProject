@@ -25,6 +25,8 @@ $(document).ready(function () {
     // stomp socket 客户端
     let stompClient = null;
 
+    startSocket()
+
     // 开启socket
     function startSocket() {
         // 创建 socket 连接
@@ -51,7 +53,7 @@ $(document).ready(function () {
                 } else {
                     //解析消息并加入弹幕缓冲区
                     barrageData.push(JSON.parse(response.body))
-                    if (barrageData.length > 1000) {
+                    if (barrageData.length > 2000) {
                         // 缓冲区弹幕过多，直接清理
                         barrageData.splice(50, 200)
                         // barrageData.shift()
@@ -127,9 +129,8 @@ $(document).ready(function () {
         console.log("change barrage speed : " + basicSpeed)
     };
 
-    // 启动弹幕显示 & socket连接
-    startTimer()
-    startSocket()
+    // 启动弹幕显示
+    // startTimer()
 
     //刷新or关闭浏览器前，先断开socket连接，onbeforeunload 在 onunload之前执行
     window.onbeforeunload = function () {
