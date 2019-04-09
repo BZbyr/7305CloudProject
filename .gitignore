@@ -66,3 +66,5 @@ StreamProcessorSpark/\.classpath
 /**/tweetDemo.json
 /**/test.json
 /**/test.txt
+
+/**/dependency-reduced-pom.xml
