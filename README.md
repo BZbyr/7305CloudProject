@@ -115,6 +115,7 @@ Need to connect with cs vpn.
  - 情感分析结果 ```ID¦Name¦Text¦NLP¦MLlib¦DeepLearning¦Latitude¦Longitude¦Profile¦Date```
  - Lang 统计结果 ```en|jp|ch|other```
  - Fans 统计结果 ```under 100|100~500|500~1000|above 1000```
+ - map 统计结果 ```Latitude|Longitude|time```
 
 ### Operation & Conf
 
