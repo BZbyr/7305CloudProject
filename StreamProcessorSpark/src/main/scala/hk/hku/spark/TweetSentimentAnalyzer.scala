@@ -60,27 +60,6 @@ object TweetSentimentAnalyzer {
     val naiveBayesModel = NaiveBayesModel.load(ssc.sparkContext, PropertiesLoader.naiveBayesModelPath)
     val stopWordsList = ssc.sparkContext.broadcast(StopWordsLoader.loadStopWords(PropertiesLoader.nltkStopWords))
 
-    //    // 广播 Deep Learning 模型
-    //    log.info("dl4j model : " + PropertiesLoader.dl4jModelFileName)
-    //    val dl4jModel = ssc.sparkContext.broadcast(Dl4jModelLoader.loadDl4jModel(PropertiesLoader.dl4jModelFileName))
-    //    //    val dl4jModel: Broadcast[MultiLayerNetwork] = ssc.sparkContext.broadcast(ModelSerializer.restoreMultiLayerNetwork(PropertiesLoader.dl4jModelPath))
-    //    log.info(dl4jModel.toString())
-    //    log.info(dl4jModel.value)
-    //
-    //    // 广播 Deep Learning 词向量
-    //    log.info("dl4j word vector : " + PropertiesLoader.dl4jWordVectorPath)
-    //    val tmpWordFile = ssc.sparkContext.textFile(PropertiesLoader.dl4jWordVectorPath)  // test ok
-    //    log.info("dl4j word vector"  + tmpWordFile)
-    //    log.info("dl4j word vector"  + tmpWordFile.count()) // 9242603 条
-    //    // 这样是能读取的，但loadStaticModel 还是不行
-    //    val hdfsVector = HDFSUtils.readHDFSFile("/tweets_sentiment/dl4j/GoogleNews-vectors-negative300.bin.gz")
-    //    log.info("hdfs file hdfsVector : " + hdfsVector.length)
-    //    val vectorFile = new File("vector.tmp")
-    //    FileUtils.writeBytes(hdfsVector, vectorFile)
-    //    log.info("vector File vectorFile : " + vectorFile.exists())
-    //    val dl4jWordVector: Broadcast[WordVectors] = ssc.sparkContext.broadcast(WordVectorSerializer.loadStaticModel(vectorFile))
-    //    log.info("vector File dl4jWordVector : " + dl4jWordVector.value)
-    //    log.info("test over")
 
     /**
       * Predicts the sentiment of the tweet passed.
@@ -95,6 +74,7 @@ object TweetSentimentAnalyzer {
       val tweetText = status.getText.replaceAll("\n", "")
       //      log.info("tweetText : " + tweetText)
 
+      // dl4jSentiment 不在spark streaming 里做了， 加载词向量有bug，放在CloudWeb 里做！
       val (corenlpSentiment, mllibSentiment, dl4jSentiment) =
         (
           CoreNLPSentimentAnalyzer.computeWeightedSentiment(tweetText),

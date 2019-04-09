@@ -210,6 +210,13 @@ public class KafkaService {
         }
     }
 
+
+    @Async
+    public void computeDL4JSentiment(){
+
+    }
+
+
     //测试用
     @Async
     @Deprecated
