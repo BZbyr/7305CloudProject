@@ -41,6 +41,8 @@ public class KafkaController {
 //        kafkaService.consumeKafkaTest();
         // 启动kafka 线程
         kafkaService.consumeKafka();
+        // 启动心跳
+        kafkaService.putSentimentTimingMessage();
         return message;
     }
 
@@ -67,6 +69,8 @@ public class KafkaController {
         kafkaService.consumeStatisticLang();
         // 启动kafka 线程consume fans 统计数据
         kafkaService.consumeStatisticFans();
+        // 启动心跳
+        kafkaService.putStatisticTimingMessage();
         return message;
     }
 

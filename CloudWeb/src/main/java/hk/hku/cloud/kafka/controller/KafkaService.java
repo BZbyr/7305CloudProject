@@ -184,23 +184,31 @@ public class KafkaService {
 
     // 定时往socket 地址发送一条消息，保证web socket 存活
     @Async
-    public void putTimingMessage() {
+    public void putSentimentTimingMessage() {
         while (true) {
             try {
-                TimeUnit.SECONDS.sleep(1);
+                TimeUnit.SECONDS.sleep(2);
                 String value = "ping-alive";
-                
                 template.convertAndSend("/topic/consumeSentiment", value);
-                template.convertAndSend("/topic/consumeLang", value);
-                template.convertAndSend("/topic/consumeFans", value);
-
             } catch (Exception e) {
                 logger.error("putTimingMessage exception : ", e);
             }
-
         }
     }
 
+    @Async
+    public void putStatisticTimingMessage() {
+        while (true) {
+            try {
+                TimeUnit.SECONDS.sleep(2);
+                String value = "ping-alive";
+                template.convertAndSend("/topic/consumeLang", value);
+                template.convertAndSend("/topic/consumeFans", value);
+            } catch (Exception e) {
+                logger.error("putTimingMessage exception : ", e);
+            }
+        }
+    }
 
     //测试用
     @Async
