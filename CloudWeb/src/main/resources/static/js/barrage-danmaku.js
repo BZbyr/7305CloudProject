@@ -15,12 +15,14 @@ $(document).ready(function () {
     let sentiment = "nlp";
     let analysisMethod = document.getElementById("method");
 
-    // 设置缓冲区，解决kafka 一次性读到大量数据的情况
+    // 设置缓冲区，解决kafka 一次性读到大量数据的情况, 保存 nb & nlp 情感分析结果
     let barrageData = [];
     // detailed 缓冲区数据（来源是socket）
     let detailBarrageData = [];
-    // detailed 显示过的数据（为了点击事件能索引到，会比socket慢点）
+    // detailed 显示过的数据（为了点击事件能索引到，会比socket 获取并存到缓冲区的数据速率 慢点）
     let detailDisplayData = []
+    // 保存 dl4j 情感分析结果
+    let barrageDataDl4j = [];
 
     // stomp socket 客户端
     let stompClient = null;
@@ -46,7 +48,7 @@ $(document).ready(function () {
                 lanuchBarrageOnce("😊" + response.body);
             })
 
-            // 订阅 /topic/consumeSentiment
+            // 订阅 /topic/consumeSentiment ，只有nb、nlp 的分析值
             stompClient.subscribe('/topic/consumeSentiment', function (response) {
                 if (response.body == "ping-alive") {
                     console.log("consumeSentiment alive")
@@ -57,6 +59,23 @@ $(document).ready(function () {
                         // 缓冲区弹幕过多，直接清理
                         barrageData.splice(50, 200)
                         // barrageData.shift()
+                    }
+
+                    // detailed barrage 数据保存并展示
+                    detailBarrageData.push(JSON.parse(response.body))
+                }
+            })
+
+            // 订阅 /topic/consumeDeepLearning ，只有 dl4j 的分析值
+            stompClient.subscribe('/topic/consumeDeepLearning', function (response) {
+                if (response.body == "ping-alive") {
+                    console.log("consumeSentiment alive")
+                } else {
+                    //解析消息并加入弹幕缓冲区
+                    barrageDataDl4j.push(JSON.parse(response.body))
+                    if (barrageDataDl4j.length > 2000) {
+                        // 缓冲区弹幕过多，直接清理
+                        barrageDataDl4j.splice(50, 200)
                     }
 
                     // detailed barrage 数据保存并展示
@@ -105,18 +124,26 @@ $(document).ready(function () {
 
     // 定时器 显示缓冲区里的弹幕，优化弹幕显示效果
     function startTimer() {
-        // clearInterval(intervalID);
-        let message = barrageData.shift()
-        if (message != undefined) {
-            let emoji = "";
-            if (sentiment == "nlp")
-                emoji = message.nlpPolarity == 1 ? "😍" : (message.nlpPolarity == 0 ? "😐" : "😭"); // stanford core nlp
-            else if (sentiment == "nb")
-                emoji = message.nbPolarity == 1 ? "😍" : (message.nbPolarity == 0 ? "😐" : "😭"); // naive bayes
-            else
-                emoji = message.dlPolarity == 1 ? "😍" : "😭"; // deep learning 2元分类
-            let line = emoji + " " + (message.text.length < 50 ? message.text : message.text.substr(0, 50) + "..");
-            lanuchBarrageOnce(line)
+        if (sentiment == "dl") {
+            // 显示单机处理的 dl4j 分析结果
+            let message = barrageDataDl4j.shift()
+            if (message != undefined) {
+                let emoji = message.dlPolarity == 1 ? "😍" : "😭"; // deep learning 2元分类
+                let line = emoji + " " + (message.text.length < 50 ? message.text : message.text.substr(0, 50) + "..");
+                lanuchBarrageOnce(line)
+            }
+        } else {
+            // 显示 spark streaming 处理的 nb|nlp 分析结果
+            let message = barrageData.shift()
+            if (message != undefined) {
+                let emoji = ""
+                if (sentiment == "nlp")
+                    emoji = message.nlpPolarity == 1 ? "😍" : (message.nlpPolarity == 0 ? "😐" : "😭"); // stanford core nlp
+                else if (sentiment == "nb")
+                    emoji = message.nbPolarity == 1 ? "😍" : (message.nbPolarity == 0 ? "😐" : "😭"); // naive bayes
+                let line = emoji + " " + (message.text.length < 50 ? message.text : message.text.substr(0, 50) + "..");
+                lanuchBarrageOnce(line)
+            }
         }
         intervalID = setTimeout(startTimer, basicSpeed + getRandomInt(100));
     }
@@ -238,7 +265,7 @@ $(document).ready(function () {
         running = true
         // clearInterval(detailIntervalId)
         detailIntervalId = setInterval(function () {
-            // 不应是shift
+            // 不应是shift, 实际可以用游标记录显示过的数据位置, 这边新增个队列保存 display 的内容,效果也行
             let message = detailBarrageData.shift()
             if (message != undefined) {
                 // message = {
@@ -307,12 +334,27 @@ $(document).ready(function () {
             // console.log(item)
             $("#twitter-text-p").text(item.text)
             $("#detail-author").text(item.author)
-            $("#detail-nb").text(item.nbPolarity == 1 ? "😍" : (item.nbPolarity == 0 ? "😐" : "😭"))
-            $("#detail-nlp").text(item.nlpPolarity == 1 ? "😍" : (item.nlpPolarity == 0 ? "😐" : "😭"))
-            $("#detail-dl").text(item.dlPolarity == 1 ? "😍" : "😭")
+            if (item.image == "dl4j") {
+                // 隐藏 nb & nlp 结果
+                $("#tr-detail-nb").css('display','none')
+                $("#tr-detail-nlp").css('display','none')
+                // 显示 dl4j 结果
+                $("#tr-detail-dl").css('display','table-row')
+                $("#detail-dl").text(item.dlPolarity == 1 ? "😍" : "😭")
+            } else {
+                // 隐藏 dl4j 结果
+                $("#tr-detail-dl").css('display','none')
+                // 显示 nb & nlp 结果
+                $("#tr-detail-nb").css('display','table-row')
+                $("#tr-detail-nlp").css('display','table-row')
+                $("#detail-nb").text(item.nbPolarity == 1 ? "😍" : (item.nbPolarity == 0 ? "😐" : "😭"))
+                $("#detail-nlp").text(item.nlpPolarity == 1 ? "😍" : (item.nlpPolarity == 0 ? "😐" : "😭"))
+            }
+
             $("#detail-date").text(item.date)
             $("#detail-latitude").text(item.latitude == -1 ? "NULL" : item.latitude)
             $("#detail-longitude").text(item.longitude == -1 ? "NULL" : item.longitude)
+
         }
     });
 })

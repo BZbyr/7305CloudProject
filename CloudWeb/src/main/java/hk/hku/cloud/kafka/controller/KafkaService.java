@@ -211,6 +211,7 @@ public class KafkaService {
                 TimeUnit.SECONDS.sleep(3);
                 String value = "ping-alive";
                 template.convertAndSend("/topic/consumeSentiment", value);
+                template.convertAndSend("/topic/consumeDeepLearning", value);
             } catch (Exception e) {
                 logger.error("putTimingMessage exception : ", e);
             }
@@ -306,7 +307,8 @@ public class KafkaService {
 
                     SentimentTuple sentimentTuple = new SentimentTuple();
 
-                    sentimentTuple.setId(String.valueOf(status.getId()));
+                    // id 也以 dl4j 开头，理论上存在和spark streaming 处理的数据是同一份，导致前端弹幕滚动展示两次同一份数据的情况
+                    sentimentTuple.setId(String.valueOf("dl4j" + status.getId()));
                     sentimentTuple.setName(status.getUser().getScreenName());
                     sentimentTuple.setText(status.getText());
                     sentimentTuple.setNlpPolarity(0);
