@@ -66,12 +66,12 @@ public class KafkaConsumer {
         DataStream<Status> tweets = stream.map(new JSONParser()).filter(tweet -> ((tweet.getCreatedAt() != null) && (tweet.getText() != null)));
 
         // create a stream of GPS information
-        DataStream<Tuple4<String, Double, Double, Long>> geoInfo =
+        DataStream<String> geoInfo =
                 tweets.filter(tweet -> (TweetFunctions.getTweetCountry(tweet) != null))
                         .filter(tweet -> TweetFunctions.getTweetGPSCoordinates(tweet) != null)
                         .map(new TweetToLocation());
         //geoInfo.print();
-        geoInfo.addSink(new FlinkKafkaProducer<>(context.getString(KAFKA_TOPIC_PRODUCER_3), new SimpleStringSchema(), propProducer));
+        geoInfo.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_3), new SimpleStringSchema(), propProducer));
 
         // create a stream of Sentiment Analysis
         DataStream<Tuple2<Long, String>> sentimentInfo = tweets.map(new TweetToSentiment());
@@ -105,34 +105,6 @@ public class KafkaConsumer {
             KafkaConsumer.run(context);
         } catch (Exception e) {
             System.out.println(e.toString());
-        }
-    }
-
-    /**
-     * Inserts tweet locations into elasticsearch.
-     */
-    public static class LocationInserter
-            implements ElasticsearchSinkFunction<Tuple4<String, Double, Double, Long>> {
-
-        // construct index request
-        @Override
-        public void process(
-                Tuple4<String, Double, Double, Long> record,
-                RuntimeContext ctx,
-                RequestIndexer indexer) {
-
-            // construct JSON document to index
-            Map<String, String> json = new HashMap<>();
-            json.put("time", record.f3.toString());         // timestamp
-            json.put("geolocation", record.f1+","+record.f2);  // lat,lon pair
-            json.put("country", record.f0.toString());      // country
-
-            IndexRequest rqst = Requests.indexRequest()
-                    .index("locations")        // index name
-                    .type("locationsType")  // mapping name
-                    .source(json);
-
-            indexer.add(rqst);
         }
     }
 
@@ -218,13 +190,13 @@ public class KafkaConsumer {
     /**
      * Maps a tweet to its country, latitude, longitude, and timestamp
      */
-    public static class TweetToLocation implements MapFunction<Status, Tuple4<String, Double, Double, Long>> {
+    public static class TweetToLocation implements MapFunction<Status, String> {
         @Override
-        public Tuple4<String, Double, Double, Long> map(Status tweet) throws Exception {
-            return new Tuple4<>(TweetFunctions.getTweetCountry(tweet),
-                    TweetFunctions.getTweetGPSCoordinates(tweet).getLatitude(),
-                    TweetFunctions.getTweetGPSCoordinates(tweet).getLongitude(),
-                    tweet.getCreatedAt().getTime()
+        public String map(Status tweet) throws Exception {
+            return new String(TweetFunctions.getTweetCountry(tweet)+"|"
+                    +TweetFunctions.getTweetGPSCoordinates(tweet).getLatitude()+"|"
+                    +TweetFunctions.getTweetGPSCoordinates(tweet).getLongitude()+"|"
+                    +tweet.getCreatedAt().getTime()
             );
         }
     }
