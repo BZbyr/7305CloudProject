@@ -122,7 +122,7 @@ body {
 }
 
 .content {
-    /* width: 100%; */
+    width: 1200px;
     min-width: 1200px;
 }
 
@@ -325,7 +325,6 @@ section .progress__layout .item.spark-streaming::before {
     text-align: center
 }
 
-
 /* btn 样式 from bootstrap */
 
 .btn {
@@ -399,7 +398,7 @@ fieldset[disabled] .btn {
 .btn-default:active,
 .btn-default:focus,
 .btn-default:hover,
-.open>.dropdown-toggle.btn-default {
+.open > .dropdown-toggle.btn-default {
     color: #333;
     background-color: #e6e6e6;
     border-color: #adadad
@@ -407,7 +406,7 @@ fieldset[disabled] .btn {
 
 .btn-default.active,
 .btn-default:active,
-.open>.dropdown-toggle.btn-default {
+.open > .dropdown-toggle.btn-default {
     background-image: none
 }
 
