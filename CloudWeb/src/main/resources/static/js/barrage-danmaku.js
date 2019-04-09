@@ -104,7 +104,7 @@ $(document).ready(function () {
     let basicSpeed = 100;
 
     // 定时器 显示缓冲区里的弹幕，优化弹幕显示效果
-    function startTimer(interval) {
+    function startTimer() {
         // clearInterval(intervalID);
         let message = barrageData.shift()
         if (message != undefined) {
@@ -157,15 +157,22 @@ $(document).ready(function () {
         switch (opera) {
             case 'show':
                 danmaku.show()
+                startTimer();
                 break
             case 'hide':
                 danmaku.hide()
+                clearInterval(intervalID);
                 break
             case 'clear':
                 danmaku.clear()
                 break
-            case 'destory':
-                danmaku.destory()
+            case 'reset':
+                stopSocket()
+                startSocket()
+                danmaku.clear()
+                danmaku.show()
+                clearInterval(intervalID)
+                startTimer()
                 break
             default:
                 console.log("opera : " + opera)
