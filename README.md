@@ -55,7 +55,7 @@ Developed By:
 
 Need to connect with cs vpn.
 
-[WebSite](http://202.45.128.135:20907/)
+[Spring Boot WebSite](http://202.45.128.135:20907/)
 
 [Ganglia Cluster Monitor](http://202.45.128.135:20007/ganglia/)
 
@@ -65,7 +65,9 @@ Need to connect with cs vpn.
 
 [Hadoop JobHistory](http://202.45.128.135:20307/jobhistory)
 
-[Spark](http://202.45.128.135:20507/)
+[Spark History Server](http://202.45.128.135:20507/)
+
+[Flink Server](http://202.45.128.135:20807/)
 
 ### Project Documents
 

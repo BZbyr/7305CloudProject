@@ -28,9 +28,11 @@ import twitter4j.TwitterObjectFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -46,6 +48,9 @@ public class KafkaService {
     private static Gson gson = new Gson();
 
     private static volatile boolean consumeKafka = true;
+
+    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EE MMM dd HH:mm:ss ZZ yyyy");
+
     @Autowired
     private SimpMessagingTemplate template;
 
@@ -240,10 +245,10 @@ public class KafkaService {
 
         System.out.println("用户的当前工作目录: " + System.getProperties().getProperty("user.dir"));
 
-        // 从 classpath 加载模型
+        // 从本地加载模型
         MultiLayerNetwork restored = null;
         try {
-            restored = ModelSerializer.restoreMultiLayerNetwork(new File("./CloudWeb/src/main/resources/DumpedModel.zip"));
+            restored = ModelSerializer.restoreMultiLayerNetwork(new File("/home/hduser/dl4j/DumpedModel.zip"));
             logger.info("load model successful");
         } catch (IOException e) {
             logger.error("computeDL4JSentiment load model exception", e);
@@ -281,22 +286,55 @@ public class KafkaService {
 
             for (ConsumerRecord consumerRecord : consumerRecords) {
                 try {
-                    String value = consumerRecord.value().toString();
+                    String value = consumerRecord.value().toString().trim();
+                    // 不可能过短
+                    if (value.length() <= 5) {
+                        continue;
+                    }
                     Status status = TwitterObjectFactory.createStatus(value);
-                    logger.info("get twitter status : " + status.getText());
+//                    logger.info("get twitter status : " + status.getText());
 
-                    producer.send(new ProducerRecord<>(topicsProducer, status.getText()));
+                    // 计算文本的情绪值
+                    INDArray features = iterator.loadFeaturesFromString(status.getText(), 256);
+                    INDArray networkOutput_restored = restored.output(features);
+                    long timeSeriesLength_restored = networkOutput_restored.size(2);
+                    INDArray probabilitiesAtLastWord_restored = networkOutput_restored
+                            .get(NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(timeSeriesLength_restored - 1));
 
-//                    INDArray features = iterator.loadFeaturesFromString(status.getText(), 256);
-//                    INDArray networkOutput_restored = restored.output(features);
-//                    long timeSeriesLength_restored = networkOutput_restored.size(2);
-//                    INDArray probabilitiesAtLastWord_restored = networkOutput_restored
-//                            .get(NDArrayIndex.point(0), NDArrayIndex.all(), NDArrayIndex.point(timeSeriesLength_restored - 1));
-//
-//                    // 吐出分析结果
-//                    Double positive = probabilitiesAtLastWord_restored.getDouble(0);
-//                    if (positive > 0.5)
-//                        logger.info("positive");
+                    // 吐出分析结果
+                    Double positive = probabilitiesAtLastWord_restored.getDouble(0);
+
+                    SentimentTuple sentimentTuple = new SentimentTuple();
+
+                    sentimentTuple.setId(String.valueOf(status.getId()));
+                    sentimentTuple.setName(status.getUser().getScreenName());
+                    sentimentTuple.setText(status.getText());
+                    sentimentTuple.setNlpPolarity(0);
+                    sentimentTuple.setNbPolarity(0);
+
+                    if (positive > 0.5)
+                        sentimentTuple.setDlPolarity(1);
+                    else
+                        sentimentTuple.setDlPolarity(-1);
+
+                    double latitude = -1;
+                    double longtitude = -1;
+                    if (status.getGeoLocation() != null) {
+                        latitude = status.getGeoLocation().getLatitude();
+                        longtitude = status.getGeoLocation().getLongitude();
+                    }
+                    sentimentTuple.setLatitude(latitude);
+                    sentimentTuple.setLongitude(longtitude);
+                    // 不新增字段了，直接用这无用的字段进行 dl4j 的前台校验
+                    sentimentTuple.setImage("dl4j");
+                    sentimentTuple.setDate(simpleDateFormat.format(status.getCreatedAt()));
+
+//                    // 发送 dl4j 情感分析结果到kafka 中
+//                    producer.send(new ProducerRecord<>(topicsProducer, status.getText()));
+//                    // 感觉没必要，直接将数据吐给 websocket 就够了
+
+                    // 发送消息给订阅 "/topic/consumeDeepLearning" 且在线的用户
+                    template.convertAndSend("/topic/consumeDeepLearning", gson.toJson(sentimentTuple));
 
                 } catch (TwitterException e) {
                     logger.error("TwitterException : ", e);
