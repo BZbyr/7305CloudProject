@@ -92,7 +92,6 @@ public class KafkaConsumer {
                                                                 long enCount = 0;
                                                                 long jaCount = 0;
                                                                 long esCount = 0;
-                                                                long msCount = 0;
                                                                 long ptCount = 0;
                                                                 long arCount = 0;
                                                                 long frCount = 0;
