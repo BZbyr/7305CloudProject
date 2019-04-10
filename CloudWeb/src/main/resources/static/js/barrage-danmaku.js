@@ -441,7 +441,7 @@ $(document).ready(function () {
         if (item != undefined) {
             // console.log(item)
             $("#twitter-text-p").text(item.text)
-            $("#detail-author").text(item.author)
+            $("#detail-author").text(item.name)
             if (item.image == "dl4j") {
                 // 隐藏 nb & nlp 结果
                 $("#tr-detail-nb").css('display', 'none')
