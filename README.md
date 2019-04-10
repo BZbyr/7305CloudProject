@@ -9,14 +9,16 @@ Term Project for **COMP7305 Cluster and Cloud Computing**.
 [![](https://img.shields.io/badge/Flume-1.9.0-blue.svg)](https://flume.apache.org)
 [![](https://img.shields.io/badge/Kafka-2.1.1-blue.svg)](http://kafka.apache.org)
 [![](https://img.shields.io/badge/Flink-1.7.2-blue.svg)](https://flink.apache.org)
+
 [![](https://img.shields.io/badge/Scala-2.11.12-brightgreen.svg)](https://www.scala-lang.org)
 [![](https://img.shields.io/badge/Python-3.6.7-brightgreen.svg)](https://www.python.org)
 [![](https://img.shields.io/badge/Java-1.8-brightgreen.svg)](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
-[![](https://img.shields.io/badge/SpringBoot-2.1.3-brightgreen.svg)](https://docs.spring.io)
-[![](https://img.shields.io/badge/JQuery-3.3.1-brightgreen.svg)](https://jquery.com)
-[![](https://img.shields.io/badge/Sockjs-1.3.0-brightgreen.svg)](https://github.com/sockjs/sockjs-client)
-[![](https://img.shields.io/badge/Stomp-2.3.3-brightgreen.svg)](http://stomp.github.io)
-[![](https://img.shields.io/badge/Echarts-4.2.1-brightgreen.svg)](https://echarts.baidu.com)
+
+[![](https://img.shields.io/badge/SpringBoot-2.1.3-ff69b4.svg)](https://docs.spring.io)
+[![](https://img.shields.io/badge/JQuery-3.3.1-ff69b4.svg)](https://jquery.com)
+[![](https://img.shields.io/badge/Sockjs-1.3.0-ff69b4.svg)](https://github.com/sockjs/sockjs-client)
+[![](https://img.shields.io/badge/Stomp-2.3.3-ff69b4.svg)](http://stomp.github.io)
+[![](https://img.shields.io/badge/Echarts-4.2.1-ff69b4.svg)](https://echarts.baidu.com)
 
 ## Title : Realtime Twitter Stream Analysis System
 
@@ -69,8 +71,6 @@ Need to connect with cs vpn.
 
 [Flink Server](http://202.45.128.135:20807/)
 
-[Flink Dashboard](http://202.45.128.135:20807)
-
 ### Project Documents
 
 [Proposal](https://docs.google.com/document/d/1zzrZSWjRAz3FpL2EyyuIOGwQPduTtCBiCcYJMfmvA4I/edit?usp=sharing)
@@ -107,16 +107,16 @@ Need to connect with cs vpn.
                -> DL4J -> Kafka
  ```
  
- *Flume*  将*Twitter Data* 搬运存储到 ```topic : alex1```
+ *Flume*  将*Twitter Data* 搬运存储到 ```topic : alex1``` 供 Spark & Flink & DL4J 订阅。
  
- *Spark Streaming* 读取```topic : alex1``` 进行情感分析，存储结果数据到 ```topic : twitter-result1```
+ *Spark Streaming* 读取```topic : alex1``` 进行情感分析，存储结果数据到 ```topic : twitter-result1``` 供Web端订阅。
  
- *Cloud Web DL4J* 读取```topic : alex1``` 进行 dl4j 情感分析，存储结果数据到 ```topic : twitter-dl4j```
+ *Cloud Web DL4J* 读取```topic : alex1``` 进行 dl4j 情感分析，结果数据不存储，直接吐到WebSocket监听的路由里，供Web端订阅。
  
  *Flink* 读取```topic : alex1``` 进行数据统计分析，
- - twitter 语言统计结果存储到```topic : twitter-flink-lang```
- - twitter 用户fans统计结果存储到```topic : twitter-flink-fans``` 
- - twitter 用户fans统计结果存储到```topic : twitter-flink-geo``` 
+ - twitter 语言统计结果存储到```topic : twitter-flink-lang``` 供Web端订阅。
+ - twitter 用户fans统计结果存储到```topic : twitter-flink-fans``` 供Web端订阅。
+ - twitter 用户geo统计结果存储到```topic : twitter-flink-geo``` 供Web端订阅。
  
  数据格式:
  
