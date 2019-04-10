@@ -24,6 +24,95 @@ $(document).ready(function () {
     // 保存 dl4j 情感分析结果
     let barrageDataDl4j = [];
 
+    // 折线图：趋势, 初始化
+    let lineChart = echarts.init(document.getElementById('LineChart'));
+    let lineChartOption = getLineChartOption()
+    lineChart.setOption(lineChartOption)
+
+    // 刷新折线图
+    let startPoint = new Date()
+    let data_x = [[startPoint.getHours(), startPoint.getMinutes(), startPoint.getSeconds()].join(':')]
+
+    //初始化坐标数据
+    let cur_num_nb_positive = 0
+    let cur_num_nb_negative = 0
+    let data_nb_positive = [cur_num_nb_positive]
+    let data_nb_negative = [cur_num_nb_negative]
+    let cur_num_nlp_positive = 0
+    let cur_num_nlp_negative = 0
+    let data_nlp_positive = [cur_num_nlp_positive]
+    let data_nlp_negative = [cur_num_nlp_negative]
+    let cur_num_dl_positive = 0
+    let cur_num_dl_negative = 0
+    let data_dl_positive = [cur_num_dl_positive]
+    let data_dl_negative = [cur_num_dl_negative]
+
+    let lineIntervalId;
+    // 2秒刷一次折线图
+    let lineIntervalDuration = 2000;
+
+    startLineChartInterval()
+
+    // 开启折线图绘画（刷新）
+    function startLineChartInterval() {
+        lineIntervalId = setInterval(function () {
+            startPoint = new Date(+startPoint + lineIntervalDuration)
+            data_x.push([startPoint.getHours(), startPoint.getMinutes(), startPoint.getSeconds()].join(':'))
+            // 添加当前值
+            data_nb_positive.push(cur_num_nb_positive)
+            data_nb_negative.push(cur_num_nb_negative)
+            data_nlp_positive.push(cur_num_nlp_positive)
+            data_nlp_negative.push(cur_num_nlp_negative)
+            data_dl_positive.push(cur_num_dl_positive)
+            data_dl_negative.push(cur_num_dl_negative)
+
+            lineChart.setOption({
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: data_x
+                },
+                series: [{
+                    name: 'nb-positive',
+                    type: 'line',
+                    stack: '总量',
+                    data: data_nb_positive,
+                    itemStyle: {
+                        color: '#aa314d'
+                    }
+                }, {
+                    name: 'nb-negative',
+                    type: 'line',
+                    stack: '总量',
+                    data: data_nb_negative,
+                    itemStyle: {
+                        color: '#283c55'
+                    }
+                }, {
+                    name: 'nlp-positive',
+                    type: 'line',
+                    stack: '总量',
+                    data: data_nlp_positive,
+                }, {
+                    name: 'nlp-negative',
+                    type: 'line',
+                    stack: '总量',
+                    data: data_nlp_negative,
+                }, {
+                    name: 'dl-positive',
+                    type: 'line',
+                    stack: '总量',
+                    data: data_dl_positive,
+                }, {
+                    name: 'dl-negative',
+                    type: 'line',
+                    stack: '总量',
+                    data: data_dl_negative,
+                }]
+            });
+        }, lineIntervalDuration);
+    }
+
     // stomp socket 客户端
     let stompClient = null;
 
@@ -53,16 +142,28 @@ $(document).ready(function () {
                 if (response.body == "ping-alive") {
                     console.log("consumeSentiment alive")
                 } else {
+                    let status = JSON.parse(response.body)
                     //解析消息并加入弹幕缓冲区
-                    barrageData.push(JSON.parse(response.body))
+                    barrageData.push(status)
                     if (barrageData.length > 2000) {
                         // 缓冲区弹幕过多，直接清理
                         barrageData.splice(50, 200)
-                        // barrageData.shift()
                     }
 
                     // detailed barrage 数据保存并展示
-                    detailBarrageData.push(JSON.parse(response.body))
+                    detailBarrageData.push(status)
+
+                    // 折线图数据更新
+                    if (status.nbPolarity == 1) {
+                        cur_num_nb_positive += 1
+                    } else if (status.nbPolarity == -1) {
+                        cur_num_nb_negative += 1
+                    }
+                    if (status.nlpPolarity == 1) {
+                        cur_num_nlp_positive += 1
+                    } else if (status.nlpPolarity == -1) {
+                        cur_num_nlp_negative += 1
+                    }
                 }
             })
 
@@ -71,15 +172,22 @@ $(document).ready(function () {
                 if (response.body == "ping-alive") {
                     console.log("consumeSentiment alive")
                 } else {
+                    let status = JSON.parse(response.body)
                     //解析消息并加入弹幕缓冲区
-                    barrageDataDl4j.push(JSON.parse(response.body))
+                    barrageDataDl4j.push(status)
                     if (barrageDataDl4j.length > 2000) {
                         // 缓冲区弹幕过多，直接清理
                         barrageDataDl4j.splice(50, 200)
                     }
 
                     // detailed barrage 数据保存并展示
-                    detailBarrageData.push(JSON.parse(response.body))
+                    detailBarrageData.push(status)
+
+                    if (status.dlPolarity == 1) {
+                        cur_num_dl_positive += 1
+                    } else {
+                        cur_num_dl_negative += 1
+                    }
                 }
             })
         });
@@ -336,17 +444,17 @@ $(document).ready(function () {
             $("#detail-author").text(item.author)
             if (item.image == "dl4j") {
                 // 隐藏 nb & nlp 结果
-                $("#tr-detail-nb").css('display','none')
-                $("#tr-detail-nlp").css('display','none')
+                $("#tr-detail-nb").css('display', 'none')
+                $("#tr-detail-nlp").css('display', 'none')
                 // 显示 dl4j 结果
-                $("#tr-detail-dl").css('display','table-row')
+                $("#tr-detail-dl").css('display', 'table-row')
                 $("#detail-dl").text(item.dlPolarity == 1 ? "😍" : "😭")
             } else {
                 // 隐藏 dl4j 结果
-                $("#tr-detail-dl").css('display','none')
+                $("#tr-detail-dl").css('display', 'none')
                 // 显示 nb & nlp 结果
-                $("#tr-detail-nb").css('display','table-row')
-                $("#tr-detail-nlp").css('display','table-row')
+                $("#tr-detail-nb").css('display', 'table-row')
+                $("#tr-detail-nlp").css('display', 'table-row')
                 $("#detail-nb").text(item.nbPolarity == 1 ? "😍" : (item.nbPolarity == 0 ? "😐" : "😭"))
                 $("#detail-nlp").text(item.nlpPolarity == 1 ? "😍" : (item.nlpPolarity == 0 ? "😐" : "😭"))
             }
@@ -386,4 +494,23 @@ window.switchBarrageBackground = (function () {
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
+}
+
+function getLineChartOption() {
+    let option = {
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: ['nb-positive', 'nb-negative', 'nlp-positive', 'nlp-negative', 'dl-positive', 'dl-negative']
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+        },
+        yAxis: {
+            type: 'value'
+        }
+    };
+    return option
 }

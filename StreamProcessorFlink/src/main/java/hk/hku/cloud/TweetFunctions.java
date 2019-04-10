@@ -8,9 +8,7 @@ package hk.hku.cloud;
 import twitter4j.Status;
 import twitter4j.GeoLocation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 /**
  *
