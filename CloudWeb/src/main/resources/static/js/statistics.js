@@ -103,9 +103,9 @@ $(document).ready(function () {
                     // count200+"|"+count800+"|"+count2k+"|"+count5k+"|"+count20k+"|"+count100k+"|"+count1kk+"|"+count1kkp
                     let fans = response.body.split("|")
                     let num_200_800 = new Number(fans[0]) + new Number(fans[1])
-                    let num_800_2k = new Number(fans[2])
-                    let num_2k_5k = new Number(fans[3])
-                    let num_5k_20k = new Number(fans[4])
+                    let num_800_2k = (new Number(fans[2])).toString()
+                    let num_2k_5k = (new Number(fans[3])).toString()
+                    let num_5k_20k = (new Number(fans[4])).toString()
                     let num_20k_1kk = new Number(fans[5]) + new Number(fans[6]) + new Number(fans[7])
                     if (fans.length < 0)
                         console.log("consume fans data format exeception : " + response.body)
