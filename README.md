@@ -19,7 +19,8 @@ Term Project for **COMP7305 Cluster and Cloud Computing**.
 [![](https://img.shields.io/badge/Sockjs-1.3.0-brightgreen.svg)](https://github.com/sockjs/sockjs-client)
 [![](https://img.shields.io/badge/Stomp-2.3.3-brightgreen.svg)](http://stomp.github.io)
 [![](https://img.shields.io/badge/Echarts-4.2.1-brightgreen.svg)](https://echarts.baidu.com)
-![](https://img.shields.io/static/v1.svg?label=<LABEL>&message=<MESSAGE>&color=ff69b4<COLOR>)
+
+![](https://img.shields.io/static/v1.svg?label=<LABEL>&message=<MESSAGE>&color=<ff69b4>)
 
 ## Title : Realtime Twitter Stream Analysis System
 
