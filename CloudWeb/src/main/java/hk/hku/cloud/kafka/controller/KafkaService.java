@@ -308,6 +308,7 @@ public class KafkaService {
 
                     // 吐出分析结果
                     Double positive = probabilitiesAtLastWord_restored.getDouble(0);
+                    logger.info("dl4j positive : " + positive);
 
                     SentimentTuple sentimentTuple = new SentimentTuple();
 
@@ -318,7 +319,7 @@ public class KafkaService {
                     sentimentTuple.setNlpPolarity(0);
                     sentimentTuple.setNbPolarity(0);
 
-                    if (positive > 0.5)
+                    if (positive > 0.8)
                         sentimentTuple.setDlPolarity(1);
                     else
                         sentimentTuple.setDlPolarity(-1);

@@ -8,16 +8,18 @@ $(document).ready(function () {
 
 
     // 更新柱状图数据
-    let barTitle = "Analyze the composition of the Twitter language in the past 1w"
+    let barTitle = "Analyze the composition of the Twitter language in the past 500"
     // 横轴坐标名, 初定6批数据
     let barxAxis = ['batch1', 'batch2', 'batch3', 'batch4', 'batch5', 'batch6']
     let barData = {
-        // 初定分为 4类数据, 根据实际情况配置
-        name: ['en', 'ch', 'jp', 'other'],
+        // 初定分为 5类数据, 根据实际情况配置
+        //"pt":2,"ot":26,"ja":3,"en":453,"fr":12,"es":4,
+        name: ['en', 'ja', 'fr', 'es', 'pt', 'other'],
         // 显示的数据, 4*N 的矩阵, N<=6, 去掉旧数据保存新数据, 形成水流一样的效果
         en_data: [0],
-        ch_data: [0],
-        jp_data: [0],
+        fr_data: [0],
+        es_data: [0],
+        pt_data: [0],
         other_data: [0]
     }
     let barChartOption = setBarChartOption(barTitle, barxAxis, barData)
@@ -29,7 +31,7 @@ $(document).ready(function () {
 
 
     // 更细饼图数据
-    let pieTitle = "Analysis of the composition of Twitter users in the past 1w"
+    let pieTitle = "Analysis of the composition of Twitter users in the past 500"
     let pieData = []
     let pieOption = setPieChartOption(pieTitle, pieData);
     pieChart.setOption(pieOption);
@@ -64,27 +66,51 @@ $(document).ready(function () {
 
             // 订阅 /topic/consumeLang 语言统计数据
             stompClient.subscribe('/topic/consumeLang', function (response) {
-                if (response.body == "ping-alive"){
+                if (response.body == "ping-alive") {
                     console.log("consumeLang alive")
                 } else {
-                    let tmp = response.body.split("|")
-                    if (tmp.length < 4)
+                    let lang = JSON.parse(response.body)
+                    if (lang.length < 0)
                         console.log("consume lang data format exeception : " + response.body)
-                    else
-                        langDataNewest = [tmp[0], tmp[1], tmp[2], tmp[3]]
+                    else {
+                        let enNum = 0
+                        let frNum = 0
+                        let esNum = 0
+                        let ptNum = 0
+                        let otNum = 0
+                        for (let i in a) {
+                            if (i == 'en')
+                                enNum += a[i]
+                            else if (i == 'fr')
+                                frNum += a[i]
+                            else if (i == 'es')
+                                esNum += a[i]
+                            else if (i == 'pt')
+                                ptNum += a[i]
+                            else
+                                otNum += a[i]
+                        }
+                    }
+                    langDataNewest = [enNum, frNum, esNum, ptNum, otNum]
                 }
             })
 
             // 订阅 /topic/consumeFans 用户fans统计数据
             stompClient.subscribe('/topic/consumeFans', function (response) {
-                if (response.body == "ping-alive"){
+                if (response.body == "ping-alive") {
                     console.log("consumeFans alive")
                 } else {
-                    let tmp = response.body.split("|")
-                    if (tmp.length < 5)
+                    // count200+"|"+count800+"|"+count2k+"|"+count5k+"|"+count20k+"|"+count100k+"|"+count1kk+"|"+count1kkp
+                    let fans = response.body.split("|")
+                    let num_200_800 = fans[0] + fans[1]
+                    let num_800_2k = fans[2]
+                    let num_2k_5k = fans[3]
+                    let num_5k_20k = fans[4]
+                    let num_20k_1kk = fans[5] + fans[6] + fans[7]
+                    if (tmp.length < 0)
                         console.log("consume fans data format exeception : " + response.body)
                     else
-                        fansDataNewest = [tmp[0], tmp[1], tmp[2], tmp[3], tmp[4]]
+                        fansDataNewest = [num_200_800, num_800_2k, num_2k_5k, num_5k_20k, num_20k_1kk]
                 }
             })
         });
@@ -112,27 +138,30 @@ $(document).ready(function () {
                 // 已经满6列数据，去除第一条，再新增最新数据
                 while (barData.en_data.length >= 6) {
                     barData.en_data.shift()
-                    barData.ch_data.shift()
-                    barData.jp_data.shift()
+                    barData.fr_data.shift()
+                    barData.es_data.shift()
+                    barData.pt_data.shift()
                     barData.other_data.shift()
                 }
 
                 // 免得 langDataNewest 被改变了
                 let displayData = langDataNewest;
 
-                if (displayData.length < 4) {
+                if (displayData.length < 5) {
                     // 使用测试数据
-                    let randomData = [getRandomInt(100), getRandomInt(50), getRandomInt(50)]
-                    barData.en_data.push(200 - randomData[0] - randomData[1] - randomData[2])
-                    barData.ch_data.push(randomData[0])
-                    barData.jp_data.push(randomData[1])
-                    barData.other_data.push(randomData[2])
+                    let randomData = [getRandomInt(60), getRandomInt(60), getRandomInt(30), getRandomInt(100)]
+                    barData.en_data.push(500 - randomData[0] - randomData[1] - randomData[2] - randomData[3])
+                    barData.fr_data.push(randomData[0])
+                    barData.es_data.push(randomData[1])
+                    barData.pt_data.push(randomData[2])
+                    barData.other_data.push(randomData[3])
                 } else {
                     // 插入 kafka 数据
                     barData.en_data.push(displayData[0])
-                    barData.ch_data.push(displayData[1])
-                    barData.jp_data.push(displayData[2])
-                    barData.other_data.push(displayData[3])
+                    barData.fr_data.push(displayData[1])
+                    barData.es_data.push(displayData[2])
+                    barData.pt_data.push(displayData[3])
+                    barData.other_data.push(displayData[4])
                 }
 
                 //更新bar 显示数据
@@ -188,7 +217,7 @@ $(document).ready(function () {
         if (pieTimerId == undefined) {
             function pieTimer() {
                 // 更新pie 显示数据
-                let name = ['fans <= 100', '100 < fans <= 300', '300 < fans <= 500', '500 < fans <= 1000', '1000 < fans']
+                let name = ['fans <= 800', '800 < fans <= 2k', '2k < fans <= 5k', '5k < fans <= 20k', '20k < fans']
                 let data = []
 
                 // 免得 fansDataNewest 被改变了
@@ -197,8 +226,12 @@ $(document).ready(function () {
                 if (displayData.length < 5) {
                     // 使用测试数据
                     for (let i = 0; i < 5; i++) {
+                        let tmp = 400 + getRandomInt(200)
+                        if (i == 5) {
+                            tmp = getRandomInt(200)
+                        }
                         data.push({
-                            value: getRandomInt(1000),
+                            value: tmp,
                             name: name[i]
                         })
                     }
