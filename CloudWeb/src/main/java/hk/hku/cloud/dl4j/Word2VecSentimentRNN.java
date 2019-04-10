@@ -22,6 +22,8 @@ import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Scanner;
 
 /**Example: Given a movie review (raw text), classify that movie review as either positive or negative based on the words it contains.
  * This is done by combining Word2Vec vectors and a recurrent neural network model. Each word in a review is vectorized
@@ -61,7 +63,7 @@ public class Word2VecSentimentRNN {
     /** Location to save and extract the training/testing data */
     public static final String DATA_PATH = FilenameUtils.concat(System.getProperty("java.io.tmpdir"), "dl4j_w2vSentiment/");
     /** Location (local file system) for the Google News vectors. Set this manually. */
-    public static final String WORD_VECTORS_PATH = "/Users/woora/Downloads/GoogleNews-vectors-negative300.bin.gz";
+    public static final String WORD_VECTORS_PATH = "/Users/Kai/Downloads/GoogleNews-vectors-negative300.bin.gz";
 
 
     public static void main(String[] args) throws Exception {
