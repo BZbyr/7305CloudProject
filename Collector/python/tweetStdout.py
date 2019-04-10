@@ -9,7 +9,7 @@ G_consumer_secret = 'h1NfmL8t3Ry60eranoz61PYWXNir9539QyzQ0i4L2jqaU0IQDC'
 G_access_token = '4244469072-FxT513aKjBWrSZipMYzhMdlN6AYha77d90MV3Hh'
 G_access_token_secret = 'ks69jGoDCEVeKarwBqztsoWt0xdPIamllVKq9MgGu3NMi'
 # keywords
-G_track = ['Oscar','football','weather']
+G_track = ['Oscar','football','trump']
 
 ## This is the listener, resposible for receiving data
 class StdOutListener(tweepy.StreamListener):
