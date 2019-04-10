@@ -84,7 +84,7 @@ public class KafkaConsumer {
         DataStream<Map<String,Long>> countsLang = tweets.filter(tweet -> (TweetFunctions.getTweetLanguage(tweet) != null))
                                                         .map(new TweetWithLang())
                                                         .returns(typeInformation)
-                                                        .countWindowAll(500)
+                                                        .countWindowAll(500,100)
                                                         .process(new ProcessAllWindowFunction<Tuple2<Status, String>, Map<String,Long>, GlobalWindow>() {
                                                             @Override
                                                             public void process(Context context, Iterable<Tuple2<Status, String>> elements, Collector<Map<String,Long>> out) throws Exception {
@@ -105,7 +105,6 @@ public class KafkaConsumer {
                                                                             langMap.put("zh",zhCount);
                                                                             break;
                                                                         case "en":
-                                                                            enCount ++;
                                                                             langMap.put("en",enCount);
                                                                             break;
                                                                         case "ja":
@@ -221,38 +220,6 @@ public class KafkaConsumer {
                 // return the parsed tweet, or null if exception occured
                 return status;
             }
-        }
-    }
-
-    /**
-     * 主要为了存储单词以及单词出现的次数
-     */
-    public static class LangWithCount {
-        public String lang;
-        public long count;
-
-        public LangWithCount() {
-        }
-
-        public LangWithCount(String lang, long count) {
-            this.lang = lang;
-            this.count = count;
-        }
-
-        public long getCount() {
-            return count;
-        }
-
-        public String getLang() {
-            return lang;
-        }
-
-        @Override
-        public String toString() {
-            return "LangWithCount{" +
-                    "lang='" + lang + '\'' +
-                    ", count=" + count +
-                    '}';
         }
     }
 }
