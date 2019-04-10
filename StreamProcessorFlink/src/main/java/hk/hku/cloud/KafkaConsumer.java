@@ -7,24 +7,19 @@ package hk.hku.cloud;
  */
 
 import com.google.gson.Gson;
-import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.api.common.functions.FoldFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.windowing.ProcessAllWindowFunction;
-import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.util.Collector;
+import org.apache.kafka.common.protocol.types.Field;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.Status;
@@ -74,7 +69,7 @@ public class KafkaConsumer {
         // Stream transformations
         DataStream<Status> tweets =
                 stream.filter(line -> line.toString().trim().length() > 0)
-                        .map(new JSONParser())
+                        .map(new JsonParser())
                         .filter(tweet -> (tweet != null && (tweet.getCreatedAt() != null) && (tweet.getText() != null)))
                         .name("Tweets Sweeper");
 
@@ -149,7 +144,7 @@ public class KafkaConsumer {
                                             break;
 
                                     }
-                                };
+                                }
                                 out.collect(langMap);
                             }
                         })
@@ -165,6 +160,62 @@ public class KafkaConsumer {
 
         langString.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_1), new SimpleStringSchema(), propProducer))
                     .name("Language Count Sink");
+
+        DataStream<String> countsByFollowers =
+                tweets.filter(tweet -> (TweetFunctions.getUsrFollowerNumLevel(tweet) != null))
+                        .map(new TweetWithFollowersLevel())
+                        .returns(typeInformation)
+                        .countWindowAll(2000,200)
+                        .process(
+                                new ProcessAllWindowFunction<Tuple2<Status, String>, String, GlobalWindow>() {
+                                     @Override
+                                     public void process(Context context, Iterable<Tuple2<Status, String>> elements, Collector<String> out) throws Exception {
+                                        long count200 = 0;
+                                        long count800 = 0;
+                                        long count2k = 0;
+                                        long count5k = 0;
+                                        long count20k = 0;
+                                        long count100k = 0;
+                                        long count1kk = 0;
+                                        long count1kkp = 0;
+                                        for (Tuple2<Status,String> element:elements){
+                                            switch (element.f1){
+                                                case "200":
+                                                    count200 ++;
+                                                    break;
+                                                case "800":
+                                                    count800 ++;
+                                                    break;
+                                                case "2k":
+                                                    count2k ++;
+                                                    break;
+                                                case "5k":
+                                                    count5k ++;
+                                                    break;
+                                                case "20k":
+                                                    count20k ++;
+                                                    break;
+                                                case "100k":
+                                                    count100k ++;
+                                                    break;
+                                                case "1kk":
+                                                    count1kk ++;
+                                                    break;
+                                                case "1kk+":
+                                                    count1kkp ++;
+                                                    break;
+
+                                                default:
+                                                    break;
+                                            }
+                                        }
+                                        out.collect(new String(count200+"|"+count800+"|"+count2k+"|"+count5k+"|"+count20k+"|"+count100k+"|"+count1kk+"|"+count1kkp));
+                                     }
+                                }
+                        ).name("followerLevel count");
+        countsByFollowers.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_2), new SimpleStringSchema(),propProducer))
+                            .name("follower level sink");
+
 
 
         // execute program
@@ -184,11 +235,6 @@ public class KafkaConsumer {
 
     /**
      * Maps a tweet to its country, latitude, longitude, and timestamp
-     *
-     * @package: hk.hku.cloud
-     * @class: KafkaConsumer
-     * @author: Boyang
-     * @date: 2019-04-09 19:10
      */
     public static class TweetToLocation implements MapFunction<Status, String> {
         @Override
@@ -200,7 +246,7 @@ public class KafkaConsumer {
     }
 
     /**
-     * Maps a tweet to lang, count
+     * Maps a tweet to Tuple< tweet, lang >
      */
     public static class TweetWithLang implements MapFunction<Status, Tuple2<Status,String>> {
 
@@ -210,14 +256,21 @@ public class KafkaConsumer {
         public Tuple2<Status,String> map(Status tweet) {
             return new Tuple2<>(tweet, TweetFunctions.getTweetLanguage(tweet));
         }
+    }
 
+    public static class TweetWithFollowersLevel implements MapFunction<Status,Tuple2<Status,String>>{
+        private static final long serialVersionUID= 1L;
 
+        @Override
+        public Tuple2<Status, String> map(Status tweet){
+            return new Tuple2<>(tweet,TweetFunctions.getUsrFollowerNumLevel(tweet));
+        }
     }
 
     /**
      * Implements the JSON parser provided by twitter4J into Flink MapFunction
      */
-    public static final class JSONParser implements MapFunction<String, Status> {
+    public static final class JsonParser implements MapFunction<String, Status> {
         @Override
         public Status map(String value) {
             Status status = null;
@@ -231,4 +284,34 @@ public class KafkaConsumer {
             }
         }
     }
+
+    /**
+     * 统计每个 level 的发帖量
+     */
+    public static class WordWithCount{
+        private String level;
+        private long count;
+        public WordWithCount(){}
+        public WordWithCount(String word, long count) {
+            this.level = word;
+            this.count = count;
+        }
+
+        public long getCount() {
+            return count;
+        }
+
+        public String getLevel() {
+            return level;
+        }
+
+        @Override
+        public String toString() {
+            return "WordWithCount{" +
+                    "word='" + level + '\'' +
+                    ", count=" + count +
+                    '}';
+        }
+    }
+
 }

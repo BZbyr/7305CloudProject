@@ -26,6 +26,47 @@ public class TweetFunctions {
     private static final List<String> LANG_CODE = new ArrayList<>(Arrays.asList("zh","en","ja","es","pt","ar","fr","ko"));
 
 
+    /**
+     * get the num of fans of the tweet poster
+     *
+     * @param tweet the tweet
+     * @return  java.lang.Long
+     */
+    public static String getUsrFollowerNumLevel(Status tweet){
+        String followerNumLevel = null;
+        int followNum = 0;
+        if (tweet.getUser()!=null){
+            followNum = tweet.getUser().getFollowersCount();
+            if (followNum<=200){
+                followerNumLevel = "200";
+            }
+            else if (followNum<=800){
+                followerNumLevel = "800";
+            }
+            else if (followNum<=2000){
+                followerNumLevel = "2k";
+            }
+            else if (followNum<=5000){
+                followerNumLevel = "5k";
+            }else if (followNum <= 20000){
+                followerNumLevel = "20k";
+            }else if (followNum <= 100000){
+                followerNumLevel = "100k";
+            }else if (followNum <= 1000000){
+                followerNumLevel = "1kk";
+            }else {
+                followerNumLevel = "1kk+";
+            }
+        }
+        return followerNumLevel;
+    }
+
+    /**
+     * get the tweet language
+     *
+     * @param tweet the tweet
+     * @return  java.lang.String
+     */
     public static String getTweetLanguage(Status tweet){
         String language = null;
         if(tweet.getLang() != null) {
@@ -52,6 +93,12 @@ public class TweetFunctions {
         return language;
     }
 
+    /**
+     * get the tweet latitude and longitude
+     *
+     * @param tweet the tweet
+     * @return  twitter4j.GeoLocation
+     */
     public static GeoLocation getTweetGPSCoordinates(Status tweet) {
         GeoLocation coordinates = null;
 
@@ -63,14 +110,13 @@ public class TweetFunctions {
             coordinates = tweet.getGeoLocation();
         }
 
-
         else if(tweet.getPlace() != null && tweet.getPlace().getBoundingBoxCoordinates() != null) {
             // get bounding box
             GeoLocation[] boundingBox =  tweet.getPlace().getBoundingBoxCoordinates()[0];
             // compute center of bounding box
-            double centerLatitude = Arrays.stream(boundingBox).map(location -> location.getLatitude())
+            double centerLatitude = Arrays.stream(boundingBox).map(GeoLocation::getLatitude)
                     .collect(Collectors.averagingDouble(d -> d));
-            double centerLongitude = Arrays.stream(boundingBox).map(location -> location.getLongitude())
+            double centerLongitude = Arrays.stream(boundingBox).map(GeoLocation::getLongitude)
                     .collect(Collectors.averagingDouble(d -> d));
 
             coordinates = new GeoLocation(centerLatitude, centerLongitude);
