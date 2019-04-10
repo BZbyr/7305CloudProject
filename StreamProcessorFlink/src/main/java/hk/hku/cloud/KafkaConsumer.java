@@ -98,6 +98,7 @@ public class KafkaConsumer {
                                                                 long frCount = 0;
                                                                 long koCount = 0;
                                                                 long otCount = 0;
+                                                                langMap.clear();
                                                                 for (Tuple2<Status, String> element : elements) {
                                                                     switch (element.f1){
                                                                         case "zh":
@@ -105,6 +106,7 @@ public class KafkaConsumer {
                                                                             langMap.put("zh",zhCount);
                                                                             break;
                                                                         case "en":
+                                                                            enCount ++;
                                                                             langMap.put("en",enCount);
                                                                             break;
                                                                         case "ja":
@@ -114,10 +116,6 @@ public class KafkaConsumer {
                                                                         case "es":
                                                                             esCount ++;
                                                                             langMap.put("es",esCount);
-                                                                            break;
-                                                                        case "ms":
-                                                                            msCount ++;
-                                                                            langMap.put("ms",msCount);
                                                                             break;
                                                                         case "pt":
                                                                             ptCount ++;

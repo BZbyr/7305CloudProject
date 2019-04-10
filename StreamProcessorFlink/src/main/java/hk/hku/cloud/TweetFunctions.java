@@ -23,23 +23,28 @@ public class TweetFunctions {
     private static final String JP = "jp";
     private static final String SPA = "sp";
     private static final String POR = "po";
-    private static final List<String> LANG_CODE = new ArrayList<>(Arrays.asList("zh","en","ja","es","ms","pt","ar","fr","ko"));
+    private static final List<String> LANG_CODE = new ArrayList<>(Arrays.asList("zh","en","ja","es","pt","ar","fr","ko"));
 
 
     public static String getTweetLanguage(Status tweet){
         String language = null;
         if(tweet.getLang() != null) {
             language = tweet.getLang().substring(0,2);
-            if (language.equals(JP) ){
-                language = "ja";
-            }else if (language.equals(SPA)){
-                language = "es";
-            }else if (language.equals(POR)){
-                language = "pt";
-            }else {
-                if (!LANG_CODE.contains(language)) {
-                    language = "ot";
-                }
+            switch (language) {
+                case JP:
+                    language = "ja";
+                    break;
+                case SPA:
+                    language = "es";
+                    break;
+                case POR:
+                    language = "pt";
+                    break;
+                default:
+                    if (!LANG_CODE.contains(language)) {
+                        language = "ot";
+                    }
+                    break;
             }
         }
 
