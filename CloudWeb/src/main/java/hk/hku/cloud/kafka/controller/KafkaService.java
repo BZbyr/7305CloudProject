@@ -176,7 +176,7 @@ public class KafkaService {
 
     /**
      * consume kafka Fans data 并发送到前端 /topic/consumeFans
-     * 根据Lang语言分类
+     *
      */
     @Async
     public void consumeStatisticFans() {

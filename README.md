@@ -123,7 +123,7 @@ Need to connect with cs vpn.
  - Twitter 元数据 ```twitter4j.Status```
  - 情感分析结果 ```ID¦Name¦Text¦NLP¦MLlib¦DeepLearning¦Latitude¦Longitude¦Profile¦Date```
  - Lang 统计结果 ```{"pt":2,"ot":26,"ja":3,"en":453,"fr":12,"es":4}```
- - Fans 统计结果 ```under 100|100~500|500~1000|above 1000```
+ - Fans 统计结果 ```200|800|500~1000|above 1000```
  - map 统计结果 ```Latitude|Longitude|time```
 
 ### Operation & Conf
