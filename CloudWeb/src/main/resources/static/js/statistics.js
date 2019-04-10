@@ -90,8 +90,8 @@ $(document).ready(function () {
                             else
                                 otNum += lang[i]
                         }
+                        langDataNewest = [enNum, frNum, esNum, ptNum, otNum]
                     }
-                    langDataNewest = [enNum, frNum, esNum, ptNum, otNum]
                 }
             })
 
@@ -102,11 +102,11 @@ $(document).ready(function () {
                 } else {
                     // count200+"|"+count800+"|"+count2k+"|"+count5k+"|"+count20k+"|"+count100k+"|"+count1kk+"|"+count1kkp
                     let fans = response.body.split("|")
-                    let num_200_800 = fans[0] + fans[1]
-                    let num_800_2k = fans[2]
-                    let num_2k_5k = fans[3]
-                    let num_5k_20k = fans[4]
-                    let num_20k_1kk = fans[5] + fans[6] + fans[7]
+                    let num_200_800 = new Number(fans[0]) + new Number(fans[1])
+                    let num_800_2k = new Number(fans[2])
+                    let num_2k_5k = new Number(fans[3])
+                    let num_5k_20k = new Number(fans[4])
+                    let num_20k_1kk = new Number(fans[5]) + new Number(fans[6]) + new Number(fans[7])
                     if (fans.length < 0)
                         console.log("consume fans data format exeception : " + response.body)
                     else
@@ -146,6 +146,7 @@ $(document).ready(function () {
 
                 // 免得 langDataNewest 被改变了
                 let displayData = langDataNewest;
+                langDataNewest = []
 
                 if (displayData.length < 5) {
                     // 使用测试数据
@@ -172,30 +173,33 @@ $(document).ready(function () {
                         stack: '总量',
                         areaStyle: {},
                         data: barData.en_data
-                    },
-                        {
-                            name: barData.name[1],
-                            type: 'line',
-                            stack: '总量',
-                            areaStyle: {},
-                            data: barData.ch_data
+                    }, {
+                        name: barData.name[1],
+                        type: 'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: barData.fr_data
+                    }, {
+                        name: barData.name[2],
+                        type: 'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: barData.es_data
+                    }, {
+                        name: barData.name[3],
+                        type: 'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: barData.pt_data
+                    }, {
+                        name: barData.name[4],
+                        type: 'line',
+                        stack: '总量',
+                        areaStyle: {
+                            normal: {}
                         },
-                        {
-                            name: barData.name[2],
-                            type: 'line',
-                            stack: '总量',
-                            areaStyle: {},
-                            data: barData.jp_data
-                        },
-                        {
-                            name: barData.name[3],
-                            type: 'line',
-                            stack: '总量',
-                            areaStyle: {
-                                normal: {}
-                            },
-                            data: barData.other_data
-                        }
+                        data: barData.other_data
+                    }
                     ]
                 });
                 // 每2秒刷新一次报表展示数据

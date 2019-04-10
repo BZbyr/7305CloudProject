@@ -134,7 +134,6 @@ public class KafkaService {
                 }
 
                 String data = gson.toJson(sentimentTuple);
-                logger.info("sendData : " + data);
                 // 发送消息给订阅 "/topic/notice" 且在线的用户
                 template.convertAndSend("/topic/consumeSentiment", data);
             }
