@@ -295,7 +295,7 @@ public class KafkaService {
                     Status status = TwitterObjectFactory.createStatus(value);
 //                    logger.info("get twitter status : " + status.getText());
 
-                    if (status.getText() == null || status.getText().length() < 5) {
+                    if (status == null || status.getText() == null || status.getText().length() < 5) {
                         continue;
                     }
 
