@@ -67,96 +67,108 @@ public class KafkaConsumer {
 
         TypeInformation<Tuple2<Status, String>> typeInformation = TypeInformation.of(new TypeHint<Tuple2<Status, String>>() {});
         // get input data
-        DataStream<String> stream = env.addSource(new FlinkKafkaConsumer<>(context.getString(KAFKA_TOPIC), new SimpleStringSchema(), propConsumer));
+        DataStream<String> stream =
+                env.addSource(new FlinkKafkaConsumer<>(context.getString(KAFKA_TOPIC), new SimpleStringSchema(), propConsumer))
+                    .name("KafkaConsumer");
 
         // Stream transformations
-        DataStream<Status> tweets = stream.filter(line -> line.toString().trim().length() > 0)
-                .map(new JSONParser())
-                .filter(tweet -> (tweet != null && (tweet.getCreatedAt() != null) && (tweet.getText() != null)));
+        DataStream<Status> tweets =
+                stream.filter(line -> line.toString().trim().length() > 0)
+                        .map(new JSONParser())
+                        .filter(tweet -> (tweet != null && (tweet.getCreatedAt() != null) && (tweet.getText() != null)))
+                        .name("Tweets Sweeper");
 
         // create a stream of GPS information
         DataStream<String> geoInfo =
                 tweets.filter(tweet -> TweetFunctions.getTweetGPSCoordinates(tweet) != null)
-                        .map(new TweetToLocation());
+                        .map(new TweetToLocation())
+                        .name("Tweets to Location");
         //write GPS information into kafka topic3
-        geoInfo.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_3), new SimpleStringSchema(), propProducer));
+        geoInfo.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_3), new SimpleStringSchema(), propProducer))
+                .name("Location Sink");
 
-        DataStream<Map<String,Long>> countsLang = tweets.filter(tweet -> (TweetFunctions.getTweetLanguage(tweet) != null))
-                                                        .map(new TweetWithLang())
-                                                        .returns(typeInformation)
-                                                        .countWindowAll(500,100)
-                                                        .process(new ProcessAllWindowFunction<Tuple2<Status, String>, Map<String,Long>, GlobalWindow>() {
-                                                            @Override
-                                                            public void process(Context context, Iterable<Tuple2<Status, String>> elements, Collector<Map<String,Long>> out) throws Exception {
-                                                                long zhCount = 0;
-                                                                long enCount = 0;
-                                                                long jaCount = 0;
-                                                                long esCount = 0;
-                                                                long ptCount = 0;
-                                                                long arCount = 0;
-                                                                long frCount = 0;
-                                                                long koCount = 0;
-                                                                long otCount = 0;
-                                                                langMap.clear();
-                                                                for (Tuple2<Status, String> element : elements) {
-                                                                    switch (element.f1){
-                                                                        case "zh":
-                                                                            zhCount ++;
-                                                                            langMap.put("zh",zhCount);
-                                                                            break;
-                                                                        case "en":
-                                                                            enCount ++;
-                                                                            langMap.put("en",enCount);
-                                                                            break;
-                                                                        case "ja":
-                                                                            jaCount ++;
-                                                                            langMap.put("ja",jaCount);
-                                                                            break;
-                                                                        case "es":
-                                                                            esCount ++;
-                                                                            langMap.put("es",esCount);
-                                                                            break;
-                                                                        case "pt":
-                                                                            ptCount ++;
-                                                                            langMap.put("pt",ptCount);
-                                                                            break;
-                                                                        case "ar":
-                                                                            arCount ++;
-                                                                            langMap.put("ar",arCount);
-                                                                            break;
-                                                                        case "fr":
-                                                                            frCount ++;
-                                                                            langMap.put("fr",frCount);
-                                                                            break;
-                                                                        case "ko":
-                                                                            koCount ++;
-                                                                            langMap.put("ko",koCount);
-                                                                            break;
-                                                                        case "ot":
-                                                                            otCount ++;
-                                                                            langMap.put("ot",otCount);
-                                                                            break;
+        // language count
+        DataStream<Map<String,Long>> countsLang =
+                tweets.filter(tweet -> (TweetFunctions.getTweetLanguage(tweet) != null))
+                        .map(new TweetWithLang())
+                        .returns(typeInformation)
+                        .countWindowAll(500,100)
+                        .process(new ProcessAllWindowFunction<Tuple2<Status, String>, Map<String,Long>, GlobalWindow>() {
+                            @Override
+                            public void process(Context context, Iterable<Tuple2<Status, String>> elements, Collector<Map<String,Long>> out) throws Exception {
+                                long zhCount = 0;
+                                long enCount = 0;
+                                long jaCount = 0;
+                                long esCount = 0;
+                                long ptCount = 0;
+                                long arCount = 0;
+                                long frCount = 0;
+                                long koCount = 0;
+                                long otCount = 0;
+                                langMap.clear();
+                                for (Tuple2<Status, String> element : elements) {
+                                    switch (element.f1){
+                                        case "zh":
+                                            zhCount ++;
+                                            langMap.put("zh",zhCount);
+                                            break;
+                                        case "en":
+                                            enCount ++;
+                                            langMap.put("en",enCount);
+                                            break;
+                                        case "ja":
+                                            jaCount ++;
+                                            langMap.put("ja",jaCount);
+                                            break;
+                                        case "es":
+                                            esCount ++;
+                                            langMap.put("es",esCount);
+                                            break;
+                                        case "pt":
+                                            ptCount ++;
+                                            langMap.put("pt",ptCount);
+                                            break;
+                                        case "ar":
+                                            arCount ++;
+                                            langMap.put("ar",arCount);
+                                            break;
+                                        case "fr":
+                                            frCount ++;
+                                            langMap.put("fr",frCount);
+                                            break;
+                                        case "ko":
+                                            koCount ++;
+                                            langMap.put("ko",koCount);
+                                            break;
+                                        case "ot":
+                                            otCount ++;
+                                            langMap.put("ot",otCount);
+                                            break;
 
-                                                                        default:
-                                                                            break;
+                                        default:
+                                            break;
 
-                                                                    }
-                                                                };
-                                                                out.collect(langMap);
-                                                            }
-                                                        });
-        DataStream<String> langString = countsLang.map(new MapFunction<Map<String, Long>, String>() {
-            @Override
-            public String map(Map<String, Long> value) throws Exception {
-                return gson.toJson(value);
-            }
-        });
+                                    }
+                                };
+                                out.collect(langMap);
+                            }
+                        })
+                        .name("Language Count Map Factory");
+        DataStream<String> langString =
+                countsLang.map(new MapFunction<Map<String, Long>, String>() {
+                                @Override
+                                public String map(Map<String, Long> value) throws Exception {
+                                    return gson.toJson(value);
+                                }
+                            })
+                            .name("Language Count Json String Factory");
 
-        langString.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_1), new SimpleStringSchema(), propProducer));
+        langString.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_1), new SimpleStringSchema(), propProducer))
+                    .name("Language Count Sink");
 
 
         // execute program
-        env.execute("Java Flink KafkaConsumer");
+        env.execute("7305 Java Flink KafkaConsumer");
     }
 
     public static void main(String[] args) {
