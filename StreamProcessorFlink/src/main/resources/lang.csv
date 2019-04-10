@@ -1,11 +1,15 @@
 cn,ISO 639-1,ISO 639-3,ISO 639-1 with ISO 3166-1 alpha-2
-中文, zh, zho,    [zh-cn,zh-tw]
-英语, en, eng,    [en,en-gb]
-日语, ja, jpn,    [*]
-西班, es, spa,    [*]
+中文, zh, zho,    [zh-cn,zh-tw]1
+英语, en, eng,    [en,en-gb]1
+日语, ja, jpn,    [*]1
+西班, es, spa,    [*]1
 马来, ms, msa,    []
-葡语, pt, por,    [*]
-阿拉, ar, ara,    []
-法语, fr, fra,    []
-韩语, ko, kon,    []
-其他, ot, oth,    []
+葡语, pt, por,    [*]1
+阿拉, ar, ara,    []1
+法语, fr, fra,    []1
+韩语, ko, kon,    []1
+其他, ot, oth,    []1
+{"ar":1,"pt":2,"ko":2,"ot":12,"ja":4,"en":471,"fr":1,"es":11,"zh":1}
+{"ar":1,"pt":3,"ko":1,"ot":8,"ja":2,"en":474,"fr":4,"es":9,"zh":1}
+{"ar":8,"pt":3,"ko":2,"ot":21,"ja":3,"en":445,"fr":16,"es":7,"zh":1}
+{"pt":2,"ot":26,"ja":3,"en":453,"fr":12,"es":4}
