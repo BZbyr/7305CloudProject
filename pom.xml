@@ -25,7 +25,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <flink.version>1.7.2</flink.version>
-        <log4j.ersion>2.11.2</log4j.ersion>
+        <log4j.version>2.11.2</log4j.version>
         <scala.binary.version>2.11</scala.binary.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
