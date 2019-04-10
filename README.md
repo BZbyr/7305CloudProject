@@ -14,10 +14,10 @@ Term Project for **COMP7305 Cluster and Cloud Computing**.
 [![](https://img.shields.io/badge/Python-3.6.7-brightgreen.svg)](https://www.python.org)
 [![](https://img.shields.io/badge/Java-1.8-brightgreen.svg)](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 
-[![](https://img.shields.io/badge/SpringBoot-2.1.3-brightgreen.svg)](https://docs.spring.io)
-[![](https://img.shields.io/badge/JQuery-3.3.1-brightgreen.svg)](https://jquery.com)
-[![](https://img.shields.io/badge/Sockjs-1.3.0-brightgreen.svg)](https://github.com/sockjs/sockjs-client)
-[![](https://img.shields.io/badge/Stomp-2.3.3-brightgreen.svg)](http://stomp.github.io)
+[![](https://img.shields.io/badge/SpringBoot-2.1.3-ff69b4.svg)](https://docs.spring.io)
+[![](https://img.shields.io/badge/JQuery-3.3.1-ff69b4.svg)](https://jquery.com)
+[![](https://img.shields.io/badge/Sockjs-1.3.0-ff69b4.svg)](https://github.com/sockjs/sockjs-client)
+[![](https://img.shields.io/badge/Stomp-2.3.3-ff69b4.svg)](http://stomp.github.io)
 [![](https://img.shields.io/badge/Echarts-4.2.1-ff69b4.svg)](https://echarts.baidu.com)
 
 ## Title : Realtime Twitter Stream Analysis System
