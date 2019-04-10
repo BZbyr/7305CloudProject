@@ -39,7 +39,8 @@ public class KafkaConsumer {
     private static final String KAFKA_TOPIC_PRODUCER_1 = "kafka.topic.producer1";
     private static final String KAFKA_TOPIC_PRODUCER_2 = "kafka.topic.producer2";
     private static final String KAFKA_TOPIC_PRODUCER_3 = "kafka.topic.producer3";
-    private static final List<String> LANG_CODE_0 = new ArrayList<>(Arrays.asList("zh", "en", "ja", "es", "ms", "pt", "ar", "fr", "ko", "ot"));
+
+    private static final Map<String, Long> langMap = new HashMap<>();
     public static Gson gson = new Gson();
     private static Logger logger = LoggerFactory.getLogger(KafkaConsumer.class);
 
@@ -71,13 +72,18 @@ public class KafkaConsumer {
         geoInfo.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_3), new SimpleStringSchema(), propProducer));
 
 
-        DataStream<LangWithCount> countsLang = tweets.filter(tweet -> (TweetFunctions.getTweetLanguage(tweet) != null)).flatMap(new TweetToLang()).keyBy("lang").countWindow(3000, 300).sum("count");
-        DataStream<String> langString = countsLang.keyBy("lang").fold("lang", new FoldFunction<LangWithCount, String>() {
+        DataStream<LangWithCount> countsLang = tweets.filter(tweet -> (TweetFunctions.getTweetLanguage(tweet) != null)).flatMap(new TweetToLang()).keyBy("lang").countWindow(500,100).sum("count");
+        DataStream<String> langString = countsLang.keyBy("lang").fold(langMap,new FoldFunction<LangWithCount, Map<String, Long>>() {
+
             @Override
-            public String fold(String current, LangWithCount value) {
-                Map<String, Long> langMap = new HashMap<>();
-                langMap.put(value.getLang(), value.getCount());
-                return gson.toJson(langMap);
+            public Map<String, Long> fold(Map<String, Long> current, LangWithCount value) {
+                current.put(value.getLang(),value.getCount());
+                return current;
+            }
+        }).map(new MapFunction<Map<String, Long>, String>() {
+            @Override
+            public String map(Map<String, Long> value) throws Exception {
+                return gson.toJson(value);
             }
         });
         langString.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_1), new SimpleStringSchema(), propProducer));

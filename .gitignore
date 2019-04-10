@@ -68,3 +68,4 @@ StreamProcessorSpark/\.classpath
 /**/test.txt
 
 /**/dependency-reduced-pom.xml
+StreamProcessorSpark/.factorypath
