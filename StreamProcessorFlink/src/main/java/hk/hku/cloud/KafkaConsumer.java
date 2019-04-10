@@ -78,9 +78,6 @@ public class KafkaConsumer {
                 tweets.filter(tweet -> TweetFunctions.getTweetGPSCoordinates(tweet) != null)
                         .map(new TweetToLocation())
                         .name("Tweets to Location");
-        //write GPS information into kafka topic3
-        geoInfo.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_3), new SimpleStringSchema(), propProducer))
-                .name("Location Sink");
 
         // language count
         DataStream<Map<String,Long>> countsLang =
@@ -158,9 +155,6 @@ public class KafkaConsumer {
                             })
                             .name("Language Count Json String Factory");
 
-        langString.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_1), new SimpleStringSchema(), propProducer))
-                    .name("Language Count Sink");
-
         DataStream<String> countsByFollowers =
                 tweets.filter(tweet -> (TweetFunctions.getUsrFollowerNumLevel(tweet) != null))
                         .map(new TweetWithFollowersLevel())
@@ -213,8 +207,17 @@ public class KafkaConsumer {
                                      }
                                 }
                         ).name("followerLevel count");
+
+        //write GPS information into kafka topic3
+        geoInfo.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_3), new SimpleStringSchema(), propProducer))
+                .name("Location Sink");
+
+        langString.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_1), new SimpleStringSchema(), propProducer))
+                .name("Language Count Sink");
+
         countsByFollowers.addSink(new FlinkKafkaProducer<String>(context.getString(KAFKA_TOPIC_PRODUCER_2), new SimpleStringSchema(),propProducer))
                             .name("follower level sink");
+
 
 
 
