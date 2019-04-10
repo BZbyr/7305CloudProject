@@ -295,6 +295,10 @@ public class KafkaService {
                     Status status = TwitterObjectFactory.createStatus(value);
 //                    logger.info("get twitter status : " + status.getText());
 
+                    if (status.getText() == null || status.getText().length() < 5) {
+                        continue;
+                    }
+
                     // 计算文本的情绪值
                     INDArray features = iterator.loadFeaturesFromString(status.getText(), 256);
                     INDArray networkOutput_restored = restored.output(features);
@@ -338,7 +342,7 @@ public class KafkaService {
                     // 发送消息给订阅 "/topic/consumeDeepLearning" 且在线的用户
                     template.convertAndSend("/topic/consumeDeepLearning", gson.toJson(sentimentTuple));
 
-                } catch (TwitterException e) {
+                } catch (Exception e) {
                     logger.error("TwitterException : ", e);
                 }
             }
