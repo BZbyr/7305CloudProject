@@ -107,16 +107,16 @@ Need to connect with cs vpn.
                -> DL4J -> Kafka
  ```
  
- *Flume*  将*Twitter Data* 搬运存储到 ```topic : alex1```
+ *Flume*  将*Twitter Data* 搬运存储到 ```topic : alex1``` 供 Spark & Flink & DL4J 订阅。
  
- *Spark Streaming* 读取```topic : alex1``` 进行情感分析，存储结果数据到 ```topic : twitter-result1```
+ *Spark Streaming* 读取```topic : alex1``` 进行情感分析，存储结果数据到 ```topic : twitter-result1``` 供Web端订阅。
  
- *Cloud Web DL4J* 读取```topic : alex1``` 进行 dl4j 情感分析，存储结果数据到 ```topic : twitter-dl4j```
+ *Cloud Web DL4J* 读取```topic : alex1``` 进行 dl4j 情感分析，结果数据不存储，直接吐到WebSocket监听的路由里，供Web端订阅。
  
  *Flink* 读取```topic : alex1``` 进行数据统计分析，
- - twitter 语言统计结果存储到```topic : twitter-flink-lang```
- - twitter 用户fans统计结果存储到```topic : twitter-flink-fans``` 
- - twitter 用户fans统计结果存储到```topic : twitter-flink-geo``` 
+ - twitter 语言统计结果存储到```topic : twitter-flink-lang``` 供Web端订阅。
+ - twitter 用户fans统计结果存储到```topic : twitter-flink-fans``` 供Web端订阅。
+ - twitter 用户geo统计结果存储到```topic : twitter-flink-geo``` 供Web端订阅。
  
  数据格式:
  
