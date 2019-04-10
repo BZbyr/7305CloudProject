@@ -141,7 +141,10 @@ Need to connect with cs vpn.
     - Stanford Core NLP 模型路径，maven 依赖中 [stanford-corenlp-models](https://stanfordnlp.github.io/CoreNLP/download.html)
     
     - Deep Learning 模型&词向量路径 ```/tweets_sentiment/dl4j/```
-    
+
+### Presentation PowerPoint
+https://docs.google.com/presentation/d/13iHaXcwX7a4WkaIA79BHxhsM9GSiKSfBs25j12pviWY/edit?usp=sharing
+
 ### Run
 0. Modify Zsh Environment
 ```sh
