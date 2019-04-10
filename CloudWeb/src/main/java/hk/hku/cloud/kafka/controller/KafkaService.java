@@ -273,9 +273,9 @@ public class KafkaService {
         consumer.subscribe(topics);
 
         // 加载 kafka producer
-        Properties propsProducer = getProducerProperties();
-        Producer<String, String> producer = new KafkaProducer<>(propsProducer);
-        String topicsProducer = "twitter-dl4j";
+//        Properties propsProducer = getProducerProperties();
+//        Producer<String, String> producer = new KafkaProducer<>(propsProducer);
+//        String topicsProducer = "twitter-dl4j";
 
         // dl4j 处理情感
         ConsumerRecords<String, String> consumerRecords;
