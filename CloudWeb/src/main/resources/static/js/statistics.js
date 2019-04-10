@@ -78,17 +78,17 @@ $(document).ready(function () {
                         let esNum = 0
                         let ptNum = 0
                         let otNum = 0
-                        for (let i in a) {
+                        for (let i in lang) {
                             if (i == 'en')
-                                enNum += a[i]
+                                enNum += lang[i]
                             else if (i == 'fr')
-                                frNum += a[i]
+                                frNum += lang[i]
                             else if (i == 'es')
-                                esNum += a[i]
+                                esNum += lang[i]
                             else if (i == 'pt')
-                                ptNum += a[i]
+                                ptNum += lang[i]
                             else
-                                otNum += a[i]
+                                otNum += lang[i]
                         }
                     }
                     langDataNewest = [enNum, frNum, esNum, ptNum, otNum]
@@ -107,7 +107,7 @@ $(document).ready(function () {
                     let num_2k_5k = fans[3]
                     let num_5k_20k = fans[4]
                     let num_20k_1kk = fans[5] + fans[6] + fans[7]
-                    if (tmp.length < 0)
+                    if (fans.length < 0)
                         console.log("consume fans data format exeception : " + response.body)
                     else
                         fansDataNewest = [num_200_800, num_800_2k, num_2k_5k, num_5k_20k, num_20k_1kk]
