@@ -262,7 +262,7 @@ public class KafkaService {
         WordVectors wordVectors = WordVectorSerializer.loadStaticModel(wordVectorsFile);
         logger.info("load static model successful");
 
-        SentimentExampleIterator iterator = new SentimentExampleIterator(wordVectors);
+        SentimentExampleIterator iterator = new SentimentExampleIterator(wordVectors,1,256);
         logger.info("init SentimentExampleIterator");
 
         // 加载 kafka consumer
