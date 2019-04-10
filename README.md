@@ -9,14 +9,17 @@ Term Project for **COMP7305 Cluster and Cloud Computing**.
 [![](https://img.shields.io/badge/Flume-1.9.0-blue.svg)](https://flume.apache.org)
 [![](https://img.shields.io/badge/Kafka-2.1.1-blue.svg)](http://kafka.apache.org)
 [![](https://img.shields.io/badge/Flink-1.7.2-blue.svg)](https://flink.apache.org)
+
 [![](https://img.shields.io/badge/Scala-2.11.12-brightgreen.svg)](https://www.scala-lang.org)
 [![](https://img.shields.io/badge/Python-3.6.7-brightgreen.svg)](https://www.python.org)
 [![](https://img.shields.io/badge/Java-1.8-brightgreen.svg)](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+
 [![](https://img.shields.io/badge/SpringBoot-2.1.3-brightgreen.svg)](https://docs.spring.io)
 [![](https://img.shields.io/badge/JQuery-3.3.1-brightgreen.svg)](https://jquery.com)
 [![](https://img.shields.io/badge/Sockjs-1.3.0-brightgreen.svg)](https://github.com/sockjs/sockjs-client)
 [![](https://img.shields.io/badge/Stomp-2.3.3-brightgreen.svg)](http://stomp.github.io)
 [![](https://img.shields.io/badge/Echarts-4.2.1-brightgreen.svg)](https://echarts.baidu.com)
+![](https://img.shields.io/static/v1.svg?label=<LABEL>&message=<MESSAGE>&color=ff69b4<COLOR>)
 
 ## Title : Realtime Twitter Stream Analysis System
 
