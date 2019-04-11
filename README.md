@@ -77,6 +77,9 @@ Need to connect with cs vpn.
 
 [Meeting Record](https://docs.google.com/document/d/1NkYv8v_0XF8zxkrgxPIUUTsgPG1U0NvSgCrm8yrpxfo/edit?usp=sharing)
 
+[Prensentation PPT](https://docs.google.com/presentation/d/13iHaXcwX7a4WkaIA79BHxhsM9GSiKSfBs25j12pviWY/edit?usp=sharing)
+
+
 [地理查询 API](http://jwd.funnyapi.com/#/index)
 
 [环境信息](https://docs.google.com/spreadsheets/d/1ikzBeQ43pcnHpoRPA4PIFMfDF4OV6SeimAASWj7pVvA/edit#gid=0)
@@ -141,9 +144,6 @@ Need to connect with cs vpn.
     - Stanford Core NLP 模型路径，maven 依赖中 [stanford-corenlp-models](https://stanfordnlp.github.io/CoreNLP/download.html)
     
     - Deep Learning 模型&词向量路径 ```/tweets_sentiment/dl4j/```
-
-### Presentation PowerPoint
-https://docs.google.com/presentation/d/13iHaXcwX7a4WkaIA79BHxhsM9GSiKSfBs25j12pviWY/edit?usp=sharing
 
 ### Run
 
