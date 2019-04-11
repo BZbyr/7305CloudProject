@@ -83,7 +83,7 @@ public class KafkaConsumer {
                 tweets.filter(tweet -> (TweetFunctions.getTweetLanguage(tweet) != null))
                         .map(new TweetWithLang())
                         .returns(typeInformation)
-                        .countWindowAll(500,100)
+                        .countWindowAll(500,300)
                         .process(new ProcessAllWindowFunction<Tuple2<Status, String>, Map<String,Long>, GlobalWindow>() {
                             @Override
                             public void process(Context context, Iterable<Tuple2<Status, String>> elements, Collector<Map<String,Long>> out) throws Exception {
@@ -158,7 +158,7 @@ public class KafkaConsumer {
                 tweets.filter(tweet -> (TweetFunctions.getUsrFollowerNumLevel(tweet) != null))
                         .map(new TweetWithFollowersLevel())
                         .returns(typeInformation)
-                        .countWindowAll(2000,200)
+                        .countWindowAll(1000,200)
                         .process(
                                 new ProcessAllWindowFunction<Tuple2<Status, String>, String, GlobalWindow>() {
                                      @Override
