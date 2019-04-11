@@ -307,7 +307,7 @@ public class KafkaService {
 
                     // 吐出分析结果
                     Double positive = probabilitiesAtLastWord_restored.getDouble(0);
-                    logger.info("dl4j positive : " + positive);
+//                    logger.info("dl4j positive : " + positive);
 
                     SentimentTuple sentimentTuple = new SentimentTuple();
 

@@ -135,75 +135,67 @@ $(document).ready(function () {
     function switchBarTimer() {
         if (barTimerId == undefined) {
             function barTimer() {
-                // 已经满6列数据，去除第一条，再新增最新数据
-                while (barData.en_data.length >= 6) {
-                    barData.en_data.shift()
-                    barData.fr_data.shift()
-                    barData.es_data.shift()
-                    barData.pt_data.shift()
-                    barData.other_data.shift()
-                }
-
                 // 免得 langDataNewest 被改变了
                 let displayData = langDataNewest;
                 langDataNewest = []
 
-                if (displayData.length < 5) {
-                    // 使用测试数据
-                    let randomData = [getRandomInt(60), getRandomInt(60), getRandomInt(30), getRandomInt(100)]
-                    barData.en_data.push(500 - randomData[0] - randomData[1] - randomData[2] - randomData[3])
-                    barData.fr_data.push(randomData[0])
-                    barData.es_data.push(randomData[1])
-                    barData.pt_data.push(randomData[2])
-                    barData.other_data.push(randomData[3])
-                } else {
+                if (displayData.length >= 5) {
+                    // 已经满6列数据，去除第一条，再新增最新数据
+                    while (barData.en_data.length >= 6) {
+                        barData.en_data.shift()
+                        barData.fr_data.shift()
+                        barData.es_data.shift()
+                        barData.pt_data.shift()
+                        barData.other_data.shift()
+                    }
+
                     // 插入 kafka 数据
                     barData.en_data.push(displayData[0])
                     barData.fr_data.push(displayData[1])
                     barData.es_data.push(displayData[2])
                     barData.pt_data.push(displayData[3])
                     barData.other_data.push(displayData[4])
-                }
 
-                //更新bar 显示数据
-                barChart.setOption({
-                    series: [{
-                        name: barData.name[0],
-                        type: 'line',
-                        stack: '总量',
-                        areaStyle: {},
-                        data: barData.en_data
-                    }, {
-                        name: barData.name[1],
-                        type: 'line',
-                        stack: '总量',
-                        areaStyle: {},
-                        data: barData.fr_data
-                    }, {
-                        name: barData.name[2],
-                        type: 'line',
-                        stack: '总量',
-                        areaStyle: {},
-                        data: barData.es_data
-                    }, {
-                        name: barData.name[3],
-                        type: 'line',
-                        stack: '总量',
-                        areaStyle: {},
-                        data: barData.pt_data
-                    }, {
-                        name: barData.name[4],
-                        type: 'line',
-                        stack: '总量',
-                        areaStyle: {
-                            normal: {}
-                        },
-                        data: barData.other_data
-                    }
-                    ]
-                });
+                    //更新bar 显示数据
+                    barChart.setOption({
+                        series: [{
+                            name: barData.name[0],
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {},
+                            data: barData.en_data
+                        }, {
+                            name: barData.name[1],
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {},
+                            data: barData.fr_data
+                        }, {
+                            name: barData.name[2],
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {},
+                            data: barData.es_data
+                        }, {
+                            name: barData.name[3],
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {},
+                            data: barData.pt_data
+                        }, {
+                            name: barData.name[4],
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {
+                                normal: {}
+                            },
+                            data: barData.other_data
+                        }
+                        ]
+                    });
+                }
                 // 每2秒刷新一次报表展示数据
-                barTimerId = setTimeout(barTimer, 2000);
+                barTimerId = setTimeout(barTimer, 3000);
             }
 
             // 启动定时器
@@ -226,20 +218,20 @@ $(document).ready(function () {
 
                 // 免得 fansDataNewest 被改变了
                 let displayData = fansDataNewest;
-
-                if (displayData.length < 5) {
-                    // 使用测试数据
-                    for (let i = 0; i < 5; i++) {
-                        let tmp = 400 + getRandomInt(200)
-                        if (i == 5) {
-                            tmp = getRandomInt(200)
-                        }
-                        data.push({
-                            value: tmp,
-                            name: name[i]
-                        })
-                    }
-                } else {
+                fansDataNewest = []
+                if (displayData.length >= 5) {
+                    //     // 使用测试数据
+                    //     for (let i = 0; i < 5; i++) {
+                    //         let tmp = 400 + getRandomInt(200)
+                    //         if (i == 5) {
+                    //             tmp = getRandomInt(200)
+                    //         }
+                    //         data.push({
+                    //             value: tmp,
+                    //             name: name[i]
+                    //         })
+                    //     }
+                    // } else {
                     // 使用 kafka 传来的最新数据
                     for (let i = 0; i < 5; i++) {
                         data.push({
@@ -247,13 +239,13 @@ $(document).ready(function () {
                             name: name[i]
                         })
                     }
+                    pieChart.setOption({
+                        series: [{
+                            data: data
+                        }]
+                    });
                 }
-                pieChart.setOption({
-                    series: [{
-                        data: data
-                    }]
-                });
-                pieTimerId = setTimeout(pieTimer, 2000);
+                pieTimerId = setTimeout(pieTimer, 3000);
             }
 
             // 启动定时器
@@ -334,7 +326,7 @@ function setPieChartOption(title, pieData) {
             selectedMode: 'single',
             selectedOffset: 30,
             clockwise: true,
-            radius:[0,'55%'],
+            radius: [0, '55%'],
             label: {
                 normal: {
                     textStyle: {
