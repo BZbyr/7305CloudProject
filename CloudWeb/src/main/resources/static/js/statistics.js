@@ -139,16 +139,24 @@ $(document).ready(function () {
                 let displayData = langDataNewest;
                 langDataNewest = []
 
-                if (displayData.length >= 5) {
-                    // 已经满6列数据，去除第一条，再新增最新数据
-                    while (barData.en_data.length >= 6) {
-                        barData.en_data.shift()
-                        barData.fr_data.shift()
-                        barData.es_data.shift()
-                        barData.pt_data.shift()
-                        barData.other_data.shift()
-                    }
+                // 已经满6列数据，去除第一条，再新增最新数据
+                while (barData.en_data.length >= 6) {
+                    barData.en_data.shift()
+                    barData.fr_data.shift()
+                    barData.es_data.shift()
+                    barData.pt_data.shift()
+                    barData.other_data.shift()
+                }
 
+                if (displayData.length < 5) {
+                    // 使用测试数据
+                    let randomData = [getRandomInt(30), getRandomInt(30), getRandomInt(30), 40 + getRandomInt(30)]
+                    barData.en_data.push(500 - randomData[0] - randomData[1] - randomData[2] - randomData[3] - 40)
+                    barData.fr_data.push(randomData[0])
+                    barData.es_data.push(randomData[1])
+                    barData.pt_data.push(randomData[2])
+                    barData.other_data.push(randomData[3])
+                } else {
                     // 插入 kafka 数据
                     barData.en_data.push(displayData[0])
                     barData.fr_data.push(displayData[1])
