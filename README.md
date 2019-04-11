@@ -146,6 +146,7 @@ Need to connect with cs vpn.
 https://docs.google.com/presentation/d/13iHaXcwX7a4WkaIA79BHxhsM9GSiKSfBs25j12pviWY/edit?usp=sharing
 
 ### Run
+
 0. Modify Zsh Environment
 ```sh
 #使用zsh, 自定义环境变量需要修改:
@@ -166,14 +167,7 @@ nohup flume-ng agent -f /opt/spark-twitter/7305CloudProject/Collector/TwitterToK
 spark-submit --class "hk.hku.spark.TweetSentimentAnalyzer" --master local[3] /opt/spark-twitter/7305CloudProject/StreamProcessorSpark/target/StreamProcessorSpark-jar-with-dependencies.jar
 
 集群模式
-spark-submit --class "hk.hku.spark.TweetSentimentAnalyzer" --master yarn --deploy-mode cluster \ 
---num-executors 2 \
---executor-memory 4g \
---executor-cores 4 \
---driver-memory 4g \
---conf spark.kryoserializer.buffer.max=2048 \
---conf spark.yarn.executor.memoryOverhead=2048 \
-/opt/spark-twitter/7305CloudProject/StreamProcessorSpark/target/StreamProcessorSpark-jar-with-dependencies.jar
+spark-submit --class "hk.hku.spark.TweetSentimentAnalyzer" --master yarn --deploy-mode cluster --num-executors 2 --executor-memory 4g --executor-cores 4 --driver-memory 4g --conf spark.kryoserializer.buffer.max=2048 --conf spark.yarn.executor.memoryOverhead=2048 /opt/spark-twitter/7305CloudProject/StreamProcessorSpark/target/StreamProcessorSpark-jar-with-dependencies.jar
 ```
 
 3. Start *CloudWeb* to show the result on the [website](http://202.45.128.135:20907).

@@ -75,38 +75,38 @@ $(document).ready(function () {
                 series: [{
                     name: 'nb-positive',
                     type: 'line',
-                    stack: '总量',
+                    // stack: '总量',
                     data: data_nb_positive,
-                    itemStyle: {
-                        color: '#aa314d'
-                    }
+                    // itemStyle: {
+                    //     color: '#aa314d'
+                    // }
                 }, {
                     name: 'nb-negative',
                     type: 'line',
-                    stack: '总量',
+                    // stack: '总量',
                     data: data_nb_negative,
-                    itemStyle: {
-                        color: '#283c55'
-                    }
+                    // itemStyle: {
+                    //     color: '#283c55'
+                    // }
                 }, {
                     name: 'nlp-positive',
                     type: 'line',
-                    stack: '总量',
+                    // stack: '总量',
                     data: data_nlp_positive,
                 }, {
                     name: 'nlp-negative',
                     type: 'line',
-                    stack: '总量',
+                    // stack: '总量',
                     data: data_nlp_negative,
                 }, {
                     name: 'dl-positive',
                     type: 'line',
-                    stack: '总量',
+                    // stack: '总量',
                     data: data_dl_positive,
                 }, {
                     name: 'dl-negative',
                     type: 'line',
-                    stack: '总量',
+                    // stack: '总量',
                     data: data_dl_negative,
                 }]
             });

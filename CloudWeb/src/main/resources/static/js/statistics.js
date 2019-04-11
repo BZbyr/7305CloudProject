@@ -334,6 +334,7 @@ function setPieChartOption(title, pieData) {
             selectedMode: 'single',
             selectedOffset: 30,
             clockwise: true,
+            radius:[0,'55%'],
             label: {
                 normal: {
                     textStyle: {
