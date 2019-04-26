@@ -158,7 +158,7 @@ spark-submit --class "hk.hku.spark.mllib.SparkNaiveBayesModelCreator" --master l
 
 4. The Model for CoreNLP has been stored in NLP-jars, so we only need to make sure the maven dependency is completed.
 
-5. The Model for DL4J has been stored in the project, so we only need to make sure the [word vectors](https://github.com/mmihaltz/word2vec-GoogleNews-vectors/archive/master.zip) (stored on HDSF) are completed.
+5. The Model for DL4J has been stored in the project, so we only need to make sure the [word vectors](https://github.com/mmihaltz/word2vec-GoogleNews-vectors/) (stored on HDSF) are completed.
 
 6. The CloudWeb Spring Boot project includes DL4J and this makes it need about 6G memory. Keep mind.
 
