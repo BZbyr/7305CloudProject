@@ -25,7 +25,7 @@ Term Project for **COMP7305 Cluster and Cloud Computing**.
 Developed By:
 
   - [@GaryGao](https://github.com/GaryGao829)
-  - [@lexkaing](https://github.com/AlexTK2012)
+  - [@AlexTK2012](http://alextk2012.github.io)
   - [@BZbyr](https://github.com/BZbyr)
   - [@Yang Xiangyu](https://github.com/ulysses1881826)
   
@@ -143,22 +143,39 @@ Need to connect with cs vpn.
     
     - Stanford Core NLP 模型路径，maven 依赖中 [stanford-corenlp-models](https://stanfordnlp.github.io/CoreNLP/download.html)
     
-    - Deep Learning 模型&词向量路径 ```/tweets_sentiment/dl4j/```
+    - Deep Learning 模型&[词向量](https://github.com/mmihaltz/word2vec-GoogleNews-vectors/archive/master.zip)路径 ```/tweets_sentiment/dl4j/```
+
+### Precondition
+
+1. Make preparation for Kafka environment. We have set up kafka on total 9 machines. Create kafka topic and make sure we can consume and produce the topic.
+
+2. Make preparation for Flume environment. We have set up flume GPU7.
+
+3. Generate Model for Machine Learning lib, run the command and put the model on the HDFS.
+```Shell
+spark-submit --class "hk.hku.spark.mllib.SparkNaiveBayesModelCreator" --master local[3] /opt/spark-twitter/7305CloudProject/StreamProcessorSpark/target/StreamProcessorSpark-jar-with-dependencies.jar
+```
+
+4. The Model for CoreNLP has been stored in NLP-jars, so we only need to make sure the maven dependency is completed.
+
+5. The Model for DL4J has been stored in the project, so we only need to make sure the [word vectors](https://github.com/mmihaltz/word2vec-GoogleNews-vectors/archive/master.zip) (stored on HDSF) are completed.
+
+6. The CloudWeb Spring Boot project includes DL4J and this makes it need about 6G memory. Keep mind.
+
+7. Log in the GPU machine, `cd /opt/spark-twitter/7305CloudProject`, `git pull` code and `mvn compile` project.
 
 ### Run
-
-0. Modify Zsh Environment
-```sh
-#使用zsh, 自定义环境变量需要修改:
-vi ~/sh/env_zsh 
-```
 
 1. Start *Flume* to collect twitter data and transport into *Kafka*.
 
 ```sh
 # read boot_flume_sh
 nohup flume-ng agent -f /opt/spark-twitter/7305CloudProject/Collector/TwitterToKafka.conf -Dflume.root.logger=DEBUG,console -n a1 >> flume.log 2>&1 &
+
+# make sure data has been produced into kafka topic successfully
 ```
+
+> We can start 3 or more flume progress to test the cluster performance.
 
 2. Start *Spark Streaming* to analysis twitter text sentiment using stanford nlp & naive bayes.
 
@@ -170,6 +187,8 @@ spark-submit --class "hk.hku.spark.TweetSentimentAnalyzer" --master local[3] /op
 spark-submit --class "hk.hku.spark.TweetSentimentAnalyzer" --master yarn --deploy-mode cluster --num-executors 2 --executor-memory 4g --executor-cores 4 --driver-memory 4g --conf spark.kryoserializer.buffer.max=2048 --conf spark.yarn.executor.memoryOverhead=2048 /opt/spark-twitter/7305CloudProject/StreamProcessorSpark/target/StreamProcessorSpark-jar-with-dependencies.jar
 ```
 
+Watch the Spark Status on the Spark History Server website.
+
 3. Start *CloudWeb* to show the result on the [website](http://202.45.128.135:20907).
 
 ```sh
@@ -177,7 +196,22 @@ cd /opt/spark-twitter/7305CloudProject/CloudWeb/target
 nohup java -Xmx3072m -jar /opt/spark-twitter/7305CloudProject/CloudWeb/target/CloudWeb-1.0-SNAPSHOT.jar & 
 ```
 
+Watch the Flink Status on the Flink History Server website.
+
 4. Start *Flink* 
 ```sh
 flink run /opt/spark-twitter/7305CloudProject/StreamProcessorFlink/target/StreamProcessorFlink-1.0-SNAPSHOT.jar
 ```
+
+### Common Issues and Solution
+
+1. Modify Zsh Environment
+```sh
+# 使用zsh, 自定义环境变量需要修改:
+vi ~/sh/env_zsh 
+# then restart the shell
+```
+
+2. CloudWeb start failed
+
+The most possible reason is the machine's memory isn't enough. Use command `top` to watch the status.
